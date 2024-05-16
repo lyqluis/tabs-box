@@ -27,13 +27,14 @@ const TabsBoxPage = () => {
   // get all tabs info
   const getTabs = async () => {
     try {
-      const tabs = await chrome.tabs.query({})
-      // group by windowId
-      const allWindowTabs = groupBy(tabs, "windowId")
-      const tabsByWindows = Object.entries(allWindowTabs)
-      setTabs(tabsByWindows)
-      console.table(tabs, ["favIconUrl", "title", "url"])
-      console.log("windows", chrome.windows)
+      // // get tabs by chrome.tabs api
+      // const tabs = await chrome.tabs.query({})
+      // // group by windowId
+      // const allWindowTabs = groupBy(tabs, "windowId")
+      // const tabsByWindows = Object.entries(allWindowTabs)
+      // setTabs(tabsByWindows)
+      // console.table(tabs, ["favIconUrl", "title", "url"])
+      // console.log("windows", chrome.windows)
 
       const allWindows = await chrome.windows.getAll({ populate: true })
       // set current window to the first of the list

@@ -15,6 +15,7 @@ const ListItem = ({ tab }) => {
        overflow-hidden"
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}>
+      <i className="list-item__handle flex-none w-5 h-5 bg-slate-500"></i>
       <span
         className="flex-none m-0.5 w-7 
         flex justify-center items-center">

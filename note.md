@@ -1,0 +1,15 @@
+# TODO
+- [ ] layout
+- [x] sortable feature
+  - add react-sortablejs
+  - sortable only with handle icon
+- [-] list
+  - [ ] show pinned url
+  - [ ] handle icon
+  - [ ] URL that exceeds fades out with a gradient
+- [ ] search feature
+- [ ] export feature
+- [ ] import feature
+- [ ] save in cloud feature
+  - [ ] google drive
+- [ ] setting feature
