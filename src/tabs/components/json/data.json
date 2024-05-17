@@ -1,0 +1,44 @@
+{
+  "format": "nxs.json.v2",
+  "exportId": "Cs6DWag4AjECoSTANe3F3pG",
+  "created": "2024-05-13T08:06:56.297Z",
+  "scope": "all",
+  "source": {
+    "type": "client",
+    "id": "8VMzfufDruZ6XnUBsURka7k",
+    "version": "4.0.3",
+    "language": "zh-CN",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+  },
+  "collections": [  
+    // window
+    {
+      "id": "kdL9vvX7JvGotsFPPkIiT9Y",
+      "title": "temp",
+      "created": 1714047444579,
+      "updated": 1714979051462,
+      "pinned": 1715046611670,
+      "touched": 1715046606756,
+      "sourceType": "local-client",
+      "folders": [
+        {
+          "state": "maximized",
+          "top": 25,
+          "width": 1440,
+          "height": 875,
+          "id": "JU42fYXW4Y6Yvlf9fH7UBow",
+          "links": [
+            {
+              "url": "https://kimi.moonshot.cn/chat/cos4u61kqq4s2lfi8jo0",
+              "title": "Kimi.ai - 帮你看更大的世界",
+              "favIconUrl": "https://statics.moonshot.cn/kimi-chat/favicon.ico",
+              "pinned": true,
+              "id": "vkbQf36RbxdquhTaZ2wW5qN"
+            }
+          ]
+        }
+      ],
+      "sourceId": "0AxFGFlXnfyTqWwlLRk441m"
+    }
+  ]
+}

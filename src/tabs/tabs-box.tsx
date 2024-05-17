@@ -2,40 +2,21 @@ import "./style"
 
 import { useEffect, useState } from "react"
 
-import { List } from "./components/list"
+import Content from "./components/Content"
+import Header from "./components/Header"
+import { ProviderWithReducer } from "./components/reducer/reducer"
 import SideBar from "./components/SideBar"
-
-const groupBy = (arr, key) => {
-  const groups = arr.reduce((groups, item) => {
-    if (!groups[item[key]]) {
-      groups[item[key]] = []
-    }
-    groups[item[key]].push(item)
-    return groups
-  }, {})
-  return groups
-}
+import { getAllCollections } from "./store"
 
 const TabsBoxPage = () => {
   const [loading, setLoading] = useState(true)
-  const [tabs, setTabs] = useState([])
   const [windows, setWindows] = useState([])
-  const [currentIdx, setCurrentIdx] = useState(0)
-  const selectWindow = (i) => () => setCurrentIdx(i)
-  const selectedWindow = windows[currentIdx]
+  const [collections, setCollections] = useState([])
+  const [current, setCurrent] = useState(null)
 
   // get all tabs info
   const getTabs = async () => {
     try {
-      // // get tabs by chrome.tabs api
-      // const tabs = await chrome.tabs.query({})
-      // // group by windowId
-      // const allWindowTabs = groupBy(tabs, "windowId")
-      // const tabsByWindows = Object.entries(allWindowTabs)
-      // setTabs(tabsByWindows)
-      // console.table(tabs, ["favIconUrl", "title", "url"])
-      // console.log("windows", chrome.windows)
-
       const allWindows = await chrome.windows.getAll({ populate: true })
       // set current window to the first of the list
       const currentWindowIdx = allWindows.findIndex((w) => w.focused)
@@ -43,15 +24,40 @@ const TabsBoxPage = () => {
       allWindows.unshift(...currentWindow)
       console.log("all windows", allWindows)
       setWindows(allWindows)
+      setCurrent(allWindows[0])
     } catch (err) {
       console.error("Error get tabs:", err)
+    }
+  }
+
+  const getCollections = async () => {
+    try {
+      const allCollections = await getAllCollections()
+      // set pinned collection to the first of the list & sort by date
+      const pinnedCollections = allCollections
+        .filter((c) => c.pinned)
+        .sort((a, b) => b.updated - a.updated)
+      const restCollections = allCollections
+        .filter((c) => !c.pinned)
+        .sort((a, b) => b.updated - a.updated)
+      console.log("all collectioins from store", allCollections)
+      setCollections([...pinnedCollections, ...restCollections])
+    } catch (err) {
+      console.error("Error get collections:", err)
+    }
+  }
+
+  const getData = async () => {
+    try {
+      await getTabs()
+      await getCollections()
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    getTabs()
+    getData()
   }, [])
 
   if (loading) {
@@ -59,20 +65,19 @@ const TabsBoxPage = () => {
   }
 
   return (
-    <div className="flex">
-      {/* // TODO when select item from sidebar, change the display in main content */}
-      <SideBar
-        windows={windows}
-        selectWindow={selectWindow}
-        currentIdx={currentIdx}></SideBar>
-      <main className="w-full overflow-hidden">
-        <header className="h-16 w-auto bg-danube-100">
-          header
-          <h2>Tabs Box</h2>
-        </header>
-        <List window={selectedWindow}></List>
-      </main>
-    </div>
+    <ProviderWithReducer data={windows}>
+      <div className="flex">
+        <SideBar
+          windows={windows}
+          collections={collections}
+          onSelect={setCurrent}
+          current={current}></SideBar>
+        <main className="w-full overflow-hidden">
+          <Header></Header>
+          <Content selectedItem={current}></Content>
+        </main>
+      </div>
+    </ProviderWithReducer>
   )
 }
 
