@@ -1,11 +1,11 @@
-import { saveCollection } from "~tabs/store"
+import { localSaveCollection } from "~tabs/store"
 
 const parseJSON = (data) => {
   const collections = data.collections
   if (!collections || !collections.length) return
   // iterate collections to store locally
   collections.map((collection) => {
-    saveCollection(collection, false)
+    localSaveCollection(collection)
   })
 }
 

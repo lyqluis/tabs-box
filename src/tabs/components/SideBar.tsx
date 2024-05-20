@@ -1,6 +1,28 @@
+import { useEffect, useRef } from "react"
+
 import "../style"
 
-const SideBar = ({ windows, collections, onSelect, current }) => {
+import { useGlobalCtx } from "./context"
+import { setCurrent } from "./reducer/actions"
+
+const SideBar = ({}) => {
+  const init = useRef(false)
+  const onSelect = (windowOrCollection) =>
+    dispatch(setCurrent(windowOrCollection))
+  const {
+    state: { windows, collections, current },
+    dispatch
+  } = useGlobalCtx()
+
+  useEffect(() => {
+    if (!init.current && windows.length) {
+      console.log("current", windows)
+      console.log("sidebar data refreshed")
+      dispatch(setCurrent(windows[0]))
+      init.current = true
+    }
+  }, [windows])
+
   return (
     <aside
       className="w-1/3 min-w-52 h-lvh px-3.5 

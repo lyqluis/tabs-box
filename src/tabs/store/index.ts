@@ -4,22 +4,13 @@ const COLLECTIONS = localforage.createInstance({
   name: "collections"
 })
 
-export const saveCollection = (window, isNew = true) => {
-  let collection = window
-  if (isNew) {
-    // wrapper the window to collection data
-    const created = Date.now()
-    collection = {
-      created,
-      updated: created,
-      title: window.tabs[0]?.title ?? "", // give a default title
-      windows: [window]
-    }
-  }
+export const localSaveCollection = (collection) => {
   COLLECTIONS.setItem(collection.created.toString(), collection)
 }
 
-export const removeCollection = (collection) => {
+export const localGetCollection = () => {}
+
+export const localRemoveCollection = (collection) => {
   const created = collection.created.toString()
   COLLECTIONS.removeItem(created)
 }

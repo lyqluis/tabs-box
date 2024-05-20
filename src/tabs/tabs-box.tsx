@@ -65,16 +65,12 @@ const TabsBoxPage = () => {
   }
 
   return (
-    <ProviderWithReducer data={windows}>
+    <ProviderWithReducer data={{ windows, collections }}>
       <div className="flex">
-        <SideBar
-          windows={windows}
-          collections={collections}
-          onSelect={setCurrent}
-          current={current}></SideBar>
+        <SideBar></SideBar>
         <main className="w-full overflow-hidden">
           <Header></Header>
-          <Content selectedItem={current}></Content>
+          <Content></Content>
         </main>
       </div>
     </ProviderWithReducer>
