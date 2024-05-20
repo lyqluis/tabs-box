@@ -1,17 +1,68 @@
+import { useGlobalCtx } from "./context"
 import { List } from "./list"
+import { removeCollection, setCollection, setCurrent } from "./reducer/actions"
 
-const Content = ({ selectedItem }) => {
-  // window
-  if (selectedItem.tabs) {
-    return <List window={selectedItem}></List>
+const ContentLayout = ({ seletedItem, children }) => {
+  const { dispatch } = useGlobalCtx()
+  const saveCollection = () => {
+    dispatch(setCollection(seletedItem))
   }
-  // collection
-  const list = selectedItem.folders ?? selectedItem.windows
+  // TODO view does not change after save/delete
+  const editCollection = () => {
+    // todo
+  }
+  const deleteCollection = () => dispatch(removeCollection(seletedItem))
+
   return (
     <>
-      {list.map((window) => (
-        <List window={window} key={window.id}></List>
-      ))}
+      <h1>Title:{seletedItem.title}</h1>
+      <button
+        className="p-2 bg-white border border-solid border-danube-600"
+        onClick={saveCollection}>
+        save to collection
+      </button>
+      {/* // TODO only shows when selectedItem is collection */}
+      <button
+        className="p-2 bg-white border border-solid border-danube-600"
+        onClick={editCollection}>
+        edit title
+      </button>
+      <button
+        className="p-2 bg-white border border-solid border-danube-600"
+        onClick={deleteCollection}>
+        delete
+      </button>
+      {children}
+    </>
+  )
+}
+
+const Content = ({}) => {
+  const {
+    state: { current }
+  } = useGlobalCtx()
+
+  if (!current) return <h1>loading</h1>
+
+  // window
+  if (current.tabs) {
+    return (
+      <>
+        <ContentLayout seletedItem={current}>
+          <List window={current}></List>
+        </ContentLayout>
+      </>
+    )
+  }
+  // collection
+  const list = current.folders ?? current.windows
+  return (
+    <>
+      <ContentLayout seletedItem={current}>
+        {list.map((window) => (
+          <List window={window} key={window.id}></List>
+        ))}
+      </ContentLayout>
     </>
   )
 }

@@ -20,12 +20,6 @@ const Header = () => {
         onClick={importFile}>
         import
       </button>
-      <button className="p-2 bg-white border border-solid border-danube-600">
-        add a new collection
-      </button>
-      <button className="p-2 bg-white border border-solid border-danube-600">
-        save to collection
-      </button>
       <button>apply</button>
     </header>
   )

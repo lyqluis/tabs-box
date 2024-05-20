@@ -3,23 +3,24 @@ import "../../style"
 import { useEffect, useState } from "react"
 import { ReactSortable } from "react-sortablejs"
 
-import { saveCollection } from "~tabs/store"
-
 import { ListItem } from "."
 
 const List = ({ window }) => {
   const [tabs, setTabs] = useState(window?.tabs ?? window?.links ?? [])
+
+  useEffect(() => {
+    setTabs(window.tabs ?? window.links)
+  }, [window])
+
+  useEffect(() => {
+    console.log("tabs update", tabs)
+  }, [tabs])
 
   if (!tabs || !tabs.length) return
 
   return (
     <div className="p-5 text-clip">
       <h1>Window: {window.focused ? "current" : window.id}</h1>
-      <button
-        className="p-2 bg-white border border-solid border-danube-600"
-        onClick={() => saveCollection(window)}>
-        save to collection
-      </button>
       <ReactSortable
         tag="ul"
         list={tabs}
