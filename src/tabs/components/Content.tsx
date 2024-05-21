@@ -1,11 +1,15 @@
 import { useGlobalCtx } from "./context"
 import { List } from "./list"
-import { removeCollection, setCollection, setCurrent } from "./reducer/actions"
+import {
+  removeCollection,
+  setCollectionWithLocalStorage,
+  setWindowOrCollection
+} from "./reducer/actions"
 
 const ContentLayout = ({ seletedItem, children }) => {
   const { dispatch } = useGlobalCtx()
   const saveCollection = () => {
-    dispatch(setCollection(seletedItem))
+    dispatch(setCollectionWithLocalStorage(seletedItem))
   }
   // TODO view does not change after save/delete
   const editCollection = () => {
@@ -39,7 +43,8 @@ const ContentLayout = ({ seletedItem, children }) => {
 
 const Content = ({}) => {
   const {
-    state: { current }
+    state: { current, windows, collections },
+    dispatch
   } = useGlobalCtx()
 
   if (!current) return <h1>loading</h1>
@@ -55,12 +60,12 @@ const Content = ({}) => {
     )
   }
   // collection
-  const list = current.folders ?? current.windows
+  const list = current.windows ?? current.folders
   return (
     <>
       <ContentLayout seletedItem={current}>
         {list.map((window) => (
-          <List window={window} key={window.id}></List>
+          <List key={window.id} window={window}></List>
         ))}
       </ContentLayout>
     </>

@@ -7,8 +7,10 @@ import { setCurrent } from "./reducer/actions"
 
 const SideBar = ({}) => {
   const init = useRef(false)
-  const onSelect = (windowOrCollection) =>
+  const onSelect = (windowOrCollection) => {
+    console.log("sidebar select item", windowOrCollection)
     dispatch(setCurrent(windowOrCollection))
+  }
   const {
     state: { windows, collections, current },
     dispatch
@@ -35,10 +37,10 @@ const SideBar = ({}) => {
           <li
             key={window.id}
             className={`mb-2.5 px-3.5 w-full h-20 rounded-md
-            hover:bg-danube-800 hover:text-danube-50 
-            flex content-center items-center 
-            shadow font-light
-            ${window === current ? "bg-danube-800 text-danube-50 font-medium" : ""} 
+           hover:bg-danube-800 hover:text-danube-50 
+             flex content-center items-center 
+             shadow font-light
+             ${window === current ? "bg-danube-800 text-danube-50 font-medium" : ""} 
             `}
             onClick={() => onSelect(window)}>
             window: {window.focused ? "current" : window.id}
@@ -51,10 +53,10 @@ const SideBar = ({}) => {
           <li
             key={collection.created}
             className={`mb-2.5 px-3.5 w-full h-20 rounded-md
-            hover:bg-danube-800 hover:text-danube-50 
-            flex content-center items-center 
-            shadow font-light
-            ${collection === current ? "bg-danube-800 text-danube-50 font-medium" : ""} 
+           hover:bg-danube-800 hover:text-danube-50 
+             flex content-center items-center 
+             shadow font-light
+             ${collection === current ? "bg-danube-800 text-danube-50 font-medium" : ""} 
             `}
             onClick={() => onSelect(collection)}>
             {collection.title}
