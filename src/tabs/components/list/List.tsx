@@ -4,17 +4,58 @@ import { useEffect, useState } from "react"
 import { ReactSortable } from "react-sortablejs"
 
 import { ListItem } from "."
+import { useGlobalCtx } from "../context"
+import { setCollection, setCurrent, setWindow } from "../reducer/actions"
 
-const List = ({ window }) => {
+const listIndexShift = (arr, from, to) => {
+  const direction = from < to ? 1 : -1
+  const step = direction === 1 ? 1 : -1
+
+  const target = arr[from]
+  for (let i = from; i !== to; i += step) {
+    arr[i] = arr[i + step]
+  }
+  arr[to] = target
+  return arr
+}
+
+interface ListProps {
+  window: chrome.windows.Window // from <windows[] | collection.windows[]>
+  type?: string // window | collection
+}
+
+const List: React.FC<ListProps> = ({ window }) => {
   const [tabs, setTabs] = useState(window?.tabs ?? window?.links ?? [])
+  const {
+    state: { current },
+    dispatch
+  } = useGlobalCtx()
 
   useEffect(() => {
     setTabs(window.tabs ?? window.links)
   }, [window])
 
-  useEffect(() => {
-    console.log("tabs update", tabs)
-  }, [tabs])
+  // update tabs to the reducer
+  const onSortEnd = (e) => {
+    // old index -> new index
+    const { oldIndex, newIndex } = e
+    listIndexShift(tabs, oldIndex, newIndex)
+    const newWindow = { ...window, tabs: tabs }
+    if (current.created) {
+      // current is collection
+      const insertIdx = current.windows.findIndex((w) => w.id === newWindow.id)
+      if (insertIdx > -1) {
+        // create new collection
+        current.windows.splice(insertIdx, 1, newWindow)
+        dispatch(setCollection(current))
+        dispatch(setCurrent(current))
+      }
+    } else {
+      // current is window
+      dispatch(setWindow(newWindow))
+      dispatch(setCurrent(newWindow))
+    }
+  }
 
   if (!tabs || !tabs.length) return
 
@@ -25,7 +66,8 @@ const List = ({ window }) => {
         tag="ul"
         list={tabs}
         setList={setTabs}
-        handle=".list-item__handle">
+        handle=".list-item__handle"
+        onEnd={onSortEnd}>
         {tabs.map((tab, i) => {
           return <ListItem tab={tab} key={`${tab.url}-${i}`}></ListItem>
         })}

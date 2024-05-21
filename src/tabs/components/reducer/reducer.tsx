@@ -6,12 +6,13 @@ import { Provider } from "../context"
 import {
   REMOVE_COLLECTION,
   SET_COLLECTION,
+  SET_COLLECTION_WITH_LOCAL_STORAGE,
   SET_COLLECTIONS,
   SET_CURRENT,
+  SET_WINDOW,
   SET_WINDOWS,
   setCollections,
-  setWindows,
-  SORT_COLLECTION
+  setWindows
 } from "./actions"
 
 const initialJSON = {
@@ -26,22 +27,6 @@ const window = {
   created: "timestamp" // => json‘s created time
 }
 
-// TODO 
-const setExistedCollectionOrWindow = (item, list, withLocalSave) => {
-  let insertIdx = 0
-  let removeCount = 1
-  const newList = list.slice()
-  insertIdx = list.findIndex(
-    (c) => c.created === item.created || c.id === item.id // window only has id
-  )
-  newList.splice(insertIdx, removeCount, item)
-  // set to local store
-  if (withLocalSave) {
-    localSaveCollection(item)
-  }
-  return newList
-}
-
 const reducer = (state, action) => {
   switch (action.type) {
     case SET_CURRENT:
@@ -50,7 +35,25 @@ const reducer = (state, action) => {
       return { ...state, windows: action.payload }
     case SET_COLLECTIONS:
       return { ...state, collections: action.payload }
+    case SET_WINDOW: {
+      const window = action.payload
+      const newWindows = state.windows.slice()
+      const index = newWindows.findIndex((w) => w.id === window.id)
+      if (index < 0) return state
+      newWindows.splice(index, 1, window)
+      return { ...state, windows: newWindows }
+    }
     case SET_COLLECTION: {
+      const collection = action.payload
+      const newCollections = state.collections.slice()
+      const index = newCollections.findIndex(
+        (c) => c.created === collection.created
+      )
+      if (index < 0) return state
+      newCollections.splice(index, 1, collection)
+      return { ...state, collections: newCollections }
+    }
+    case SET_COLLECTION_WITH_LOCAL_STORAGE: {
       // set single collection
       let collection = action.payload
       let insertIdx = 0
@@ -94,9 +97,6 @@ const reducer = (state, action) => {
         collections: newCollections,
         current: state.windows[0]
       }
-    }
-    case SORT_COLLECTION: {
-      const collection = action.payload
     }
     // other case...
   }

@@ -7,12 +7,15 @@
 - [ ] SideBar
   - [ ] show pinned item
   - [ ] scroll y
+  - [ ] show updated time
+  - [ ] sortable
 - [-] List
   - [ ] show pinned url
   - [ ] detect tabs witch are loading
   - [ ] handle icon
   - [ ] URL that exceeds fades out with a gradient
   - [ ] open feature
+  - [ ] selected feature
 - [ ] search feature
 - [-] export & import feature
   - [ ] export & import data foramt
@@ -22,8 +25,8 @@
 - [ ] data & local
   - [x] save through indexedDB
   - [x] add/set collection, toggle 'save' to save to the collections
-  - [ ] save sortable data
-    - after sort, new data update to the reducer without local store
+  - [x] save sortable data
+    - after drag sorted, update the new list data update in the reducer without local storage
   - [x] delete collection
 - [ ] save in cloud feature
   - [ ] google drive
