@@ -9,17 +9,28 @@ import {
   SET_COLLECTION_WITH_LOCAL_STORAGE,
   SET_COLLECTIONS,
   SET_CURRENT,
+  SET_SELECTED_LIST,
   SET_WINDOW,
   SET_WINDOWS,
   setCollections,
+  setSelectedList,
   setWindows
 } from "./actions"
 
-const initialJSON = {
+interface State {
+  source: object
+  windows: chrome.windows.Window[]
+  collections: collection[]
+  current: chrome.windows.Window | collection
+  selectedList: chrome.tabs.Tab[]
+}
+
+const initialJSON: State = {
   source: {},
-  windows: [], // window[]
-  collections: [], // window[]
-  current: null
+  windows: [],
+  collections: [],
+  current: null,
+  selectedList: []
 }
 
 const window = {
@@ -97,6 +108,10 @@ const reducer = (state, action) => {
         collections: newCollections,
         current: state.windows[0]
       }
+    }
+    case SET_SELECTED_LIST: {
+      const newList = action.payload
+      return { ...state, selectedList: newList }
     }
     // other case...
   }

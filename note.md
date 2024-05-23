@@ -10,12 +10,12 @@
   - [ ] show updated time
   - [ ] sortable
 - [-] List
-  - [ ] show pinned url
+  - [-] handle icon
+    - [x] show pinned
   - [ ] detect tabs witch are loading
-  - [ ] handle icon
   - [ ] URL that exceeds fades out with a gradient
   - [ ] open feature
-  - [ ] selected feature
+  - [x] selected feature
 - [ ] search feature
 - [-] export & import feature
   - [ ] export & import data foramt

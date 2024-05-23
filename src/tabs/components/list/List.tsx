@@ -5,7 +5,12 @@ import { ReactSortable } from "react-sortablejs"
 
 import { ListItem } from "."
 import { useGlobalCtx } from "../context"
-import { setCollection, setCurrent, setWindow } from "../reducer/actions"
+import {
+  setCollection,
+  setCurrent,
+  setSelectedList,
+  setWindow
+} from "../reducer/actions"
 
 const listIndexShift = (arr, from, to) => {
   const direction = from < to ? 1 : -1
@@ -27,9 +32,21 @@ interface ListProps {
 const List: React.FC<ListProps> = ({ window }) => {
   const [tabs, setTabs] = useState(window?.tabs ?? window?.links ?? [])
   const {
-    state: { current },
+    state: { current, selectedList },
     dispatch
   } = useGlobalCtx()
+
+  const onSelect = ({ tab, isSelected }) => {
+    if (isSelected) {
+      // add
+      const existed = selectedList.find((t) => t.url === tab.url)
+      if (existed) return
+      dispatch(setSelectedList([...selectedList, tab]))
+    } else {
+      // remove
+      dispatch(setSelectedList(selectedList.filter((t) => t.url !== tab.url)))
+    }
+  }
 
   useEffect(() => {
     setTabs(window.tabs ?? window.links)
@@ -62,6 +79,9 @@ const List: React.FC<ListProps> = ({ window }) => {
   return (
     <div className="p-5 text-clip">
       <h1>Window: {window.focused ? "current" : window.id}</h1>
+      {selectedList.length > 0 && (
+        <h1>{selectedList.length} tabs is selected</h1>
+      )}
       <ReactSortable
         tag="ul"
         list={tabs}
@@ -69,7 +89,13 @@ const List: React.FC<ListProps> = ({ window }) => {
         handle=".list-item__handle"
         onEnd={onSortEnd}>
         {tabs.map((tab, i) => {
-          return <ListItem tab={tab} key={`${tab.url}-${i}`}></ListItem>
+          return (
+            <ListItem
+              tab={tab}
+              key={`${tab.url}-${i}`}
+              checked={selectedList.includes(tab)}
+              onSelect={onSelect}></ListItem>
+          )
         })}
       </ReactSortable>
     </div>

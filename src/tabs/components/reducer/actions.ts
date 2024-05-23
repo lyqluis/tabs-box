@@ -7,8 +7,7 @@ export const SET_COLLECTION_WITH_LOCAL_STORAGE =
   "SET_COLLECTION_WITH_LOCAL_STORAGE"
 export const REMOVE_COLLECTION = "REMOVE_COLLECTION"
 export const SET_CURRENT = "SET_CURRENT"
-export const SORT_COLLECTION = "SORT_COLLECTION"
-export const SET_TABS = "SET_TABS"
+export const SET_SELECTED_LIST = "SET_SELECTED_LIST"
 
 export const setWindows = (windows: chrome.windows.Window[]) => ({
   type: SET_WINDOWS,
@@ -26,10 +25,6 @@ export const setCollection = (collection: collection) => ({
   type: SET_COLLECTION,
   payload: collection
 })
-export const setTabs = (tabs) => ({
-  type: SET_TABS,
-  payload: tabs
-})
 export const setCollectionWithLocalStorage = (collection: collection) => ({
   type: SET_COLLECTION_WITH_LOCAL_STORAGE,
   payload: collection
@@ -41,4 +36,8 @@ export const removeCollection = (collection: collection) => ({
 export const setCurrent = (collection: collection | chrome.windows.Window) => ({
   type: SET_CURRENT,
   payload: collection
+})
+export const setSelectedList = (list) => ({
+  type: SET_SELECTED_LIST,
+  payload: list
 })
