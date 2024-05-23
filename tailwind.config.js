@@ -22,5 +22,34 @@ module.exports = {
       }
     }
   },
-  plugins: []
+  plugins: [require("daisyui")],
+  daisyui: {
+    themes: [
+      {
+        mytheme: {
+          primary: "#33569a",
+          "primary-content": "#e0eef9",
+          secondary: "#417dcf",
+          "secondary-content": "#e0eef9",
+          accent: "#a2ceee",
+          "accent-content": "#0a0f14",
+          neutral: "#202f4b",
+          "neutral-content": "#e0eef9",
+          "base-100": "#ffffff",
+          "base-200": "#dedede",
+          "base-300": "#bebebe",
+          "base-content": "#161616",
+          info: "#bae6fd",
+          "info-content": "#0d1316",
+          success: "#d1fae5",
+          "success-content": "#101512",
+          warning: "#ffedd5",
+          "warning-content": "#161410",
+          error: "#fecaca",
+          "error-content": "#160f0f"
+        }
+      },
+      "dark"
+    ]
+  }
 }

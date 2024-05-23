@@ -10,17 +10,24 @@ const Header = () => {
     <header className="h-16 w-auto bg-danube-100 flex">
       header
       <h2>Tabs Box</h2>
+      <div className="search flex">
+        <input
+          type="text"
+          placeholder="Type here"
+          className="input input-bordered max-w-xs"
+        />
+        <button className="btn btn-outline btn-primary p-2">search</button>
+      </div>
       <button
-        className="p-2 bg-white border border-solid border-danube-600"
+        // className="btn p-2 bg-white border border-solid border-danube-600"
+        className="btn btn-outline btn-primary p-2"
         onClick={exportJSON}>
         export
       </button>
-      <button
-        className="p-2 bg-white border border-solid border-danube-600"
-        onClick={importFile}>
+      <button className="btn btn-outline btn-primary p-2" onClick={importFile}>
         import
       </button>
-      <button>apply</button>
+      <button className="btn btn-outline btn-primary p-2">apply</button>
     </header>
   )
 }

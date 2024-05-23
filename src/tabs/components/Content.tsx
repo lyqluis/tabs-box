@@ -2,8 +2,7 @@ import { useGlobalCtx } from "./context"
 import { List } from "./list"
 import {
   removeCollection,
-  setCollectionWithLocalStorage,
-  setWindowOrCollection
+  setCollectionWithLocalStorage
 } from "./reducer/actions"
 
 const ContentLayout = ({ seletedItem, children }) => {
@@ -21,18 +20,18 @@ const ContentLayout = ({ seletedItem, children }) => {
     <>
       <h1>Title:{seletedItem.title}</h1>
       <button
-        className="p-2 bg-white border border-solid border-danube-600"
+        className="btn btn-outline btn-primary p-2"
         onClick={saveCollection}>
         save to collection
       </button>
       {/* // TODO only shows when selectedItem is collection */}
       <button
-        className="p-2 bg-white border border-solid border-danube-600"
+        className="btn btn-outline btn-primary p-2"
         onClick={editCollection}>
         edit title
       </button>
       <button
-        className="p-2 bg-white border border-solid border-danube-600"
+        className="btn btn-outline btn-primary p-2"
         onClick={deleteCollection}>
         delete
       </button>
