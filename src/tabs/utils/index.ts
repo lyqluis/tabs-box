@@ -7,7 +7,13 @@ const parseJSON = (data) => {
   if (!collections || !collections.length) return
   // iterate collections to store locally
   collections.map((collection) => {
-    collection.windows = collection.folders
+    // folders => windows
+    collection.windows = collection.folders.map((window) => {
+      // window.links => window.tabs
+      window.tabs = window.links
+      delete window.links
+      return window
+    })
     delete collection.folders
     localSaveCollection(collection)
   })
