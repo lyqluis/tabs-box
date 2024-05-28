@@ -1,4 +1,4 @@
-import { title } from "process"
+import { fromNow } from "~tabs/utils"
 
 import { useGlobalCtx } from "./context"
 import { useDialog } from "./Dialog/DialogContext"
@@ -53,7 +53,8 @@ const ContentLayout = ({ selectedItem, children }) => {
             disable={type === "window"}
             setTitle={setCollectionTitle}></TitleInput>
           <p className="my-2">
-            <span>{allTabsNumber} tabs</span> | updated 7 minutes ago
+            <span>{allTabsNumber} tabs</span> | Updated{" "}
+            {fromNow(selectedItem.updated)}
           </p>
         </div>
       </div>
