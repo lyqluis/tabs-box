@@ -3,6 +3,7 @@ import { useEffect, useReducer } from "react"
 import { localRemoveCollection, localSaveCollection } from "~tabs/store"
 
 import { Provider } from "../context"
+import { createCollection, updateCollection } from "../data"
 import {
   REMOVE_COLLECTION,
   SET_COLLECTION,
@@ -70,21 +71,16 @@ const reducer = (state, action) => {
       let insertIdx = 0
       let removeCount = 1
       const newCollections = state.collections.slice()
-      if (action.payload.created) {
+      if (collection.created) {
         // set existed collection
+        collection = updateCollection(collection)
         insertIdx = state.collections.findIndex(
           (c) => c.created === collection.created
         )
       } else {
-        // add new collection
-        const created = Date.now()
-        // wrapper the window to collection data
-        collection = {
-          created,
-          updated: created,
-          title: collection.tabs[0]?.title ?? "", // give a default title
-          windows: [collection]
-        }
+        // action.load is a window
+        const window = collection
+        collection = createCollection(window)
         // add to the first index after pinned
         insertIdx = state.collections.findIndex((c) => !c.pinned)
         removeCount = 0

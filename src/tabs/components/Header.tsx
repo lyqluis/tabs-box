@@ -1,6 +1,6 @@
 import "../style"
 
-import { exportFile, importFile } from "./json"
+import { exportFile, importFile } from "../utils"
 
 const Header = () => {
   const exportJSON = () => {

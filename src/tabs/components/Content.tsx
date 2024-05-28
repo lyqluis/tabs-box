@@ -4,21 +4,46 @@ import {
   removeCollection,
   setCollectionWithLocalStorage
 } from "./reducer/actions"
+import TitleInput from "./TitleInput"
 
-const ContentLayout = ({ seletedItem, children }) => {
+let count = 0
+const ContentLayout = ({ selectedItem, children }) => {
   const { dispatch } = useGlobalCtx()
+  const type = selectedItem.created ? "collection" : "window"
   const saveCollection = () => {
-    dispatch(setCollectionWithLocalStorage(seletedItem))
+    dispatch(setCollectionWithLocalStorage(selectedItem))
   }
-  // TODO view does not change after save/delete
   const editCollection = () => {
-    // todo
+    // dispatch(setCollectionWithLocalStorage(collection))
   }
-  const deleteCollection = () => dispatch(removeCollection(seletedItem))
+  const deleteCollection = () => dispatch(removeCollection(selectedItem))
+  const setCollectionTitle = (title) => {
+    console.log("set collection title", title)
+    selectedItem.title = title
+    dispatch(setCollectionWithLocalStorage(selectedItem))
+  }
 
   return (
     <>
-      <h1>Title:{seletedItem.title}</h1>
+      <div className="title-container flex items-center">
+        <div className="avatar placeholder flex-none grow-0 shrink-0">
+          <div className="bg-neutral text-neutral-content rounded-full w-12">
+            <span className="text-xl">
+              {/* // TODO type is window, use window icon */}
+              {selectedItem.title && selectedItem.title[0].toUpperCase()}
+            </span>
+          </div>
+        </div>
+        <div className="title__detail m-2">
+          <TitleInput
+            title={selectedItem.title ?? "Window"}
+            disable={type === "window"}
+            setTitle={setCollectionTitle}></TitleInput>
+          <p className="my-2">
+            <span>7 tabs</span> | updated 7 minutes ago
+          </p>
+        </div>
+      </div>
       <button
         className="btn btn-outline btn-primary p-2"
         onClick={saveCollection}>
@@ -52,7 +77,7 @@ const Content = ({}) => {
   if (current.tabs) {
     return (
       <>
-        <ContentLayout seletedItem={current}>
+        <ContentLayout selectedItem={current}>
           <List window={current}></List>
         </ContentLayout>
       </>
@@ -62,7 +87,7 @@ const Content = ({}) => {
   const list = current.windows ?? current.folders
   return (
     <>
-      <ContentLayout seletedItem={current}>
+      <ContentLayout selectedItem={current}>
         {list.map((window) => (
           <List key={window.id} window={window}></List>
         ))}

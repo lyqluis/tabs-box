@@ -4,6 +4,7 @@ const COLLECTIONS = localforage.createInstance({
   name: "collections"
 })
 
+// can directly cover old data
 export const localSaveCollection = (collection) => {
   COLLECTIONS.setItem(collection.created.toString(), collection)
 }

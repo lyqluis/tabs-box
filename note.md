@@ -10,7 +10,13 @@
   - [ ] show updated time
   - [ ] sortable
 - [-] List
-  - [-] handle icon
+  - [ ] how to distinguish whether the current window is from a collection or a new one unsaved
+  - [x] edit window title
+    - [x] input feature
+    - [x] click title to switch to edit mode
+    - [x] switch back to title
+    - [x] save edited collection
+  - [-] icon
     - [x] show pinned
   - [ ] detect tabs witch are loading
   - [ ] URL that exceeds fades out with a gradient
