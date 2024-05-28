@@ -1,6 +1,6 @@
 interface collection {
   created: number
-  updated: nubmer
+  updated: number
   title?: string
   name?: string
   windows: chrome.windows.Window[]
