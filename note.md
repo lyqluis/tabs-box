@@ -3,7 +3,7 @@
   - add react-sortablejs
   - sortable only with handle icon
 - [-] App
-  - [ ] use global data through context
+  - [x] use global data through context
 - [ ] SideBar
   - [ ] show pinned item
   - [ ] scroll y
@@ -16,12 +16,19 @@
     - [x] click title to switch to edit mode
     - [x] switch back to title
     - [x] save edited collection
+  - [x] reactive tabs number 
+  - [ ] reactive update time
   - [-] icon
     - [x] show pinned
   - [ ] detect tabs witch are loading
   - [ ] URL that exceeds fades out with a gradient
-  - [ ] open feature
+  - [ ] open url feature
   - [x] selected feature
+- [x] Dialog Box
+  - create a global `Dialog`, use `useReducer` to store Dialog state
+  - use gobal context `DialogProvider` to provide `openDialog` and `closeDialog` methods to other component
+  - `useDialog` hook provides a custom hook that allows any child component to conveniently access the dialog control methods.
+  - by passing different content components through the `openDialog` method, dynamic changes of the dialog content are achieved
 - [ ] search feature
 - [-] export & import feature
   - [ ] export & import data foramt

@@ -6,9 +6,9 @@ const Header = () => {
   const exportJSON = () => {
     exportFile("json", { name: "client", time: Date.now() })
   }
+
   return (
     <header className="h-16 w-auto bg-danube-100 flex">
-      header
       <h2>Tabs Box</h2>
       <div className="search flex">
         <input
@@ -18,10 +18,7 @@ const Header = () => {
         />
         <button className="btn btn-outline btn-primary p-2">search</button>
       </div>
-      <button
-        // className="btn p-2 bg-white border border-solid border-danube-600"
-        className="btn btn-outline btn-primary p-2"
-        onClick={exportJSON}>
+      <button className="btn btn-outline btn-primary p-2" onClick={exportJSON}>
         export
       </button>
       <button className="btn btn-outline btn-primary p-2" onClick={importFile}>
