@@ -17,7 +17,7 @@
     - [x] switch back to title
     - [x] save edited collection
   - [x] reactive tabs number 
-  - [ ] reactive update time
+  - [x] reactive update time
   - [-] icon
     - [x] show pinned
   - [ ] detect tabs witch are loading

@@ -1,3 +1,5 @@
+import dayjs from "dayjs"
+import relativeTime from "dayjs/plugin/relativeTime"
 import { useEffect, useRef } from "react"
 
 import { localSaveCollection } from "~tabs/store"
@@ -68,3 +70,6 @@ export const useRenderCount = () => {
     console.log(`Component re-rendered: ${renderCount.current}`)
   }, [])
 }
+
+dayjs.extend(relativeTime)
+export const fromNow = (time) => dayjs(time).fromNow()
