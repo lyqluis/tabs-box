@@ -3,6 +3,7 @@ import "./style"
 import { useEffect, useState } from "react"
 
 import Content from "./components/Content"
+import { DialogProvider } from "./components/Dialog/DialogContext"
 import Header from "./components/Header"
 import { ProviderWithReducer } from "./components/reducer/reducer"
 import SideBar from "./components/SideBar"
@@ -63,16 +64,17 @@ const TabsBoxPage = () => {
   if (loading) {
     return <h2>loading</h2>
   }
-
   return (
     <ProviderWithReducer data={{ windows, collections }}>
-      <div className="flex">
-        <SideBar></SideBar>
-        <main className="w-full overflow-hidden">
-          <Header></Header>
-          <Content></Content>
-        </main>
-      </div>
+      <DialogProvider>
+        <div className="flex">
+          <SideBar></SideBar>
+          <main className="w-full overflow-hidden">
+            <Header></Header>
+            <Content></Content>
+          </main>
+        </div>
+      </DialogProvider>
     </ProviderWithReducer>
   )
 }

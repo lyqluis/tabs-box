@@ -1,4 +1,7 @@
+import { title } from "process"
+
 import { useGlobalCtx } from "./context"
+import { useDialog } from "./Dialog/DialogContext"
 import { List } from "./list"
 import {
   removeCollection,
@@ -6,17 +9,27 @@ import {
 } from "./reducer/actions"
 import TitleInput from "./TitleInput"
 
-let count = 0
 const ContentLayout = ({ selectedItem, children }) => {
   const { dispatch } = useGlobalCtx()
+  const { openDialog } = useDialog()
   const type = selectedItem.created ? "collection" : "window"
+  const allTabsNumber =
+    type === "collection"
+      ? selectedItem.windows.reduce((n, window) => (n += window.tabs.length), 0)
+      : selectedItem.tabs.length
   const saveCollection = () => {
     dispatch(setCollectionWithLocalStorage(selectedItem))
   }
   const editCollection = () => {
     // dispatch(setCollectionWithLocalStorage(collection))
   }
-  const deleteCollection = () => dispatch(removeCollection(selectedItem))
+  const deleteCollection = () => {
+    openDialog({
+      title: "Warn",
+      message: "1 collection will be permanently deleted",
+      onConfirm: () => dispatch(removeCollection(selectedItem))
+    })
+  }
   const setCollectionTitle = (title) => {
     console.log("set collection title", title)
     selectedItem.title = title
@@ -40,7 +53,7 @@ const ContentLayout = ({ selectedItem, children }) => {
             disable={type === "window"}
             setTitle={setCollectionTitle}></TitleInput>
           <p className="my-2">
-            <span>7 tabs</span> | updated 7 minutes ago
+            <span>{allTabsNumber} tabs</span> | updated 7 minutes ago
           </p>
         </div>
       </div>
