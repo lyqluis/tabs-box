@@ -1,5 +1,3 @@
-import "../style"
-
 import { exportFile, importFile } from "../utils"
 
 const Header = () => {
