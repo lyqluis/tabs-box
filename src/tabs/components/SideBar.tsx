@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react"
 import Pinned from "react:~assets/svg/pin.svg"
 
+import { fromNow, shortURL } from "~tabs/utils"
+
 import { useGlobalCtx } from "./context"
 import { setCurrent } from "./reducer/actions"
 
@@ -26,23 +28,35 @@ const SideBar = ({}) => {
 
   return (
     <aside
-      className="w-1/3 min-w-52 h-screen px-3.5 flex flex-col
-       bg-gradient-to-b from-danube-700 to-danube-600
-       text-danube-200 text-base font-medium">
+      className="flex h-screen w-1/3 min-w-52 flex-col bg-gradient-to-b
+       from-danube-700 to-danube-600 px-3.5
+       text-base font-medium text-danube-200">
       <h1>side bar</h1>
       <h2>windows</h2>
       <ul className="flex-none">
         {windows.map((window) => (
           <li
             key={window.id}
-            className={`mb-2.5 px-3.5 w-full h-20 rounded-md
-           hover:bg-danube-800 hover:text-danube-50 
-             flex content-center items-center 
-             shadow font-light cursor-pointer
-             ${window === current ? "bg-danube-800 text-danube-50 font-medium" : ""} 
+            className={`mb-2.5 flex h-20 w-full cursor-pointer
+             flex-col justify-between
+             overflow-hidden rounded-md p-3.5 font-light
+             shadow hover:bg-danube-800 hover:text-danube-50
+             ${window === current ? "bg-danube-800 font-medium text-danube-50" : ""} 
             `}
             onClick={() => onSelect(window)}>
-            window: {window.focused ? "current" : window.id}
+            <p className="flex items-center justify-between overflow-hidden text-ellipsis whitespace-nowrap leading-tight">
+              {window.focused ? "Current" : "Window"}
+            </p>
+            <p
+              className={`overflow-hidden text-ellipsis whitespace-nowrap text-xs font-extralight italic text-danube-200`}>
+              {/* // TODO 1st tab's url without pinned + tabs.length */}
+              <span>
+                {shortURL(window.tabs.find((tab) => !tab.pinned).url)}
+              </span>
+            </p>
+            <p className={`text-xs font-extralight text-danube-200`}>
+              {window.tabs.length + " tabs"}
+            </p>
           </li>
         ))}
       </ul>
@@ -51,27 +65,33 @@ const SideBar = ({}) => {
         {collections.map((collection) => (
           <li
             key={collection.created}
-            className={`mb-2.5 p-3.5 w-full h-20 rounded-md
-           hover:bg-danube-800 hover:text-danube-50
-             shadow font-light cursor-pointer
-             ${collection === current ? "bg-danube-800 text-danube-50 font-medium" : ""}
+            className={`mb-2.5 flex h-20 w-full cursor-pointer
+             flex-col justify-between 
+             overflow-hidden rounded-md p-3.5 font-light
+             shadow hover:bg-danube-800 hover:text-danube-50
+             ${collection === current ? "bg-danube-800 font-medium text-danube-50" : ""}
             `}
             onClick={() => onSelect(collection)}>
-            <p className="w-full flex justify-between items-center text-ellipsis overflow-hidden">
-              {collection.title}
+            <p className="flex items-center justify-between overflow-hidden leading-tight">
+              <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+                {collection.title}
+              </span>
               <i
-                className={`flex-none w-5 h-5 flex justify-start items-center`}>
+                className={`flex h-5 w-5 flex-none items-center justify-start`}>
                 {collection.pinned ? (
-                  <Pinned className={`w-full h-full fill-danube-50`}></Pinned>
+                  <Pinned className={`h-full w-full fill-danube-50`}></Pinned>
                 ) : (
                   ""
                 )}
               </i>
             </p>
+            <p className={`text-xs font-extralight text-danube-200`}>
+              Updated {fromNow(collection.updated)}
+            </p>
           </li>
         ))}
       </ul>
-      <button className="p-5 w-20 h-20 rounded-full bg-danube-600">
+      <button className="h-20 w-20 rounded-full bg-danube-600 p-5">
         setting
       </button>
     </aside>

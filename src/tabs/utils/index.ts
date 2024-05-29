@@ -1,3 +1,4 @@
+import { register } from "module"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { useEffect, useRef } from "react"
@@ -73,3 +74,8 @@ export const useRenderCount = () => {
 
 dayjs.extend(relativeTime)
 export const fromNow = (time) => dayjs(time).fromNow()
+
+export const shortURL = (url: string) => {
+  const REG = /\/\/([a-zA-Z0-9.-]+)\//
+  return url.match(REG)[1]
+}
