@@ -39,8 +39,8 @@ const ContentLayout = ({ selectedItem, children }) => {
   return (
     <>
       <div className="title-container flex items-center">
-        <div className="avatar placeholder flex-none grow-0 shrink-0">
-          <div className="bg-neutral text-neutral-content rounded-full w-12">
+        <div className="avatar placeholder flex-none shrink-0 grow-0">
+          <div className="w-12 rounded-full bg-neutral text-neutral-content">
             <span className="text-xl">
               {/* // TODO type is window, use window icon */}
               {selectedItem.title && selectedItem.title[0].toUpperCase()}
@@ -51,7 +51,8 @@ const ContentLayout = ({ selectedItem, children }) => {
           <TitleInput
             title={selectedItem.title ?? "Window"}
             disable={type === "window"}
-            setTitle={setCollectionTitle}></TitleInput>
+            setTitle={setCollectionTitle}
+          ></TitleInput>
           <p className="my-2">
             <span>{allTabsNumber} tabs</span> | Updated{" "}
             {fromNow(selectedItem.updated)}
@@ -60,18 +61,21 @@ const ContentLayout = ({ selectedItem, children }) => {
       </div>
       <button
         className="btn btn-outline btn-primary p-2"
-        onClick={saveCollection}>
+        onClick={saveCollection}
+      >
         save to collection
       </button>
       {/* // TODO only shows when selectedItem is collection */}
       <button
         className="btn btn-outline btn-primary p-2"
-        onClick={editCollection}>
+        onClick={editCollection}
+      >
         edit title
       </button>
       <button
         className="btn btn-outline btn-primary p-2"
-        onClick={deleteCollection}>
+        onClick={deleteCollection}
+      >
         delete
       </button>
       {children}

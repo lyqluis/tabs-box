@@ -75,7 +75,7 @@ const List: React.FC<ListProps> = ({ window }) => {
   if (!tabs || !tabs.length) return
 
   return (
-    <div className="p-5 text-clip">
+    <div className="text-clip p-5">
       <h1>Window: {window.focused ? "current" : window.id}</h1>
       {selectedList.length > 0 && (
         <h1>{selectedList.length} tabs is selected</h1>
@@ -85,14 +85,16 @@ const List: React.FC<ListProps> = ({ window }) => {
         list={tabs}
         setList={setTabs}
         handle=".list-item__handle"
-        onEnd={onSortEnd}>
+        onEnd={onSortEnd}
+      >
         {tabs.map((tab, i) => {
           return (
             <ListItem
               tab={tab}
               key={`${tab.url}-${i}`}
               checked={selectedList.includes(tab)}
-              onSelect={onSelect}></ListItem>
+              onSelect={onSelect}
+            ></ListItem>
           )
         })}
       </ReactSortable>

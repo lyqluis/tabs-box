@@ -30,7 +30,8 @@ const SideBar = ({}) => {
     <aside
       className="flex h-screen w-1/3 min-w-52 flex-col bg-gradient-to-b
        from-danube-700 to-danube-600 px-3.5
-       text-base font-medium text-danube-200">
+       text-base font-medium text-danube-200"
+    >
       <h1>side bar</h1>
       <h2>windows</h2>
       <ul className="flex-none">
@@ -43,12 +44,14 @@ const SideBar = ({}) => {
              shadow hover:bg-danube-800 hover:text-danube-50
              ${window === current ? "bg-danube-800 font-medium text-danube-50" : ""} 
             `}
-            onClick={() => onSelect(window)}>
+            onClick={() => onSelect(window)}
+          >
             <p className="flex items-center justify-between overflow-hidden text-ellipsis whitespace-nowrap leading-tight">
               {window.focused ? "Current" : "Window"}
             </p>
             <p
-              className={`overflow-hidden text-ellipsis whitespace-nowrap text-xs font-extralight italic text-danube-200`}>
+              className={`overflow-hidden text-ellipsis whitespace-nowrap text-xs font-extralight italic text-danube-200`}
+            >
               {/* // TODO 1st tab's url without pinned + tabs.length */}
               <span>
                 {shortURL(window.tabs.find((tab) => !tab.pinned).url)}
@@ -71,13 +74,15 @@ const SideBar = ({}) => {
              shadow hover:bg-danube-800 hover:text-danube-50
              ${collection === current ? "bg-danube-800 font-medium text-danube-50" : ""}
             `}
-            onClick={() => onSelect(collection)}>
+            onClick={() => onSelect(collection)}
+          >
             <p className="flex items-center justify-between overflow-hidden leading-tight">
               <span className="overflow-hidden text-ellipsis whitespace-nowrap">
                 {collection.title}
               </span>
               <i
-                className={`flex h-5 w-5 flex-none items-center justify-start`}>
+                className={`flex h-5 w-5 flex-none items-center justify-start`}
+              >
                 {collection.pinned ? (
                   <Pinned className={`h-full w-full fill-danube-50`}></Pinned>
                 ) : (

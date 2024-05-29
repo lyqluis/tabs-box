@@ -6,7 +6,7 @@ const Header = () => {
   }
 
   return (
-    <header className="h-16 w-auto bg-danube-100 flex">
+    <header className="flex h-16 w-auto bg-danube-100">
       <h2>Tabs Box</h2>
       <div className="search flex">
         <input
