@@ -9,7 +9,6 @@ export default {
   singleQuote: false,
   trailingComma: "none",
   bracketSpacing: true,
-  bracketSameLine: true,
   plugins: [
     "@ianvs/prettier-plugin-sort-imports",
     "prettier-plugin-tailwindcss"

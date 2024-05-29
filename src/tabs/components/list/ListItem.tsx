@@ -22,47 +22,47 @@ const ListItem = ({ tab, onSelect, checked }) => {
   return (
     <li
       style={{ display: "flex" }}
-      className={`flex flex-nowrap items-center
-       text-base font-light
-     hover:bg-slate-100 align-baseline 
+      className={`flex flex-nowrap items-center overflow-hidden text-ellipsis whitespace-nowrap align-baseline text-base font-light hover:bg-slate-100
        ${isSelected ? "bg-slate-100" : ""}
-       overflow-hidden
       `}
       onMouseOver={onMouseOver}
-      onMouseLeave={onMouseLeave}>
-      {/* // TODO toggle, pinned <-> dragable */}
+      onMouseLeave={onMouseLeave}
+    >
       <i
-        className={`flex-none w-5 h-5 flex justify-start items-center ${tab.pinned ? "" : "list-item__handle"}`}>
+        className={`flex h-5 w-5 flex-none items-center justify-start ${tab.pinned ? "" : "list-item__handle"}`}
+      >
         {tab.pinned ? (
-          <Pinned className={`w-full h-full fill-slate-700`}></Pinned>
+          <Pinned className={`h-full w-full fill-slate-700`}></Pinned>
         ) : (
           <DragableIcon
-            className={`w-full h-full fill-slate-300 ${isHovered || isSelected ? "flex" : "hidden"}`}></DragableIcon>
+            className={`h-full w-full fill-slate-300 ${isHovered || isSelected ? "flex" : "hidden"}`}
+          ></DragableIcon>
         )}
       </i>
       <div className="form-cont">
         <label className="label cursor-pointer">
           <input
             type="checkbox"
-            className="checkbox checkbox-sm checkbox-primary"
+            className="checkbox-primary checkbox checkbox-sm"
             checked={isSelected}
             onChange={onChange}
           />
         </label>
       </div>
       <span
-        className="flex-none m-0.5 w-6 
-        flex justify-center items-center">
+        className="m-0.5 flex w-6 
+        flex-none items-center justify-center"
+      >
         <img src={tab.favIconUrl} alt="" className="w-4" />
       </span>
-      <span className="flex-none mr-2">{tab.title}</span>
-      <a
-        className={`w-auto text-slate-400 flex-none 
-         ${isHovered ? "flex" : "hidden"}
-         items-center text-sm
-        `}>
-        {tab.url}
-      </a>
+      <span className="mr-2 flex-none">{tab.title}</span>
+      {isHovered && (
+        <a
+          className={`items-center overflow-hidden text-ellipsis whitespace-nowrap text-sm text-slate-400`}
+        >
+          {tab.url}
+        </a>
+      )}
     </li>
   )
 }

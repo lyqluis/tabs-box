@@ -8,7 +8,7 @@ const TitleInput = ({ title, setTitle, disable }) => {
   const [isEdit, setIsEdit] = useState(false)
   const [inputValue, setInputValue] = useState(title)
   const defaultValueRef = useRef(title)
-  
+
   const openEdit = () => setIsEdit(true)
   const closeEdit = () => {
     console.log("closeedit", title)
@@ -56,12 +56,14 @@ const TitleInput = ({ title, setTitle, disable }) => {
         <button
           className="btn btn-square btn-outline btn-primary btn-xs m-0.5 flex-none"
           onClick={onSubmit}
-          onMouseDown={onMouseDown}>
+          onMouseDown={onMouseDown}
+        >
           <Check></Check>
         </button>
         <button
           className="btn btn-square btn-outline btn-primary btn-xs m-0.5 flex-none"
-          onClick={closeEdit}>
+          onClick={closeEdit}
+        >
           <Cross></Cross>
         </button>
       </div>
