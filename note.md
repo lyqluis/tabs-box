@@ -5,14 +5,15 @@
 - [-] App
   - [x] use global data through context
 - [ ] SideBar
-  - [ ] show pinned item
+  - [x] show pinned item
   - [x] scroll y
-  - [ ] show updated time
+  - [x] show updated time
   - [ ] sortable
 - [-] List
   - [ ] how to distinguish whether the current window is from a collection or a new one unsaved
   - [x] edit window title
     - [x] input feature
+      - use mousedown event to prevent blur event from being fired before the click of buttons
     - [x] click title to switch to edit mode
     - [x] switch back to title
     - [x] save edited collection
