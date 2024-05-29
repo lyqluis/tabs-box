@@ -4,45 +4,49 @@ import Cross from "react:~assets/svg/cross.svg"
 
 const TitleInput = ({ title, setTitle, disable }) => {
   console.log("🔩 TitleInput refresh", title)
-
+  const inputRef = useRef(null)
   const [isEdit, setIsEdit] = useState(false)
   const [inputValue, setInputValue] = useState(title)
+  const defaultValueRef = useRef(title)
+  
   const openEdit = () => setIsEdit(true)
-  // TODO blur is fired ahead of button click to update colletion's title
   const closeEdit = () => {
-    setTimeout(() => {
-      console.log("close & reset edit")
-      setInputValue(title)
-      setIsEdit(false)
-    })
+    console.log("closeedit", title)
+    setInputValue(defaultValueRef.current)
+    setIsEdit(false)
   }
   const onChange = (e) => setInputValue(e.target.value)
-  const onSubmit = (e?) => {
-    e.preventDefault()
-    e.stopPropagation()
+  const onSubmit = () => {
     console.log("on submit")
     setTitle(inputValue)
+    defaultValueRef.current = inputValue
+    inputRef.current.blur()
   }
   const onKeyDown = (e) => {
     if (e && e.key === "Enter") {
       onSubmit()
+      inputRef.current.blur()
     }
   }
+  // ensure button's click is fired before blur
+  const onMouseDown = (e) => e.preventDefault()
 
   useEffect(() => {
     setInputValue(title)
+    defaultValueRef.current = title
   }, [title])
 
   if (disable)
-    return <h3 className="text-2xl h-7 flex items-center">{title}</h3>
+    return <h3 className="flex h-7 items-center text-2xl">{title}</h3>
 
   if (isEdit) {
     return (
-      <div className="input-wrapper flex items-center h-7">
+      <div className="input-wrapper flex h-7 items-center">
         <input
           type="text"
           autoFocus
-          className="input w-auto h-7 text-2xl text-slate-600 border-0 border-none rounded-none outline-none focus:rounded-none focus:outline-none focus:border-b focus:border-slate-600 focus:border-solid leading-none p-0"
+          ref={inputRef}
+          className="input h-7 w-auto rounded-none border-0 border-none p-0 text-2xl leading-none text-slate-600 outline-none focus:rounded-none focus:border-b focus:border-solid focus:border-slate-600 focus:outline-none"
           placeholder={inputValue}
           value={inputValue}
           onChange={onChange}
@@ -50,12 +54,13 @@ const TitleInput = ({ title, setTitle, disable }) => {
           onKeyDown={onKeyDown}
         />
         <button
-          className="flex-none btn btn-xs btn-square btn-outline m-0.5 btn-primary"
-          onClick={onSubmit}>
+          className="btn btn-square btn-outline btn-primary btn-xs m-0.5 flex-none"
+          onClick={onSubmit}
+          onMouseDown={onMouseDown}>
           <Check></Check>
         </button>
         <button
-          className="flex-none btn btn-xs btn-square btn-outline m-0.5 btn-primary"
+          className="btn btn-square btn-outline btn-primary btn-xs m-0.5 flex-none"
           onClick={closeEdit}>
           <Cross></Cross>
         </button>
@@ -64,7 +69,7 @@ const TitleInput = ({ title, setTitle, disable }) => {
   }
 
   return (
-    <h3 className="text-2xl h-7 flex items-center" onClick={openEdit}>
+    <h3 className="flex h-7 items-center text-2xl" onClick={openEdit}>
       {title}
     </h3>
   )

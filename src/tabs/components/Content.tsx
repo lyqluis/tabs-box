@@ -26,7 +26,7 @@ const ContentLayout = ({ selectedItem, children }) => {
   const deleteCollection = () => {
     openDialog({
       title: "Warn",
-      message: "1 collection will be permanently deleted",
+      message: `collection ${selectedItem.title} will be permanently deleted`,
       onConfirm: () => dispatch(removeCollection(selectedItem))
     })
   }

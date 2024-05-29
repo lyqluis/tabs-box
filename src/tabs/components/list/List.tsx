@@ -1,5 +1,3 @@
-import "../../style"
-
 import { useEffect, useState } from "react"
 import { ReactSortable } from "react-sortablejs"
 

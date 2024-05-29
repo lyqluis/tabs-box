@@ -6,7 +6,7 @@
   - [x] use global data through context
 - [ ] SideBar
   - [ ] show pinned item
-  - [ ] scroll y
+  - [x] scroll y
   - [ ] show updated time
   - [ ] sortable
 - [-] List

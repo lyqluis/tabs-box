@@ -2,8 +2,6 @@ import { useState } from "react"
 import DragableIcon from "react:~assets/svg/dragable.svg"
 import Pinned from "react:~assets/svg/pin.svg"
 
-import "../../style"
-
 interface ListItemProps {
   tab: chrome.tabs.Tab
   onSelect?: () => void
