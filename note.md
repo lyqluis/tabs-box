@@ -17,12 +17,13 @@
     - [x] click title to switch to edit mode
     - [x] switch back to title
     - [x] save edited collection
-  - [x] reactive tabs number 
+  - [x] reactive tabs number
   - [x] reactive update time
   - [-] icon
     - [x] show pinned
   - [ ] detect tabs witch are loading
   - [ ] URL that exceeds fades out with a gradient
+  - [ ] open collection feature
   - [ ] open url feature
   - [x] selected feature
 - [x] Dialog Box
@@ -31,11 +32,13 @@
   - `useDialog` hook provides a custom hook that allows any child component to conveniently access the dialog control methods.
   - by passing different content components through the `openDialog` method, dynamic changes of the dialog content are achieved
 - [ ] search feature
-- [-] export & import feature
-  - [ ] export & import data foramt
-  - [x] import & export function
-  - [x] import compatible with format Session Buddy
-  - [ ] export from indexDB
+- [x] export & import feature
+  - [x] data foramt
+  - [x] import 
+    - import -> reducer -> local save
+    - [x] import compatible with format Session Buddy
+  - [x] export
+    - local save -(initial render)-> reducer -> export
 - [ ] data & local
   - [x] save through indexedDB
   - [x] add/set collection, toggle 'save' to save to the collections
