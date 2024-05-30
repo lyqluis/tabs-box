@@ -3,8 +3,17 @@ import { useEffect, useReducer } from "react"
 import { localRemoveCollection, localSaveCollection } from "~tabs/store"
 
 import { Provider } from "../context"
-import { createCollection, updateCollection } from "../data"
 import {
+  compareCollections,
+  createCollection,
+  exportFile,
+  generateData,
+  importFile,
+  updateCollection
+} from "../data"
+import {
+  EXPORT_DATA,
+  IMPORT_DATA,
   REMOVE_COLLECTION,
   SET_COLLECTION,
   SET_COLLECTION_WITH_LOCAL_STORAGE,
@@ -21,8 +30,8 @@ import {
 interface State {
   source: object
   windows: chrome.windows.Window[]
-  collections: collection[]
-  current: chrome.windows.Window | collection
+  collections: Collection[]
+  current: chrome.windows.Window | Collection
   selectedList: chrome.tabs.Tab[]
 }
 
@@ -108,6 +117,29 @@ const reducer = (state, action) => {
     case SET_SELECTED_LIST: {
       const newList = action.payload
       return { ...state, selectedList: newList }
+    }
+    case EXPORT_DATA: {
+      const { collections } = state
+      const data = generateData(collections)
+      console.log("export json data", data)
+      // export
+      exportFile(data)
+      return state
+    }
+    case IMPORT_DATA: {
+      const data = action.payload
+      if (data) {
+        // compare new data and old one
+        const importCollections = data
+        const collections = state.collections
+        const newCollections = compareCollections(
+          importCollections,
+          collections
+        )
+        // local save
+        newCollections.map((collection) => localSaveCollection(collection))
+        return { ...state, collections: newCollections }
+      }
     }
     // other case...
   }

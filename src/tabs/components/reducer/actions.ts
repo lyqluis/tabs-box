@@ -8,12 +8,14 @@ export const SET_COLLECTION_WITH_LOCAL_STORAGE =
 export const REMOVE_COLLECTION = "REMOVE_COLLECTION"
 export const SET_CURRENT = "SET_CURRENT"
 export const SET_SELECTED_LIST = "SET_SELECTED_LIST"
+export const IMPORT_DATA = "IMPORT_DATA"
+export const EXPORT_DATA = "EXPORT_DATA"
 
 export const setWindows = (windows: chrome.windows.Window[]) => ({
   type: SET_WINDOWS,
   payload: windows
 })
-export const setCollections = (collections: collection[]) => ({
+export const setCollections = (collections: Collection[]) => ({
   type: SET_COLLECTIONS,
   payload: collections
 })
@@ -21,19 +23,19 @@ export const setWindow = (window: chrome.windows.Window) => ({
   type: SET_WINDOW,
   payload: window
 })
-export const setCollection = (collection: collection) => ({
+export const setCollection = (collection: Collection) => ({
   type: SET_COLLECTION,
   payload: collection
 })
-export const setCollectionWithLocalStorage = (collection: collection) => ({
+export const setCollectionWithLocalStorage = (collection: Collection) => ({
   type: SET_COLLECTION_WITH_LOCAL_STORAGE,
   payload: collection
 })
-export const removeCollection = (collection: collection) => ({
+export const removeCollection = (collection: Collection) => ({
   type: REMOVE_COLLECTION,
   payload: collection
 })
-export const setCurrent = (collection: collection | chrome.windows.Window) => ({
+export const setCurrent = (collection: Collection | chrome.windows.Window) => ({
   type: SET_CURRENT,
   payload: collection
 })
@@ -41,3 +43,9 @@ export const setSelectedList = (list) => ({
   type: SET_SELECTED_LIST,
   payload: list
 })
+
+export const importData = (data) => ({
+  type: IMPORT_DATA,
+  payload: data
+})
+export const exportData = () => ({ type: EXPORT_DATA })

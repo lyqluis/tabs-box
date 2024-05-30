@@ -6,10 +6,15 @@ const COLLECTIONS = localforage.createInstance({
 
 // can directly cover old data
 export const localSaveCollection = (collection) => {
-  COLLECTIONS.setItem(collection.created.toString(), collection)
+  // TODO
+  // get local current same key collection by id
+  // compare id & updated time between the two
+  COLLECTIONS.setItem(collection.id, collection)
 }
 
-export const localGetCollection = () => {}
+export const localGetCollection = async (id) => {
+  return
+}
 
 export const localRemoveCollection = (collection) => {
   const created = collection.created.toString()

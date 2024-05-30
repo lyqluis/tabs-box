@@ -1,8 +1,14 @@
-import { exportFile, importFile } from "../utils"
+import { useGlobalCtx } from "./context"
+import { importFile } from "./data"
+import LoadingBtn from "./LoadingBtn"
+import { exportData, importData } from "./reducer/actions"
 
 const Header = () => {
-  const exportJSON = () => {
-    exportFile("json", { name: "client", time: Date.now() })
+  const { dispatch } = useGlobalCtx()
+  const exportJSON = () => dispatch(exportData())
+  const importJSON = async () => {
+    const data = await importFile()
+    dispatch(importData(data))
   }
 
   return (
@@ -16,12 +22,10 @@ const Header = () => {
         />
         <button className="btn btn-outline btn-primary p-2">search</button>
       </div>
-      <button className="btn btn-outline btn-primary p-2" onClick={exportJSON}>
-        export
-      </button>
-      <button className="btn btn-outline btn-primary p-2" onClick={importFile}>
+      <LoadingBtn onClick={exportJSON}>export</LoadingBtn>
+      <LoadingBtn onClick={importJSON} loadingTime={3000}>
         import
-      </button>
+      </LoadingBtn>
       <button className="btn btn-outline btn-primary p-2">apply</button>
     </header>
   )
