@@ -28,11 +28,13 @@ interface ListProps {
 }
 
 const List: React.FC<ListProps> = ({ window }) => {
-  const [tabs, setTabs] = useState(window?.tabs ?? window?.links ?? [])
+  const [tabs, setTabs] = useState(window?.tabs ?? [])
   const {
     state: { current, selectedList },
     dispatch
   } = useGlobalCtx()
+
+  console.log("List Component refreshed, props-window", window, tabs)
 
   const onSelect = ({ tab, isSelected }) => {
     if (isSelected) {
@@ -47,7 +49,7 @@ const List: React.FC<ListProps> = ({ window }) => {
   }
 
   useEffect(() => {
-    setTabs(window.tabs ?? window.links)
+    setTabs(window.tabs)
   }, [window])
 
   // update tabs to the reducer

@@ -145,7 +145,7 @@ const reducer = (state, action) => {
     }
     case ADD_TAB: {
       const tab = action.payload
-      const windows = state.windows
+      const windows = state.windows.slice()
       if (tab) {
         const { windowId, index } = tab
         const window = windows.find((w) => w.id === windowId)
@@ -157,7 +157,7 @@ const reducer = (state, action) => {
     }
     case UPDATE_TAB: {
       const tab = action.payload
-      const windows = state.windows
+      const windows = state.windows.slice()
       if (tab) {
         const { windowId, index } = tab
         const window = windows.find((w) => w.id === windowId)
@@ -170,19 +170,14 @@ const reducer = (state, action) => {
     case REMOVE_TAB: {
       const { tabId, windowId } = action.payload
       const windows = state.windows
-      let current = state.current
       if (tabId && windowId) {
         const windowIndex = windows.findIndex((w) => w.id === windowId)
         const window = windows[windowIndex]
         if (window) {
-          window.tabs = window.tabs.filter((tab) => tab.id !== tabId)
-          windows[windowIndex] = { ...window }
-          console.log("REMOVE_TAB", window, state.current)
-          if (state.current.id === windowId) {
-            current = window // 更新 current
-          }
+          const tabIndex = window.tabs.findIndex((t) => t.id === tabId)
+          window.tabs.splice(tabIndex, 1)
         }
-        return { ...state, windows, current }
+        return { ...state, windows }
       }
     }
     // other case...
