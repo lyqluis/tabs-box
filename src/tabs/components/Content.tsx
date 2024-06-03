@@ -10,7 +10,10 @@ import {
 import TitleInput from "./TitleInput"
 
 const ContentLayout = ({ selectedItem, children }) => {
-  const { dispatch } = useGlobalCtx()
+  const {
+    state: { selectedList },
+    dispatch
+  } = useGlobalCtx()
   const { openDialog } = useDialog()
   const type = selectedItem.created ? "collection" : "window"
   const allTabsNumber =
@@ -23,6 +26,7 @@ const ContentLayout = ({ selectedItem, children }) => {
   const editCollection = () => {
     // dispatch(setCollectionWithLocalStorage(collection))
   }
+  const deleteTabs = () => {}
   const deleteCollection = () => {
     openDialog({
       title: "Warn",
@@ -72,12 +76,22 @@ const ContentLayout = ({ selectedItem, children }) => {
       >
         edit title
       </button>
-      <button
-        className="btn btn-outline btn-primary p-2"
-        onClick={deleteCollection}
-      >
-        delete
-      </button>
+      {/* if selectedList.length, show delete selected tabs */}
+      {selectedList.length === 0 ? (
+        <button
+          className="btn btn-outline btn-primary p-2"
+          onClick={deleteCollection}
+        >
+          delete
+        </button>
+      ) : (
+        <button
+          className="btn btn-outline btn-primary p-2"
+          onClick={deleteTabs}
+        >
+          delete selected
+        </button>
+      )}
       {children}
     </>
   )
@@ -101,8 +115,9 @@ const Content = ({}) => {
       </>
     )
   }
+
   // collection
-  const list = current.windows ?? current.folders
+  const list = current.windows
   return (
     <>
       <ContentLayout selectedItem={current}>

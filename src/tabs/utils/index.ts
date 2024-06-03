@@ -25,3 +25,22 @@ export const shortURL = (url: string) => {
   const REG = /\/\/([a-zA-Z0-9.-]+)\//
   return url.match(REG)[1]
 }
+
+class Platform {
+  constructor() {
+    // todo check the platform
+    this.platform = "chrome"
+  }
+
+  listenBrowser = () => {
+    if (this.platform === "chrome") {
+      return chrome.tabs.onCreated.addListener((tab) => {
+        console.log("新标签页创建：", tab)
+      })
+    }
+  }
+
+  cancelListenBrowser = () => {}
+}
+
+export const platformInstance = new Platform()

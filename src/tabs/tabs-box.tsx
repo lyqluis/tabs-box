@@ -8,6 +8,7 @@ import Header from "./components/Header"
 import { ProviderWithReducer } from "./components/reducer/reducer"
 import SideBar from "./components/SideBar"
 import { getAllCollections } from "./store"
+import { getAllWindows } from "./utils/platform"
 
 const TabsBoxPage = () => {
   const [loading, setLoading] = useState(true)
@@ -18,11 +19,7 @@ const TabsBoxPage = () => {
   // get all tabs info
   const getTabs = async () => {
     try {
-      const allWindows = await chrome.windows.getAll({ populate: true })
-      // set current window to the first of the list
-      const currentWindowIdx = allWindows.findIndex((w) => w.focused)
-      const currentWindow = allWindows.splice(currentWindowIdx, 1)
-      allWindows.unshift(...currentWindow)
+      const allWindows = await getAllWindows()
       console.log("all windows", allWindows)
       setWindows(allWindows)
       setCurrent(allWindows[0])
