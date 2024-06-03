@@ -39,6 +39,7 @@ const ListItem = ({ tab, onSelect, checked }) => {
           ></DragableIcon>
         )}
       </i>
+      {/* )} */}
       <div className="form-cont">
         <label className="label cursor-pointer">
           <input
@@ -51,9 +52,13 @@ const ListItem = ({ tab, onSelect, checked }) => {
       </div>
       <span
         className="m-0.5 flex w-6 
-        flex-none items-center justify-center"
+      flex-none items-center justify-center"
       >
-        <img src={tab.favIconUrl} alt="" className="w-4" />
+        {tab.status === "loading" ? (
+          <span className="loading loading-spinner loading-sm"></span>
+        ) : (
+          <img src={tab.favIconUrl} alt="" className="w-4" />
+        )}
       </span>
       <span className="mr-2 flex-none">{tab.title}</span>
       {isHovered && (

@@ -12,9 +12,11 @@ import {
   updateCollection
 } from "../data"
 import {
+  ADD_TAB,
   EXPORT_DATA,
   IMPORT_DATA,
   REMOVE_COLLECTION,
+  REMOVE_TAB,
   SET_COLLECTION,
   SET_COLLECTION_WITH_LOCAL_STORAGE,
   SET_COLLECTIONS,
@@ -23,8 +25,8 @@ import {
   SET_WINDOW,
   SET_WINDOWS,
   setCollections,
-  setSelectedList,
-  setWindows
+  setWindows,
+  UPDATE_TAB
 } from "./actions"
 
 interface State {
@@ -139,6 +141,48 @@ const reducer = (state, action) => {
         // local save
         newCollections.map((collection) => localSaveCollection(collection))
         return { ...state, collections: newCollections }
+      }
+    }
+    case ADD_TAB: {
+      const tab = action.payload
+      const windows = state.windows
+      if (tab) {
+        const { windowId, index } = tab
+        const window = windows.find((w) => w.id === windowId)
+        if (window) {
+          window.tabs.splice(index, 0, tab)
+        }
+        return { ...state, windows }
+      }
+    }
+    case UPDATE_TAB: {
+      const tab = action.payload
+      const windows = state.windows
+      if (tab) {
+        const { windowId, index } = tab
+        const window = windows.find((w) => w.id === windowId)
+        if (window) {
+          window.tabs.splice(index, 1, tab)
+        }
+        return { ...state, windows }
+      }
+    }
+    case REMOVE_TAB: {
+      const { tabId, windowId } = action.payload
+      const windows = state.windows
+      let current = state.current
+      if (tabId && windowId) {
+        const windowIndex = windows.findIndex((w) => w.id === windowId)
+        const window = windows[windowIndex]
+        if (window) {
+          window.tabs = window.tabs.filter((tab) => tab.id !== tabId)
+          windows[windowIndex] = { ...window }
+          console.log("REMOVE_TAB", window, state.current)
+          if (state.current.id === windowId) {
+            current = window // 更新 current
+          }
+        }
+        return { ...state, windows, current }
       }
     }
     // other case...

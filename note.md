@@ -24,8 +24,9 @@
   - [ ] detect tabs witch are loading
   - [ ] URL that exceeds fades out with a gradient
   - [ ] open collection feature
-  - [ ] open url feature
   - [x] selected feature
+- [ ] feature: open url/window
+- [ ] feature: real-time monitoring of the tabs/windows while staying on the app page
 - [x] Dialog Box
   - create a global `Dialog`, use `useReducer` to store Dialog state
   - use gobal context `DialogProvider` to provide `openDialog` and `closeDialog` methods to other component

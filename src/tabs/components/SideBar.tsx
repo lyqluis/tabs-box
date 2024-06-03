@@ -2,14 +2,21 @@ import { useEffect, useRef } from "react"
 import Pinned from "react:~assets/svg/pin.svg"
 
 import { fromNow, shortURL } from "~tabs/utils"
+import { useTabEvents } from "~tabs/utils/platform"
 
 import { useGlobalCtx } from "./context"
 import { setCurrent } from "./reducer/actions"
 
 const SideBar = ({}) => {
   const init = useRef(false)
-  const onSelect = (windowOrCollection) => {
+  const onSelect = async (windowOrCollection) => {
     console.log("sidebar select item", windowOrCollection)
+    // selected is window, get target window's current tabs
+    if (!windowOrCollection.created) {
+      // const window = await getWindow(windowOrCollection.id)
+      // dispatch(setWindow(window))
+      // windowOrCollection = window
+    }
     dispatch(setCurrent(windowOrCollection))
   }
   const {
@@ -20,11 +27,12 @@ const SideBar = ({}) => {
   useEffect(() => {
     if (!init.current && windows.length) {
       console.log("current", windows)
-      console.log("sidebar data refreshed")
       dispatch(setCurrent(windows[0]))
       init.current = true
     }
   }, [windows])
+
+  useTabEvents()
 
   return (
     <aside
@@ -42,12 +50,13 @@ const SideBar = ({}) => {
              flex-col justify-between
              overflow-hidden rounded-md p-3.5 font-light
              shadow hover:bg-danube-800 hover:text-danube-50
-             ${window === current ? "bg-danube-800 font-medium text-danube-50" : ""} 
+             ${window?.id === current?.id ? "bg-danube-800 font-medium text-danube-50" : ""} 
             `}
             onClick={() => onSelect(window)}
           >
             <p className="flex items-center justify-between overflow-hidden text-ellipsis whitespace-nowrap leading-tight">
-              {window.focused ? "Current" : "Window"}
+              {/* // TODO {current.id === window.id ? "Current" : "Window"} */}
+              Window
             </p>
             <p
               className={`overflow-hidden text-ellipsis whitespace-nowrap text-xs font-extralight italic text-danube-200`}
