@@ -26,7 +26,9 @@
   - [ ] open collection feature
   - [x] selected feature
 - [ ] feature: open url/window
-- [ ] feature: real-time monitoring of the tabs/windows while staying on the app page
+- [-] feature: real-time monitoring of the tabs/windows while staying on the app page
+  - on tab crated, updated, removed, [-] moved
+  - [ ] on window crated, updated, removed
 - [x] Dialog Box
   - create a global `Dialog`, use `useReducer` to store Dialog state
   - use gobal context `DialogProvider` to provide `openDialog` and `closeDialog` methods to other component

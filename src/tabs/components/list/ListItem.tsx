@@ -8,6 +8,8 @@ interface ListItemProps {
 }
 
 const ListItem = ({ tab, onSelect, checked }) => {
+  // console.log("list item refreshed", tab.title, tab.url)
+
   const [isHovered, setIsHovered] = useState(false)
   const [isSelected, setIsSelected] = useState(checked)
 

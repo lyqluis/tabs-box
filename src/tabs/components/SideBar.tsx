@@ -61,7 +61,6 @@ const SideBar = ({}) => {
             <p
               className={`overflow-hidden text-ellipsis whitespace-nowrap text-xs font-extralight italic text-danube-200`}
             >
-              {/* // TODO 1st tab's url without pinned + tabs.length */}
               <span>
                 {shortURL(window.tabs.find((tab) => !tab.pinned).url)}
               </span>

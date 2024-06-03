@@ -5,7 +5,9 @@ import { useDialog } from "./Dialog/DialogContext"
 import { List } from "./list"
 import {
   removeCollection,
-  setCollectionWithLocalStorage
+  removeTab,
+  setCollectionWithLocalStorage,
+  setSelectedList
 } from "./reducer/actions"
 import TitleInput from "./TitleInput"
 
@@ -26,7 +28,15 @@ const ContentLayout = ({ selectedItem, children }) => {
   const editCollection = () => {
     // dispatch(setCollectionWithLocalStorage(collection))
   }
-  const deleteTabs = () => {}
+  const deleteSelected = () => {
+    selectedList.map((tab) => dispatch(removeTab(tab.id, tab.windowId)))
+    dispatch(setSelectedList([]))
+    // TODO type is collection.tab
+    if (type === "collection") {
+      // 
+    }
+    // TODO type is window/collection.window
+  }
   const deleteCollection = () => {
     openDialog({
       title: "Warn",
@@ -87,7 +97,7 @@ const ContentLayout = ({ selectedItem, children }) => {
       ) : (
         <button
           className="btn btn-outline btn-primary p-2"
-          onClick={deleteTabs}
+          onClick={deleteSelected}
         >
           delete selected
         </button>

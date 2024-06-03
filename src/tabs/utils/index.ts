@@ -22,6 +22,7 @@ dayjs.extend(relativeTime)
 export const fromNow = (time) => dayjs(time).fromNow()
 
 export const shortURL = (url: string) => {
+  if (!url) return ""
   const REG = /\/\/([a-zA-Z0-9.-]+)\//
   return url.match(REG)[1]
 }
