@@ -1,7 +1,7 @@
 import { useGlobalCtx } from "./context"
 import { importFile } from "./data"
 import LoadingBtn from "./LoadingBtn"
-import { exportData, importData } from "./reducer/actions"
+import { exportData, importData } from "./reducers/actions"
 
 const Header = () => {
   const { dispatch } = useGlobalCtx()

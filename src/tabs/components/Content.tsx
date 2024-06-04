@@ -8,7 +8,7 @@ import {
   removeTab,
   setCollectionWithLocalStorage,
   setSelectedList
-} from "./reducer/actions"
+} from "./reducers/actions"
 import TitleInput from "./TitleInput"
 
 const ContentLayout = ({ selectedItem, children }) => {
