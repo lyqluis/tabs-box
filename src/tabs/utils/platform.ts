@@ -9,12 +9,29 @@ import {
   updateTab
 } from "~tabs/components/reducers/actions"
 
+export const getCurrentWindow = async () => {
+  const current = await chrome.windows.getCurrent()
+  if (!CURRENT_WINDOW) CURRENT_WINDOW = current
+  return current
+}
+
+// get the current window with the app(tabs-box page)
+export let CURRENT_WINDOW
+getCurrentWindow()
+
 export const getAllWindows = async () => {
   const allWindows = await chrome.windows.getAll({ populate: true })
   // set current window to the first of the list
-  const currentWindowIdx = allWindows.findIndex((w) => w.focused)
-  const currentWindow = allWindows.splice(currentWindowIdx, 1)
-  allWindows.unshift(...currentWindow)
+  const currentWindow = CURRENT_WINDOW
+  const currentWindowIdx = allWindows.findIndex(
+    (w) => w.id === currentWindow.id
+  )
+  if (currentWindowIdx !== 0) {
+    ;[allWindows[0], allWindows[currentWindowIdx]] = [
+      allWindows[currentWindowIdx],
+      allWindows[0]
+    ]
+  }
   return allWindows
 }
 
@@ -38,41 +55,52 @@ export const useTabEvents = () => {
     console.log("on tab remove", id, windowId)
     dispatch(removeTab(id, windowId))
   }
+  const onDetached = async (id, { oldPosition, oldWindowId }) => {
+    console.log("👂 tab detached")
+    const newWindows = await getAllWindows()
+    dispatch(setWindows(newWindows))
+    // set new current, which includes the tab
+    const current = newWindows.find((window) =>
+      window.tabs.find((t) => t.id === id)
+    )
+    dispatch(setCurrent(current))
+  }
 
   useEffect(() => {
     chrome.tabs.onCreated.addListener(onTabCreated)
     chrome.tabs.onUpdated.addListener(onTabUpdated)
     chrome.tabs.onRemoved.addListener(onTabRemoved)
+    chrome.tabs.onDetached.addListener(onDetached)
 
     return () => {
       chrome.tabs.onCreated.removeListener(onTabCreated)
       chrome.tabs.onUpdated.removeListener(onTabUpdated)
       chrome.tabs.onRemoved.removeListener(onTabRemoved)
+      chrome.tabs.onDetached.removeListener(onDetached)
     }
   }, [])
 }
 
 export const useWindowEvents = () => {
   const {
-    state: { current },
+    state: { windows, current },
     dispatch
   } = useGlobalCtx()
 
   const onWindowCreated = async (window) => {
     console.log("👂window created", window)
-    // add with refresh api
     const newWindows = await getAllWindows()
     dispatch(setWindows(newWindows))
   }
   const onWindowRemoved = async (id) => {
     console.log("👂window removed", id)
-    // add with refresh api
     const newWindows = await getAllWindows()
     dispatch(setWindows(newWindows))
-  }
-  const onTabUpdated = (id, info, tab) => {
-    console.log("👂", tab)
-    dispatch(updateTab(tab))
+    // set current to the window focused
+    if (current.id === id) {
+      const currentWindow = await getCurrentWindow()
+      dispatch(setCurrent(windows.find((w) => w.id === currentWindow.id)))
+    }
   }
 
   useEffect(() => {
@@ -85,5 +113,5 @@ export const useWindowEvents = () => {
       chrome.windows.onRemoved.removeListener(onWindowRemoved)
       // chrome.windows.onBoundsChanged.removeListener(onTabUpdated)
     }
-  }, [current])
+  }, [windows, current])
 }

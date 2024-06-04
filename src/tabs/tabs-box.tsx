@@ -22,7 +22,6 @@ const TabsBoxPage = () => {
       const allWindows = await getAllWindows()
       console.log("all windows", allWindows)
       setWindows(allWindows)
-      setCurrent(allWindows[0])
     } catch (err) {
       console.error("Error get tabs:", err)
     }

@@ -8,17 +8,14 @@ import {
   createCollection,
   exportFile,
   generateData,
-  importFile,
   updateCollection
 } from "../data"
 import {
   ADD_TAB,
-  ADD_WINDOW,
   EXPORT_DATA,
   IMPORT_DATA,
   REMOVE_COLLECTION,
   REMOVE_TAB,
-  REMOVE_WINDOW,
   SET_COLLECTION,
   SET_COLLECTION_WITH_LOCAL_STORAGE,
   SET_COLLECTIONS,
@@ -67,10 +64,6 @@ const reducer = (state, action) => {
       if (index < 0) return state
       newWindows.splice(index, 1, window)
       return { ...state, windows: newWindows }
-    }
-    case ADD_WINDOW: {
-    }
-    case REMOVE_WINDOW: {
     }
     case SET_COLLECTION: {
       const collection = action.payload

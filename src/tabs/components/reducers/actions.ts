@@ -1,9 +1,7 @@
 export const SET_BASE_DATA = "SET_BASE_DATA"
 export const SET_COLLECTIONS = "SET_COLLECTIONS"
 export const SET_WINDOWS = "SET_WINDOWS"
-export const ADD_WINDOW = "ADD_WINDOW"
 export const SET_WINDOW = "SET_WINDOW"
-export const REMOVE_WINDOW = "REMOVE_WINDOW"
 export const SET_COLLECTION = "SET_COLLECTION" // update one collections
 export const SET_COLLECTION_WITH_LOCAL_STORAGE =
   "SET_COLLECTION_WITH_LOCAL_STORAGE"
@@ -23,11 +21,6 @@ export const setWindows = (windows: chrome.windows.Window[]) => ({
 export const setCollections = (collections: Collection[]) => ({
   type: SET_COLLECTIONS,
   payload: collections
-})
-export const addWindow = (window) => ({ type: ADD_WINDOW, payload: window })
-export const removeWindow = (windowId) => ({
-  type: REMOVE_WINDOW,
-  payload: windowId
 })
 export const setWindow = (window: chrome.windows.Window) => ({
   type: SET_WINDOW,
