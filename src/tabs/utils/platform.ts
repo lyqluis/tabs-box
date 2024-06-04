@@ -54,36 +54,21 @@ export const useTabEvents = () => {
 
 export const useWindowEvents = () => {
   const {
-    state: { windows, current },
+    state: { current },
     dispatch
   } = useGlobalCtx()
 
   const onWindowCreated = async (window) => {
     console.log("👂window created", window)
     // add with refresh api
-    // const newWindows = await getAllWindows()
-    // dispatch(setWindows(newWindows))
-
-    // add with code
-    const newWindows = windows.slice()
-    if (!newWindows.includes(window)) {
-      newWindows.push(window)
-    }
+    const newWindows = await getAllWindows()
     dispatch(setWindows(newWindows))
   }
   const onWindowRemoved = async (id) => {
     console.log("👂window removed", id)
     // add with refresh api
-    // const newWindows = await getAllWindows()
-    // dispatch(setWindows(newWindows))
-
-    // add with code
-    const newWindows = windows.filter((w) => w.id !== id)
+    const newWindows = await getAllWindows()
     dispatch(setWindows(newWindows))
-    // change current
-    if (current.id === id) {
-      dispatch(setCurrent(newWindows[0]))
-    }
   }
   const onTabUpdated = (id, info, tab) => {
     console.log("👂", tab)
@@ -100,5 +85,5 @@ export const useWindowEvents = () => {
       chrome.windows.onRemoved.removeListener(onWindowRemoved)
       // chrome.windows.onBoundsChanged.removeListener(onTabUpdated)
     }
-  }, [windows, current])
+  }, [current])
 }
