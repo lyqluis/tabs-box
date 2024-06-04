@@ -41,7 +41,10 @@ export const getWindow = async (id) => {
 }
 
 export const useTabEvents = () => {
-  const { dispatch } = useGlobalCtx()
+  const {
+    state: { current },
+    dispatch
+  } = useGlobalCtx()
 
   const onTabCreated = async (tab) => {
     console.log("on tab created", tab)
@@ -55,11 +58,21 @@ export const useTabEvents = () => {
     console.log("on tab remove", id, windowId)
     dispatch(removeTab(id, windowId))
   }
+  const onTabMoved = async (id, { fromIndex, toIndex, windowId }) => {
+    console.log("on tab move", id, windowId)
+    const newWindows = await getAllWindows()
+    dispatch(setWindows(newWindows))
+    const currentId = current.id
+    if (currentId === windowId) {
+      const newCurrent = newWindows.find((window) => window.id === windowId)
+      dispatch(setCurrent(newCurrent))
+    }
+  }
   const onDetached = async (id, { oldPosition, oldWindowId }) => {
     console.log("👂 tab detached")
     const newWindows = await getAllWindows()
     dispatch(setWindows(newWindows))
-    // set new current, which includes the tab
+    // set new current window which includes the tab
     const current = newWindows.find((window) =>
       window.tabs.find((t) => t.id === id)
     )
@@ -70,15 +83,17 @@ export const useTabEvents = () => {
     chrome.tabs.onCreated.addListener(onTabCreated)
     chrome.tabs.onUpdated.addListener(onTabUpdated)
     chrome.tabs.onRemoved.addListener(onTabRemoved)
+    chrome.tabs.onMoved.addListener(onTabMoved)
     chrome.tabs.onDetached.addListener(onDetached)
 
     return () => {
       chrome.tabs.onCreated.removeListener(onTabCreated)
       chrome.tabs.onUpdated.removeListener(onTabUpdated)
       chrome.tabs.onRemoved.removeListener(onTabRemoved)
+      chrome.tabs.onMoved.removeListener(onTabMoved)
       chrome.tabs.onDetached.removeListener(onDetached)
     }
-  }, [])
+  }, [current])
 }
 
 export const useWindowEvents = () => {

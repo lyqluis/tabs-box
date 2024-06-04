@@ -32,9 +32,9 @@ const ContentLayout = ({ selectedItem, children }) => {
     selectedList.map((tab) => dispatch(removeTab(tab.id, tab.windowId)))
     dispatch(setSelectedList([]))
     // TODO type is collection.tab
-    if (type === "collection") {
-      // 
-    }
+    // if (type === "collection") {
+    //   //...
+    // }
     // TODO type is window/collection.window
   }
   const deleteCollection = () => {
@@ -87,20 +87,24 @@ const ContentLayout = ({ selectedItem, children }) => {
         edit title
       </button>
       {/* if selectedList.length, show delete selected tabs */}
-      {selectedList.length === 0 ? (
-        <button
-          className="btn btn-outline btn-primary p-2"
-          onClick={deleteCollection}
-        >
-          delete
-        </button>
+      {type === "collection" ? (
+        selectedList.length === 0 ? (
+          <button
+            className="btn btn-outline btn-primary p-2"
+            onClick={deleteCollection}
+          >
+            delete
+          </button>
+        ) : (
+          <button
+            className="btn btn-outline btn-primary p-2"
+            onClick={deleteSelected}
+          >
+            delete selected
+          </button>
+        )
       ) : (
-        <button
-          className="btn btn-outline btn-primary p-2"
-          onClick={deleteSelected}
-        >
-          delete selected
-        </button>
+        ""
       )}
       {children}
     </>
