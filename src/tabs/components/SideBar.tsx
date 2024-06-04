@@ -2,10 +2,10 @@ import { useEffect, useRef } from "react"
 import Pinned from "react:~assets/svg/pin.svg"
 
 import { fromNow, shortURL } from "~tabs/utils"
-import { useTabEvents } from "~tabs/utils/platform"
+import { useTabEvents, useWindowEvents } from "~tabs/utils/platform"
 
 import { useGlobalCtx } from "./context"
-import { setCurrent } from "./reducer/actions"
+import { setCurrent } from "./reducers/actions"
 
 const SideBar = ({}) => {
   const init = useRef(false)
@@ -33,6 +33,7 @@ const SideBar = ({}) => {
   }, [windows])
 
   useTabEvents()
+  useWindowEvents()
 
   return (
     <aside
@@ -62,11 +63,11 @@ const SideBar = ({}) => {
               className={`overflow-hidden text-ellipsis whitespace-nowrap text-xs font-extralight italic text-danube-200`}
             >
               <span>
-                {shortURL(window.tabs.find((tab) => !tab.pinned).url)}
+                {shortURL(window?.tabs?.find((tab) => !tab.pinned)?.url)}
               </span>
             </p>
             <p className={`text-xs font-extralight text-danube-200`}>
-              {window.tabs.length + " tabs"}
+              {window?.tabs?.length + " tabs"}
             </p>
           </li>
         ))}

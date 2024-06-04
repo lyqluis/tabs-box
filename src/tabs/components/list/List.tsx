@@ -8,7 +8,7 @@ import {
   setCurrent,
   setSelectedList,
   setWindow
-} from "../reducer/actions"
+} from "../reducers/actions"
 
 const listIndexShift = (arr, from, to) => {
   const direction = from < to ? 1 : -1
