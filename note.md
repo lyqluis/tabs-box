@@ -19,16 +19,16 @@
     - [x] save edited collection
   - [x] reactive tabs number
   - [x] reactive update time
-  - [-] icon
+  - [x] icon
     - [x] show pinned
-  - [ ] detect tabs witch are loading
+  - [x] detect tabs witch are loading
   - [ ] URL that exceeds fades out with a gradient
-  - [ ] open collection feature
+  - [-] open collection feature
   - [x] selected feature
 - [ ] feature: open url/window
-- [-] feature: real-time monitoring of the tabs/windows while staying on the app page
-  - on tab crated, updated, removed, [-] moved
-  - [ ] on window crated, updated, removed
+- [x] feature: real-time monitoring of the tabs/windows while staying on the app page
+  - on tab crated, updated, removed, moved
+  - on window crated, removed, [-] bound change
 - [x] Dialog Box
   - create a global `Dialog`, use `useReducer` to store Dialog state
   - use gobal context `DialogProvider` to provide `openDialog` and `closeDialog` methods to other component
