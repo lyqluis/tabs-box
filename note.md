@@ -8,7 +8,7 @@
   - [x] show pinned item
   - [x] scroll y
   - [x] show updated time
-  - [ ] sortable
+  - [?] sortable
 - [-] List
   - [ ] how to distinguish whether the current window is from a collection or a new one unsaved
   - [x] edit window title
@@ -23,9 +23,12 @@
     - [x] show pinned
   - [x] detect tabs witch are loading
   - [ ] URL that exceeds fades out with a gradient
-  - [-] open collection feature
-  - [x] selected feature
-- [ ] feature: open url/window
+  - [x] open collection feature
+  - [-] selected feature
+    - select all
+    - delete selected from window
+    - [ ] delete selected from collection
+- [x] feature: open url/window
 - [x] feature: real-time monitoring of the tabs/windows while staying on the app page
   - on tab crated, updated, removed, moved
   - on window crated, removed, [-] bound change

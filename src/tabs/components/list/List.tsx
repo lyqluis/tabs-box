@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { ReactSortable } from "react-sortablejs"
 
 import { ListItem } from "."
@@ -47,6 +47,31 @@ const List: React.FC<ListProps> = ({ window }) => {
       dispatch(setSelectedList(selectedList.filter((t) => t.url !== tab.url)))
     }
   }
+  
+  const allCheckBox = useRef(null)
+  const selectAll = (e) => {
+    console.log("select all")
+    const selectedCount = selectedList.length
+    if (selectedCount === window.tabs.length) {
+      // remove all
+      dispatch(setSelectedList([]))
+    } else {
+      // select all
+      dispatch(setSelectedList([...window.tabs]))
+    }
+  }
+
+  useEffect(() => {
+    console.log("selected list update", selectedList)
+
+    const selectCount = selectedList.length
+    if (!allCheckBox.current) return
+    if (selectCount > 0 && selectCount < window.tabs.length) {
+      allCheckBox.current.indeterminate = true
+    } else {
+      allCheckBox.current.indeterminate = false
+    }
+  }, [selectedList])
 
   useEffect(() => {
     setTabs(window.tabs)
@@ -78,7 +103,20 @@ const List: React.FC<ListProps> = ({ window }) => {
 
   return (
     <div className="text-clip p-5">
-      <h1>Window: {window.focused ? "current" : window.id}</h1>
+      <div className="mb-4 mt-4 flex h-5 items-center pl-5">
+        {selectedList.length > 0 && (
+          <label className="label mr-3 cursor-pointer">
+            <input
+              ref={allCheckBox}
+              type="checkbox"
+              className="checkbox-primary checkbox checkbox-sm"
+              checked={selectedList.length === window.tabs.length}
+              onChange={selectAll}
+            />
+          </label>
+        )}
+        Window: {window.id}
+      </div>
       <ReactSortable
         tag="ul"
         list={tabs}

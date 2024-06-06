@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import DragableIcon from "react:~assets/svg/dragable.svg"
 import Pinned from "react:~assets/svg/pin.svg"
 
@@ -8,7 +8,7 @@ interface ListItemProps {
 }
 
 const ListItem = ({ tab, onSelect, checked }) => {
-  // console.log("list item refreshed", tab.title, tab.url)
+  // console.log("list item refreshed", tab.title, checked)
 
   const [isHovered, setIsHovered] = useState(false)
   const [isSelected, setIsSelected] = useState(checked)
@@ -20,6 +20,10 @@ const ListItem = ({ tab, onSelect, checked }) => {
   }
   const onMouseOver = (e) => setIsHovered(true)
   const onMouseLeave = (e) => setIsHovered(false)
+
+  useEffect(() => {
+    setIsSelected(checked)
+  }, [checked])
 
   return (
     <li
@@ -41,7 +45,6 @@ const ListItem = ({ tab, onSelect, checked }) => {
           ></DragableIcon>
         )}
       </i>
-      {/* )} */}
       <div className="form-cont">
         <label className="label cursor-pointer">
           <input
