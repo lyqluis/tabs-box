@@ -79,9 +79,6 @@ const List: React.FC<ListProps> = ({ window }) => {
   return (
     <div className="text-clip p-5">
       <h1>Window: {window.focused ? "current" : window.id}</h1>
-      {selectedList.length > 0 && (
-        <h1>{selectedList.length} tabs is selected</h1>
-      )}
       <ReactSortable
         tag="ul"
         list={tabs}
