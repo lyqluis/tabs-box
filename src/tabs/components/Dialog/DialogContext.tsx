@@ -11,6 +11,8 @@ const dialogState = {
   isOpen: false,
   title: "Dialog Box",
   message: "",
+  confirmText: "Confirm",
+  cancelText: "Cancel",
   onConfirm: null, // () => void 0
   onCancel: null, // () => void 0
   type: "info" // ?
@@ -31,8 +33,17 @@ export const DialogProvider = ({ children }) => {
   const [state, dispatch] = useReducer(dialogReducer, dialogState)
   const dialogRef = useRef(null)
 
-  const openDialog = ({ message, title, onConfirm }) => {
-    dispatch({ type: OPEN_DIALOG, payload: { message, title, onConfirm } })
+  const openDialog = ({
+    message,
+    title,
+    onConfirm,
+    confirmText,
+    cancelText
+  }) => {
+    dispatch({
+      type: OPEN_DIALOG,
+      payload: { message, title, onConfirm, confirmText, cancelText }
+    })
     dialogRef.current.showModal()
   }
   const closeDialog = () => dispatch({ type: OPEN_DIALOG })
