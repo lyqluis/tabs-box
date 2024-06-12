@@ -8,7 +8,9 @@ import Header from "./components/Header"
 import { ProviderWithReducer } from "./components/reducers/reducer"
 import SideBar from "./components/SideBar"
 import { getAllCollections } from "./store"
+import { HistoryProvider } from "./utils/operationStack"
 import { getAllWindows } from "./utils/platform"
+import { Tst } from "./components/tst"
 
 const TabsBoxPage = () => {
   const [loading, setLoading] = useState(true)
@@ -62,15 +64,17 @@ const TabsBoxPage = () => {
   }
   return (
     <ProviderWithReducer data={{ windows, collections }}>
-      <DialogProvider>
-        <div className="flex">
-          <SideBar></SideBar>
-          <main className="w-full overflow-hidden">
-            <Header></Header>
-            <Content></Content>
-          </main>
-        </div>
-      </DialogProvider>
+      <HistoryProvider>
+        <DialogProvider>
+          <div className="flex">
+            <SideBar></SideBar>
+            <main className="flex h-screen w-full flex-col overflow-hidden">
+              <Header></Header>
+              <Content></Content>
+            </main>
+          </div>
+        </DialogProvider>
+      </HistoryProvider>
     </ProviderWithReducer>
   )
 }

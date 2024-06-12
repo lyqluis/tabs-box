@@ -1,5 +1,6 @@
 import { fromNow } from "~tabs/utils"
-import { CURRENT_WINDOW, openWindow } from "~tabs/utils/platform"
+import { CURRENT_WINDOW, getAllWindows, openWindow } from "~tabs/utils/platform"
+import { useRefresh } from "~tabs/utils/useRefresh"
 
 import { useGlobalCtx } from "./context"
 import { useDialog } from "./Dialog/DialogContext"
@@ -9,7 +10,8 @@ import {
   removeTab,
   setCollectionWithLocalStorage,
   setCurrent,
-  setSelectedList
+  setSelectedList,
+  setWindows
 } from "./reducers/actions"
 import TitleInput from "./TitleInput"
 
@@ -35,17 +37,6 @@ const ContentLayout = ({ selectedItem, children }) => {
   }
   const editCollection = () => {
     // dispatch(setCollectionWithLocalStorage(collection))
-  }
-  const deleteSelected = () => {
-    // window's tab, delete from reducer, use [apply] to update window
-    // collection's tab
-    selectedList.map((tab) => dispatch(removeTab(tab.id, tab.windowId)))
-    dispatch(setSelectedList([]))
-    // TODO type is collection.tab
-    if (type === "collection") {
-      //...
-    }
-    // TODO type is window/collection.window
   }
   const deleteCollection = () => {
     openDialog({
@@ -74,8 +65,10 @@ const ContentLayout = ({ selectedItem, children }) => {
     }
   }
 
+  const { RefreshBtn } = useRefresh()
+
   return (
-    <div className="flex h-screen flex-grow flex-col">
+    <div className="flex flex-col overflow-hidden">
       <div className="flex-none">
         <div className="title-container flex items-center">
           <div className="avatar placeholder flex-none shrink-0 grow-0">
@@ -89,16 +82,17 @@ const ContentLayout = ({ selectedItem, children }) => {
           <div className="title__detail m-2">
             <TitleInput
               title={
-                selectedItem.title ?? selectedItem.id === CURRENT_WINDOW.id
+                selectedItem.title ??
+                (selectedItem.id === CURRENT_WINDOW.id
                   ? "This Window"
-                  : "Window"
+                  : "Window")
               }
               disable={type === "window"}
               setTitle={setCollectionTitle}
             ></TitleInput>
             <p className="my-2">
               {selectedList.length > 0 && (
-                <span>{selectedList.length} selected | </span>
+                <span>{selectedList.length} selected / </span>
               )}
               <span>{allTabsNumber} tabs</span> | Updated{" "}
               {fromNow(selectedItem.updated)}
@@ -131,23 +125,16 @@ const ContentLayout = ({ selectedItem, children }) => {
           edit title
         </button>
         {/* delete */}
-        {selectedList.length > 0 ? (
-          <button
-            className="btn btn-outline btn-primary p-2"
-            onClick={deleteSelected}
-          >
-            delete selected
-          </button>
-        ) : (
-          <button
-            className="btn btn-outline btn-primary p-2"
-            onClick={deleteWindowOrCollection}
-          >
-            delete
-          </button>
-        )}
+        <button
+          className="btn btn-outline btn-primary p-2"
+          onClick={deleteWindowOrCollection}
+        >
+          delete
+        </button>
+        {/* refresh */}
+        <RefreshBtn></RefreshBtn>
       </div>
-      <div className="flex-grow overflow-y-scroll">{children}</div>
+      <div className="flex-auto overflow-y-scroll">{children}</div>
     </div>
   )
 }
@@ -160,12 +147,14 @@ const Content = ({}) => {
 
   if (!current) return <h1>loading</h1>
 
+  const type = current.created ? "collection" : "window"
+
   // window
   if (current.tabs) {
     return (
       <>
         <ContentLayout selectedItem={current}>
-          <List window={current}></List>
+          <List window={current} type={type}></List>
         </ContentLayout>
       </>
     )
@@ -177,7 +166,7 @@ const Content = ({}) => {
     <>
       <ContentLayout selectedItem={current}>
         {list.map((window) => (
-          <List key={window.id} window={window}></List>
+          <List key={window.id} window={window} type={type}></List>
         ))}
       </ContentLayout>
     </>
