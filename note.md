@@ -4,7 +4,7 @@
   - sortable only with handle icon
 - [-] App
   - [x] use global data through context
-- [ ] SideBar
+- [-] SideBar
   - [x] show pinned item
   - [x] scroll y
   - [x] show updated time
@@ -25,18 +25,66 @@
   - [ ] URL that exceeds fades out with a gradient
   - [x] open collection feature
   - [-] selected feature
-    - select all
+    - [x] select all
+    - [ ] click outside list, cancel all selected
     - delete selected from window
-    - [ ] delete selected from collection
+  - [ ] delete selected from collection
+  - [-] bugs:
+    - [x] new tab can not be detected in reducer when deleted
 - [x] feature: open url/window
 - [x] feature: real-time monitoring of the tabs/windows while staying on the app page
   - on tab crated, updated, removed, moved
   - on window crated, removed, [-] bound change
+- [-] feature: apply/save changes to windows/local
+  - [x] apply/save button
+    - when window/collection edited, apply/save button should change to a red/eye-catching color to remind users to click
+  - [x] window's apply feature
+  - [x] collection's save feature
 - [x] Dialog Box
   - create a global `Dialog`, use `useReducer` to store Dialog state
   - use gobal context `DialogProvider` to provide `openDialog` and `closeDialog` methods to other component
   - `useDialog` hook provides a custom hook that allows any child component to conveniently access the dialog control methods.
   - by passing different content components through the `openDialog` method, dynamic changes of the dialog content are achieved
+- [-] alert feature
+  - 1. use `useImperativeHandle` hook to expose taost api to the outside
+  ```tsx
+  // toast object to export api to outside
+  export const toast: { current: IToastRef | null } = { current: null }
+  
+  const ToastContainer = () => {
+    // internal custom ref
+    const toastRef = useRef<IToastRef>(null)
+    const [toastList, setToastList] = useState<{ id: string; msg: string; duration?: number }[]>([])
+    
+    // expose api to internal ref `toastRef`
+    useImperativeHandle(toastRef, () => {
+      return {
+        // api-info
+        info: (msg: string, option) => {
+          const item = {
+            msg, duration: option?.duration, id: `${+new Date()}`
+          }
+          return setToastList(list => [...list, item])
+        }
+      }
+    })
+    // set external `toast.current` point to internal ref
+    useEffect(() => {
+      toast.current = toastRef.current
+    }, [])
+
+    return (
+      <div className='fixed top-0 left-0 right-0 z-[999]'>
+        {
+          toastList.map((item) => {
+            return <ToastMessage key={item.id} {...item}>{ item.msg }</ToastMessage>
+          })
+        }
+      </div>
+    )  
+  }
+  ```
+  - 2. use `useSyncExternalStore` to subscribe to an external store and message list(https://juejin.cn/post/7223705034412802107#heading-10)
 - [ ] search feature
 - [x] export & import feature
   - [x] data foramt
@@ -45,16 +93,26 @@
     - [x] import compatible with format Session Buddy
   - [x] export
     - local save -(initial render)-> reducer -> export
-- [ ] data & local
+- [-] data & local
   - [x] save through indexedDB
   - [x] add/set collection, toggle 'save' to save to the collections
   - [x] save sortable data
     - after drag sorted, update the new list data update in the reducer without local storage
   - [x] delete collection
+  - [ ] collection with multi windows
 - [ ] save in cloud feature
   - [ ] google drive
 - [ ] setting feature
-- [ ] restore feature
+- [-] restore feature
+  - [ ] save last save (only useful to collections)
+  - [?] any operations of the list should be push into history stack
 
 ### data save
 component -> context/reducer -> local
+
+- window
+add / remove / sort --> reducer
+=> component --[apply]--> local
+- collection
+add / remove / sort --> reducer 
+=> component --[?save]--> local
