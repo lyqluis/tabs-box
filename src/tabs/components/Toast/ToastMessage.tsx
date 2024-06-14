@@ -10,20 +10,23 @@ const ToastMessage = ({
   cancelText = null,
   confirmText = null
 }) => {
-  const [isShow, setIsShow] = useState(true)
+  const [isShow, setIsShow] = useState(false)
+  const transitionDuration = 300
 
   useEffect(() => {
+    setIsShow(true)
     setTimeout(() => {
       setIsShow(false)
-      toast.current?.close(id)
+      setTimeout(() => {
+        toast.current?.close(id)
+      }, transitionDuration)
     }, duration)
   }, [])
 
   return (
     <div
       role="alert"
-      className={`alert m-1.5 shadow-lg transition-all duration-1000 ease-linear ${isShow ? "translate-x-0" : "translate-x-full"}`}
-      // style={{ transform: isShow ? "translateX(0)" : "translateX(100%)" }}
+      className={`alert m-1.5 shadow-lg transition-all ${duration-transitionDuration} ease-linear ${isShow ? "translate-x-0" : "translate-x-full opacity-0"}`}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

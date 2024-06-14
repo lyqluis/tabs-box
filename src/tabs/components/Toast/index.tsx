@@ -40,7 +40,7 @@ const ToastContainer = () => {
   }, [])
 
   const renderDom = (
-    <div className="fixed bottom-0 right-0 z-[999] flex flex-col justify-center p-5">
+    <div className="fixed bottom-5 right-5 z-[999] flex flex-col justify-center">
       {toastList.map((item) => {
         return <ToastMessage key={item.id} {...item}></ToastMessage>
       })}
