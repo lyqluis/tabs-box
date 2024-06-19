@@ -1,5 +1,9 @@
 import { fromNow } from "~tabs/utils"
-import { CURRENT_WINDOW, getAllWindows, openWindow } from "~tabs/utils/platform"
+import {
+  closeWindow,
+  CURRENT_WINDOW,
+  openWindow
+} from "~tabs/utils/platform"
 import { useRefresh } from "~tabs/utils/useRefresh"
 
 import { useGlobalCtx } from "./context"
@@ -7,11 +11,9 @@ import { useDialog } from "./Dialog/DialogContext"
 import { List } from "./list"
 import {
   removeCollection,
-  removeTab,
   setCollectionWithLocalStorage,
   setCurrent,
-  setSelectedList,
-  setWindows
+  updateEditedList
 } from "./reducers/actions"
 import TitleInput from "./TitleInput"
 
@@ -53,8 +55,8 @@ const ContentLayout = ({ selectedItem, children }) => {
   const deleteWindow = () => {
     openDialog({
       title: "Warn",
-      message: `collection ${selectedItem.title} will be permanently deleted`,
-      onConfirm: () => dispatch(removeCollection(selectedItem))
+      message: `Target window will be permanently closed`,
+      onConfirm: () => closeWindow(selectedItem.id)
     })
   }
   const deleteWindowOrCollection = () => {
@@ -148,13 +150,16 @@ const Content = ({}) => {
   if (!current) return <h1>loading</h1>
 
   const type = current.created ? "collection" : "window"
+  const dispatchEdit = (isEdited) => {
+    dispatch(updateEditedList({ id: current.id, type, isEdited }))
+  }
 
   // window
   if (current.tabs) {
     return (
       <>
         <ContentLayout selectedItem={current}>
-          <List window={current} type={type}></List>
+          <List window={current} type={type} dispatchEdit={dispatchEdit}></List>
         </ContentLayout>
       </>
     )
@@ -166,7 +171,12 @@ const Content = ({}) => {
     <>
       <ContentLayout selectedItem={current}>
         {list.map((window) => (
-          <List key={window.id} window={window} type={type}></List>
+          <List
+            key={window.id}
+            window={window}
+            type={type}
+            dispatchEdit={dispatchEdit}
+          ></List>
         ))}
       </ContentLayout>
     </>

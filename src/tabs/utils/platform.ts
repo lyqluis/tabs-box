@@ -40,6 +40,91 @@ export const getWindow = async (id) => {
   return window
 }
 
+export const openWindow = async (window) => {
+  const createData = {
+    focused: false,
+    // setSelfAsOpener: false,
+    height: window.height,
+    incognito: window.incognito,
+    left: window.left,
+    top: window.top,
+    type: "normal",
+    width: window.width
+    // url: window.tabs.map((tab) => tab.url)
+  }
+  const pinnedTabs = window.tabs.filter((t) => t.pinned)
+  const newWindow = await chrome.windows.create(createData)
+  // use tab method to create tab with old options
+  // new window's tabs' id changed, should update new tab with same url
+  window.tabs.map((tab) => {
+    chrome.tabs.create({
+      url: tab.url,
+      pinned: tab.pinned,
+      index: tab.index,
+      windowId: newWindow?.id
+    })
+  })
+  // remove the default new tab in the window
+  console.log("open a new window", pinnedTabs, newWindow)
+  const blankTab = newWindow?.tabs[0]
+  if (blankTab) {
+    chrome.tabs.remove(blankTab.id)
+  }
+}
+
+export const closeWindow = (windowId: number): Promise<void> => {
+  return chrome.windows.remove(windowId)
+}
+
+export const applyWindow = async (window) => {
+  // todo
+  const updateInfo = {}
+  // find old window
+  const target = await getWindow(window.id)
+  // update window state
+  chrome.windows.update(target.id, updateInfo)
+  // todo update window url
+  // compare tabs between window and target
+  const oldTabs = target.tabs
+  const tabs = window.tabs
+  const { creates, moves, removes } = compareTabs(oldTabs, tabs)
+  console.log("🌍 apply window", creates, moves, removes)
+  moves.length &&
+    moves.map((tab) => chrome.tabs.move(tab.id, { index: tab.index }))
+  removes.length && chrome.tabs.remove(removes)
+  creates.length && creates.map((tab) => chrome.tabs.create({ ...tab }))
+}
+
+const pinTabs = async (id: number | number[]) => {
+  if (Array.isArray(id)) {
+    id.map((id) => {})
+    return
+  }
+  const tab = await chrome.tabs.get(id)
+}
+
+const compareTabs = (oldTabs, tabs) => {
+  let i = 0
+  const removes: number[] = []
+  const moves = []
+  while (i < oldTabs.length) {
+    const oldTab = oldTabs[i++]
+    const tabIndex = tabs.findIndex((t) => t.url === oldTab.url)
+    const tab = tabs[tabIndex]
+    if (tabIndex > -1) {
+      if (oldTab.index !== tabIndex) {
+        tab.index = tabIndex
+        moves.push(tab)
+      }
+      tab.compared = true
+    } else {
+      removes.push(oldTab.id)
+    }
+  }
+  const creates = tabs.filter((t) => !t.compared)
+  return { creates, moves, removes }
+}
+
 export const useTabEvents = () => {
   const {
     state: { current },
@@ -55,7 +140,7 @@ export const useTabEvents = () => {
     dispatch(updateTab(tab))
   }
   const onTabRemoved = async (id, { windowId }) => {
-    console.log("on tab remove", id, windowId)
+    console.log("on tab remove", id, "in", windowId)
     dispatch(removeTab(id, windowId))
   }
   const onTabMoved = async (id, { fromIndex, toIndex, windowId }) => {
