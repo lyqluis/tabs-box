@@ -4,7 +4,8 @@ import { useGlobalCtx } from "~tabs/components/context"
 import {
   setCollections,
   setCurrent,
-  setWindows
+  setWindows,
+  updateEditedList
 } from "~tabs/components/reducers/actions"
 import { getAllCollections } from "~tabs/store"
 
@@ -57,6 +58,7 @@ export const useRefresh = () => {
     const windows = await getAllTabs()
     const collections = await getCollections()
     resetCurrent(windows, collections)
+    dispatch(updateEditedList('clear_all'))
   }
 
   useEffect(() => {
