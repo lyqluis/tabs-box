@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react"
 import { ReactSortable } from "react-sortablejs"
 
+import { openTabs } from "~tabs/utils/platform"
+
 import { ListItem } from "."
 import { useGlobalCtx } from "../context"
 import { useDialog } from "../Dialog/DialogContext"
@@ -64,6 +66,10 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
       dispatch(setSelectedList([...window.tabs]))
     }
   }
+  const openSelected = () => {
+    openTabs(selectedList)
+    dispatch(setSelectedList([]))
+  }
   const deleteSelected = () => {
     if (type === "collection") {
       // collection's tab
@@ -86,11 +92,6 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
     // TODO type is window/collection.window
     dispatch(setSelectedList([]))
     dispatchEdit(true)
-    // openDialog({
-    //   title: "Info",
-    //   message: "To close tabs, please click [apply] button after this step",
-    //   cancelText: "Got It"
-    // })
   }
 
   useEffect(() => {
@@ -146,8 +147,11 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
         )}
         Window: {window.id}
         {selectedList.length > 0 && (
-          <div className="btn-wrapper ml-auto">
-            <button className="btn btn-xs" onClick={deleteSelected}>
+          <div className="btn-wrapper ml-auto flex">
+            <button className="btn btn-xs m-1" onClick={openSelected}>
+              open selected
+            </button>
+            <button className="btn btn-xs m-1" onClick={deleteSelected}>
               remove selected
             </button>
           </div>
