@@ -70,6 +70,8 @@ export const openWindow = async (window) => {
   if (blankTab) {
     chrome.tabs.remove(blankTab.id)
   }
+
+  return newWindow?.id
 }
 
 export const closeWindow = (windowId: number): Promise<void> => {
@@ -147,21 +149,21 @@ export const useTabEvents = () => {
     console.log("on tab move", id, windowId)
     const newWindows = await getAllWindows()
     dispatch(setWindows(newWindows))
-    const currentId = current.id
-    if (currentId === windowId) {
-      const newCurrent = newWindows.find((window) => window.id === windowId)
-      dispatch(setCurrent(newCurrent))
-    }
+    // const currentId = current.id
+    // if (currentId === windowId) {
+    //   const newCurrent = newWindows.find((window) => window.id === windowId)
+    //   dispatch(setCurrent(newCurrent))
+    // }
   }
   const onDetached = async (id, { oldPosition, oldWindowId }) => {
     console.log("👂 tab detached")
     const newWindows = await getAllWindows()
     dispatch(setWindows(newWindows))
     // set new current window which includes the tab
-    const current = newWindows.find((window) =>
-      window.tabs.find((t) => t.id === id)
-    )
-    dispatch(setCurrent(current))
+    // const current = newWindows.find((window) =>
+    //   window.tabs.find((t) => t.id === id)
+    // )
+    // dispatch(setCurrent(current))
   }
 
   useEffect(() => {
@@ -197,10 +199,10 @@ export const useWindowEvents = () => {
     const newWindows = await getAllWindows()
     dispatch(setWindows(newWindows))
     // set current to the window focused
-    if (current.id === id) {
-      const currentWindow = await getCurrentWindow()
-      dispatch(setCurrent(windows.find((w) => w.id === currentWindow.id)))
-    }
+    // if (current.id === id) {
+    //   const currentWindow = await getCurrentWindow()
+    //   dispatch(setCurrent(windows.find((w) => w.id === currentWindow.id)))
+    // }
   }
 
   useEffect(() => {

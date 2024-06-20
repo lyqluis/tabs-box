@@ -17,7 +17,7 @@ export const localGetCollection = async (id) => {
 }
 
 export const localRemoveCollection = (collection) => {
-  const created = collection.created.toString()
+  const created = collection.id.toString()
   COLLECTIONS.removeItem(created)
 }
 
