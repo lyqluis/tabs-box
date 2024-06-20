@@ -37,8 +37,8 @@ export const DialogProvider = ({ children }) => {
     message,
     title,
     onConfirm,
-    confirmText,
-    cancelText
+    confirmText = "Confirm",
+    cancelText = "Cancel"
   }) => {
     dispatch({
       type: OPEN_DIALOG,

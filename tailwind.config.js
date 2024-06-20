@@ -43,7 +43,7 @@ module.exports = {
           "info-content": "#0d1316",
           success: "#d1fae5",
           "success-content": "#101512",
-          warning: "#ffedd5",
+          warning: "#fde68a",
           "warning-content": "#161410",
           error: "#fecaca",
           "error-content": "#160f0f"
