@@ -31,7 +31,10 @@
   - [ ] delete selected from collection
   - [-] bugs:
     - [x] new tab can not be detected in reducer when deleted
-- [x] feature: open url/window
+- [-] feature: open url/window/collection
+  - [x] open colleciton in new window
+  - [ ] open one tab / tabs selected
+  - [ ] open one window / windows selected
 - [x] feature: real-time monitoring of the tabs/windows while staying on the app page
   - on tab crated, updated, removed, moved
   - on window crated, removed, [-] bound change
@@ -45,26 +48,30 @@
   - use gobal context `DialogProvider` to provide `openDialog` and `closeDialog` methods to other component
   - `useDialog` hook provides a custom hook that allows any child component to conveniently access the dialog control methods.
   - by passing different content components through the `openDialog` method, dynamic changes of the dialog content are achieved
-- [-] alert feature
-  - 1. use `useImperativeHandle` hook to expose taost api to the outside
+- [-] notification feature
+  - 1. use `useImperativeHandle` hook to expose taost api to the outside (https://juejin.cn/post/7330602636935561255)
   ```tsx
   // toast object to export api to outside
   export const toast: { current: IToastRef | null } = { current: null }
-  
+
   const ToastContainer = () => {
     // internal custom ref
     const toastRef = useRef<IToastRef>(null)
-    const [toastList, setToastList] = useState<{ id: string; msg: string; duration?: number }[]>([])
-    
+    const [toastList, setToastList] = useState<
+      { id: string; msg: string; duration?: number }[]
+    >([])
+
     // expose api to internal ref `toastRef`
     useImperativeHandle(toastRef, () => {
       return {
         // api-info
         info: (msg: string, option) => {
           const item = {
-            msg, duration: option?.duration, id: `${+new Date()}`
+            msg,
+            duration: option?.duration,
+            id: `${+new Date()}`
           }
-          return setToastList(list => [...list, item])
+          return setToastList((list) => [...list, item])
         }
       }
     })
@@ -74,21 +81,59 @@
     }, [])
 
     return (
-      <div className='fixed top-0 left-0 right-0 z-[999]'>
-        {
-          toastList.map((item) => {
-            return <ToastMessage key={item.id} {...item}>{ item.msg }</ToastMessage>
-          })
-        }
+      <div className="fixed left-0 right-0 top-0 z-[999]">
+        {toastList.map((item) => {
+          return (
+            <ToastMessage key={item.id} {...item}>
+              {item.msg}
+            </ToastMessage>
+          )
+        })}
       </div>
-    )  
+    )
+  }
+
+  
+  const ToastMessage = ({
+    id,
+    message = "You have 1 unread message",
+    duration = 3000,
+    children = null,
+    cancelText = null,
+    confirmText = null
+  }) => {
+    const [isShow, setIsShow] = useState(false)
+    const transitionDuration = 300
+
+    // set isShow to control CSS transition, otherwise transition will not work
+    useEffect(() => {
+      setIsShow(true)
+      setTimeout(() => {
+        setIsShow(false)
+        // make sure disappeat transition works
+        setTimeout(() => {
+          toast.current?.close(id)
+        }, transitionDuration)
+      }, duration)
+    }, [])
+
+    return (
+      <div
+        role="alert"
+        className={`alert m-1.5 shadow-lg transition-all ${duration-transitionDuration} ease-linear ${isShow ? "translate-x-0" : "translate-x-full opacity-0"}`}
+      >
+      // ...
+      </div>
+    )
   }
   ```
-  - 2. use `useSyncExternalStore` to subscribe to an external store and message list(https://juejin.cn/post/7223705034412802107#heading-10)
+  - 2. use `useSyncExternalStore` to subscribe to an external store and message list (https://juejin.cn/post/7223705034412802107#heading-10)
+  - [ ] bugs
+    - [-] transition animations for conditional rendering
 - [ ] search feature
 - [x] export & import feature
   - [x] data foramt
-  - [x] import 
+  - [x] import
     - import -> reducer -> local save
     - [x] import compatible with format Session Buddy
   - [x] export
@@ -108,11 +153,12 @@
   - [?] any operations of the list should be push into history stack
 
 ### data save
+
 component -> context/reducer -> local
 
 - window
-add / remove / sort --> reducer
-=> component --[apply]--> local
+  add / remove / sort --> reducer
+  => component --[apply]--> local
 - collection
-add / remove / sort --> reducer 
-=> component --[?save]--> local
+  add / remove / sort --> reducer
+  => component --[?save]--> local

@@ -3,9 +3,10 @@ import { ReactSortable } from "react-sortablejs"
 
 import { ListItem } from "."
 import { useGlobalCtx } from "../context"
+import { useDialog } from "../Dialog/DialogContext"
 import {
+  removeTab,
   setCollection,
-  setCurrent,
   setSelectedList,
   setWindow
 } from "../reducers/actions"
@@ -25,14 +26,17 @@ const listIndexShift = (arr, from, to) => {
 interface ListProps {
   window: chrome.windows.Window // from <windows[] | collection.windows[]>
   type?: string // window | collection
+  dispatchEdit?: (isEdited?: boolean) => void
 }
 
-const List: React.FC<ListProps> = ({ window }) => {
+// TODO any operation on the list should be push into history stack
+const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
   const [tabs, setTabs] = useState(window?.tabs ?? [])
   const {
     state: { current, selectedList },
     dispatch
   } = useGlobalCtx()
+  const { openDialog } = useDialog()
 
   console.log("List Component refreshed, props-window", window, tabs)
 
@@ -47,7 +51,7 @@ const List: React.FC<ListProps> = ({ window }) => {
       dispatch(setSelectedList(selectedList.filter((t) => t.url !== tab.url)))
     }
   }
-  
+
   const allCheckBox = useRef(null)
   const selectAll = (e) => {
     console.log("select all")
@@ -60,10 +64,36 @@ const List: React.FC<ListProps> = ({ window }) => {
       dispatch(setSelectedList([...window.tabs]))
     }
   }
+  const deleteSelected = () => {
+    if (type === "collection") {
+      // collection's tab
+      // use [save] button to delete from local
+      const newTabs = tabs.filter((tab) => !selectedList.includes(tab))
+      console.log("delete selected list, new tabs", newTabs)
+
+      const newWindow = { ...window, tabs: newTabs }
+      const insertIdx = current.windows.findIndex((w) => w.id === newWindow.id)
+      if (insertIdx > -1) {
+        // create new collection
+        current.windows.splice(insertIdx, 1, newWindow)
+        dispatch(setCollection(current))
+      }
+    } else {
+      // window's tab, delete from reducer
+      // use [apply] button to update window
+      selectedList.map((tab) => dispatch(removeTab(tab.id, tab.windowId)))
+    }
+    // TODO type is window/collection.window
+    dispatch(setSelectedList([]))
+    dispatchEdit(true)
+    // openDialog({
+    //   title: "Info",
+    //   message: "To close tabs, please click [apply] button after this step",
+    //   cancelText: "Got It"
+    // })
+  }
 
   useEffect(() => {
-    console.log("selected list update", selectedList)
-
     const selectCount = selectedList.length
     if (!allCheckBox.current) return
     if (selectCount > 0 && selectCount < window.tabs.length) {
@@ -90,20 +120,19 @@ const List: React.FC<ListProps> = ({ window }) => {
         // create new collection
         current.windows.splice(insertIdx, 1, newWindow)
         dispatch(setCollection(current))
-        dispatch(setCurrent(current))
       }
     } else {
       // current is window
       dispatch(setWindow(newWindow))
-      dispatch(setCurrent(newWindow))
     }
+    dispatchEdit(true)
   }
 
   if (!tabs || !tabs.length) return
 
   return (
-    <div className="text-clip p-5">
-      <div className="mb-4 mt-4 flex h-5 items-center pl-5">
+    <div className="relative text-clip p-5">
+      <div className="sticky top-0 mb-4 mt-4 flex h-5 items-center justify-start pl-5">
         {selectedList.length > 0 && (
           <label className="label mr-3 cursor-pointer">
             <input
@@ -116,6 +145,13 @@ const List: React.FC<ListProps> = ({ window }) => {
           </label>
         )}
         Window: {window.id}
+        {selectedList.length > 0 && (
+          <div className="btn-wrapper ml-auto">
+            <button className="btn btn-xs" onClick={deleteSelected}>
+              remove selected
+            </button>
+          </div>
+        )}
       </div>
       <ReactSortable
         tag="ul"

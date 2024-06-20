@@ -5,7 +5,7 @@ import { fromNow, shortURL } from "~tabs/utils"
 import { useTabEvents, useWindowEvents } from "~tabs/utils/platform"
 
 import { useGlobalCtx } from "./context"
-import { setCurrent } from "./reducers/actions"
+import { setCurrentId, setSelectedList } from "./reducers/actions"
 
 const SideBar = ({}) => {
   const init = useRef(false)
@@ -17,20 +17,13 @@ const SideBar = ({}) => {
       // dispatch(setWindow(window))
       // windowOrCollection = window
     }
-    dispatch(setCurrent(windowOrCollection))
+    dispatch(setCurrentId(windowOrCollection.id))
+    dispatch(setSelectedList([]))
   }
   const {
     state: { windows, collections, current },
     dispatch
   } = useGlobalCtx()
-
-  useEffect(() => {
-    if (!init.current && windows.length) {
-      console.log("current", windows)
-      dispatch(setCurrent(windows[0]))
-      init.current = true
-    }
-  }, [windows])
 
   useTabEvents()
   useWindowEvents()
@@ -43,7 +36,7 @@ const SideBar = ({}) => {
     >
       <h1>side bar</h1>
       <h2>windows</h2>
-      <ul className="flex-none">
+      <ul className="max-h-60 flex-none overflow-y-scroll">
         {windows.map((window) => (
           <li
             key={window.id}

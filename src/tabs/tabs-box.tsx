@@ -7,16 +7,15 @@ import { DialogProvider } from "./components/Dialog/DialogContext"
 import Header from "./components/Header"
 import { ProviderWithReducer } from "./components/reducers/reducer"
 import SideBar from "./components/SideBar"
+import ToastContainer from "./components/Toast"
 import { getAllCollections } from "./store"
 import { HistoryProvider } from "./utils/operationStack"
 import { getAllWindows } from "./utils/platform"
-import { Tst } from "./components/tst"
 
 const TabsBoxPage = () => {
   const [loading, setLoading] = useState(true)
   const [windows, setWindows] = useState([])
   const [collections, setCollections] = useState([])
-  const [current, setCurrent] = useState(null)
 
   // get all tabs info
   const getTabs = async () => {
@@ -73,6 +72,7 @@ const TabsBoxPage = () => {
               <Content></Content>
             </main>
           </div>
+          <ToastContainer></ToastContainer>
         </DialogProvider>
       </HistoryProvider>
     </ProviderWithReducer>

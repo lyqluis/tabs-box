@@ -1,9 +1,5 @@
 import { fromNow } from "~tabs/utils"
-import {
-  closeWindow,
-  CURRENT_WINDOW,
-  openWindow
-} from "~tabs/utils/platform"
+import { closeWindow, CURRENT_WINDOW, openWindow } from "~tabs/utils/platform"
 import { useRefresh } from "~tabs/utils/useRefresh"
 
 import { useGlobalCtx } from "./context"
@@ -12,7 +8,7 @@ import { List } from "./list"
 import {
   removeCollection,
   setCollectionWithLocalStorage,
-  setCurrent,
+  setCurrentId,
   updateEditedList
 } from "./reducers/actions"
 import TitleInput from "./TitleInput"
@@ -31,11 +27,15 @@ const ContentLayout = ({ selectedItem, children }) => {
   const saveCollection = () => {
     dispatch(setCollectionWithLocalStorage(selectedItem))
   }
-  const openCollection = () => {
+  const openCollection = async () => {
     const { windows } = selectedItem
-    windows && windows.map((window) => openWindow(window))
-    // TODO set current
-    dispatch(setCurrent(windows[windows.length - 1]))
+    let newWindowId
+    windows &&
+      (await windows.map(
+        async (window) => (newWindowId = await openWindow(window))
+      ))
+    // TODO can't get new window id right now
+    dispatch(setCurrentId(newWindowId))
   }
   const editCollection = () => {
     // dispatch(setCollectionWithLocalStorage(collection))
