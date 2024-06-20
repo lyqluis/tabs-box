@@ -1,6 +1,7 @@
 import { fromNow } from "~tabs/utils"
 import { closeWindow, CURRENT_WINDOW, openWindow } from "~tabs/utils/platform"
 import { useRefresh } from "~tabs/utils/useRefresh"
+import { formatedWindow } from "~tabs/utils/window"
 
 import { useGlobalCtx } from "./context"
 import { useDialog } from "./Dialog/DialogContext"
@@ -15,7 +16,7 @@ import TitleInput from "./TitleInput"
 
 const ContentLayout = ({ selectedItem, children }) => {
   const {
-    state: { windows, selectedList },
+    state: { windows, selectedList, collections },
     dispatch
   } = useGlobalCtx()
   const { openDialog } = useDialog()
@@ -24,8 +25,15 @@ const ContentLayout = ({ selectedItem, children }) => {
     type === "collection"
       ? selectedItem.windows.reduce((n, window) => (n += window.tabs.length), 0)
       : selectedItem.tabs.length
-  const saveCollection = () => {
-    dispatch(setCollectionWithLocalStorage(selectedItem))
+  const saveCollection = (collection?) => {
+    if (collection) {
+      // save window to existed collection
+      const existedWindows = collection.windows
+      collection.windows = [...existedWindows, formatedWindow(selectedItem)]
+    }
+    // save window as new collection
+    collection = collection ?? formatedWindow(selectedItem)
+    dispatch(setCollectionWithLocalStorage(collection))
   }
   const openCollection = async () => {
     const { windows } = selectedItem
@@ -36,9 +44,6 @@ const ContentLayout = ({ selectedItem, children }) => {
       ))
     // TODO can't get new window id right now
     dispatch(setCurrentId(newWindowId))
-  }
-  const editCollection = () => {
-    // dispatch(setCollectionWithLocalStorage(collection))
   }
   const deleteCollection = () => {
     openDialog({
@@ -70,7 +75,7 @@ const ContentLayout = ({ selectedItem, children }) => {
   const { RefreshBtn } = useRefresh()
 
   return (
-    <div className="flex flex-col overflow-hidden">
+    <div className="flex flex-auto flex-col overflow-hidden">
       <div className="flex-none">
         <div className="title-container flex items-center">
           <div className="avatar placeholder flex-none shrink-0 grow-0">
@@ -112,20 +117,34 @@ const ContentLayout = ({ selectedItem, children }) => {
           </button>
         ) : (
           // save
-          <button
-            className="btn btn-outline btn-primary p-2"
-            onClick={saveCollection}
-          >
-            save to collection
-          </button>
+          <div className="join">
+            <button
+              className="btn btn-outline btn-primary join-item p-2"
+              onClick={() => saveCollection()}
+            >
+              save as new collection
+            </button>
+            <div className="dropdown">
+              <div
+                tabIndex={0}
+                role="button"
+                className="btn btn-outline btn-primary join-item p-2"
+              >
+                save to collection
+              </div>
+              <ul
+                tabIndex={0}
+                className="menu dropdown-content z-[1] max-h-[350%] flex-col flex-nowrap overflow-y-scroll rounded-box bg-base-100 p-2 shadow"
+              >
+                {collections.map((collection) => (
+                  <li onClick={() => saveCollection(collection)}>
+                    <a>{collection.title}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         )}
-        {/* // TODO only shows when selectedItem is collection */}
-        <button
-          className="btn btn-outline btn-primary p-2"
-          onClick={editCollection}
-        >
-          edit title
-        </button>
         {/* delete */}
         <button
           className="btn btn-outline btn-primary p-2"

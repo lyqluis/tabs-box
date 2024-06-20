@@ -26,9 +26,10 @@
   - [x] open collection feature
   - [-] selected feature
     - [x] select all
-    - [ ] click outside list, cancel all selected
     - delete selected from window
-  - [ ] delete selected from collection
+    - [x] delete selected from collection
+    - [ ] click outside list, cancel all selected
+    - [-] collection with multi windows works wrong
   - [-] bugs:
     - [x] new tab can not be detected in reducer when deleted
 - [-] feature: open url/window/collection
@@ -43,12 +44,13 @@
     - when window/collection edited, apply/save button should change to a red/eye-catching color to remind users to click
   - [x] window's apply feature
   - [x] collection's save feature
+    - [x] multi windows save in one collection
 - [x] Dialog Box
   - create a global `Dialog`, use `useReducer` to store Dialog state
   - use gobal context `DialogProvider` to provide `openDialog` and `closeDialog` methods to other component
   - `useDialog` hook provides a custom hook that allows any child component to conveniently access the dialog control methods.
   - by passing different content components through the `openDialog` method, dynamic changes of the dialog content are achieved
-- [-] notification feature
+- [x] notification feature
   - 1. use `useImperativeHandle` hook to expose taost api to the outside (https://juejin.cn/post/7330602636935561255)
   ```tsx
   // toast object to export api to outside

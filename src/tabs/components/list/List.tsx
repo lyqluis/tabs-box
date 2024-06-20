@@ -168,7 +168,7 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
           return (
             <ListItem
               tab={tab}
-              key={`${tab.url}-${i}`}
+              key={`${window.id}-${tab.url}-${i}`}
               checked={selectedList.includes(tab)}
               onSelect={onSelect}
             ></ListItem>
