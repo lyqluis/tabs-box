@@ -33,7 +33,7 @@
     - [x] new tab can not be detected in reducer when deleted
 - [-] feature: open url/window/collection
   - [x] open colleciton in new window
-  - [ ] open one tab / tabs selected
+  - [x] open one tab / tabs selected
   - [ ] open one window / windows selected
 - [x] feature: real-time monitoring of the tabs/windows while staying on the app page
   - on tab crated, updated, removed, moved

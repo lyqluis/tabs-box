@@ -97,12 +97,23 @@ export const applyWindow = async (window) => {
   creates.length && creates.map((tab) => chrome.tabs.create({ ...tab }))
 }
 
-const pinTabs = async (id: number | number[]) => {
-  if (Array.isArray(id)) {
-    id.map((id) => {})
+export const openTabs = (tabs) => {
+  if (Array.isArray(tabs)) {
+    tabs.map((tab) => {
+      chrome.tabs.create({
+        url: tab.url,
+        pinned: tab.pinned,
+        active: false
+      })
+    })
     return
   }
-  const tab = await chrome.tabs.get(id)
+  const tab = tabs
+  chrome.tabs.create({
+    url: tab.url,
+    pinned: tab.pinned,
+    active: false
+  })
 }
 
 const compareTabs = (oldTabs, tabs) => {
