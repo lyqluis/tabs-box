@@ -1,4 +1,4 @@
-import { memo, useEffect } from "react"
+import { useEffect } from "react"
 
 import { useGlobalCtx } from "~tabs/components/context"
 import {
@@ -57,8 +57,7 @@ export const useRefresh = () => {
   const getData = async () => {
     const windows = await getAllTabs()
     const collections = await getCollections()
-    resetCurrent(windows, collections)
-    dispatch(updateEditedList('clear_all'))
+    dispatch(updateEditedList("clear_all"))
   }
 
   useEffect(() => {
