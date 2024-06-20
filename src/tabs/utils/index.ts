@@ -3,8 +3,6 @@ import relativeTime from "dayjs/plugin/relativeTime"
 import { useEffect, useRef } from "react"
 import { v4 as uuid } from "uuid"
 
-import { localSaveCollection } from "~tabs/store"
-
 export const generateId = () => {
   return uuid()
 }
