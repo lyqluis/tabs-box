@@ -45,6 +45,7 @@
   - [x] window's apply feature
   - [x] collection's save feature
     - [x] multi windows save in one collection
+  - [-] bugs: can't close duplicated tabs in window
 - [x] Dialog Box
   - create a global `Dialog`, use `useReducer` to store Dialog state
   - use gobal context `DialogProvider` to provide `openDialog` and `closeDialog` methods to other component
