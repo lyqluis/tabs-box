@@ -1,5 +1,9 @@
 import { generateId } from "."
 
 export const formatedWindow = (window) => {
-  return {...window, id: generateId()}
+  const innerWindowId = generateId()
+  const newTabs = window.tabs.map((tab) => {
+    return {...tab, windowId: innerWindowId}
+  })
+  return { ...window, tabs: newTabs, id: innerWindowId }
 }

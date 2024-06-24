@@ -29,8 +29,8 @@
     - delete selected from window
     - [x] delete selected from collection
     - [ ] click outside list, cancel all selected
-    - [-] collection with multi windows works wrong
-  - [-] bugs:
+    - [-] collection with multi windows works wrong, select tabs in one window, another window of collections' shows select box as well
+  - [ ] bugs:
     - [x] new tab can not be detected in reducer when deleted
 - [-] feature: open url/window/collection
   - [x] open colleciton in new window
@@ -153,6 +153,12 @@
 - [-] restore feature
   - [ ] save last save (only useful to collections)
   - [?] any operations of the list should be push into history stack
+
+### component
+- list => window
+  - select list
+  - list operations
+  - list item => window's tab
 
 ### data save
 
