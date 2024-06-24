@@ -23,23 +23,33 @@ export const updateCollection = (collection) => {
 }
 
 export const compareCollections = (
-  collections1: Collection[], // formated
-  collections2: Collection[]
+  collections1: Collection[], // formated collections imported
+  collections2: Collection[] // collection from recuder
 ) => {
   console.log("compare", collections1, collections2)
 
+  // ?? no necessary
   collections1.sort((a, b) => a.created - b.created)
   collections2.sort((a, b) => a.created - b.created)
 
   const mergedCollections = collections1.concat(collections2)
-  const res = mergedCollections.reduce((acc, current) => {
-    const existed = acc[current.id]
+  const res = mergedCollections.reduce((map, collection) => {
+    const existed = map[collection.id]
     if (!existed) {
-      acc[current.id] = current
-    } else if (current.updated > existed.updated) {
-      acc[current.id] = current
+      map[collection.id] = collection
+    } else if (collection.updated > existed.updated) {
+      map[collection.id] = collection
     }
-    return acc
+    // handle collection's windows' tabs' windowId
+    const resCollection = map[collection.id]
+    resCollection.windows = resCollection.windows.map((window) => {
+      window.tabs = window.tabs.map((tab) => {
+        tab.windowId = window.id
+        return tab
+      })
+      return window
+    })
+    return map
   }, {})
 
   return Object.values(res)
@@ -76,7 +86,11 @@ const formatJSON = (data): Collection[] => {
     // collection.folders => colltion.windows
     collection.windows = collection.folders.map((window) => {
       // window.links => window.tabs
-      window.tabs = window.links
+      // add window.tabs.windowId
+      window.tabs = window.links.map((link) => {
+        link.windowId = window.id
+        return link
+      })
       delete window.links
       return window
     })
