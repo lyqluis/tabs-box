@@ -116,13 +116,14 @@ export const openTabs = (tabs) => {
   })
 }
 
+// TODO
 const compareTabs = (oldTabs, tabs) => {
   let i = 0
   const removes: number[] = []
   const moves = []
   while (i < oldTabs.length) {
     const oldTab = oldTabs[i++]
-    const tabIndex = tabs.findIndex((t) => t.url === oldTab.url)
+    const tabIndex = tabs.findIndex((t) => t.url === oldTab.url && !t.compared)
     const tab = tabs[tabIndex]
     if (tabIndex > -1) {
       if (oldTab.index !== tabIndex) {
