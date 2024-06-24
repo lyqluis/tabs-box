@@ -55,6 +55,11 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
   }
 
   const allCheckBox = useRef(null)
+  // const hasSelectedItem = selectedList.some((tab) => tab.windowId === window.id)
+  const selectedItemCount = selectedList.reduce((acc, tab) => {
+    if (tab.windowId === window.id) acc++
+    return acc
+  }, 0)
   const selectAll = (e) => {
     console.log("select all")
     const selectedCount = selectedList.length
@@ -134,25 +139,27 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
   return (
     <div className="relative text-clip p-5">
       <div className="sticky top-0 mb-4 mt-4 flex h-5 items-center justify-start pl-5">
-        {selectedList.length > 0 && (
+        {selectedItemCount > 0 && (
           <label className="label mr-3 cursor-pointer">
             <input
               ref={allCheckBox}
               type="checkbox"
               className="checkbox-primary checkbox checkbox-sm"
-              checked={selectedList.length === window.tabs.length}
+              checked={selectedItemCount === window.tabs.length}
               onChange={selectAll}
             />
           </label>
         )}
         Window: {window.id}
-        {selectedList.length > 0 && (
+        {selectedItemCount > 0 && (
           <div className="btn-wrapper ml-auto flex">
-            <button className="btn btn-xs m-1" onClick={openSelected}>
-              open selected
-            </button>
+            {type === "collection" && (
+              <button className="btn btn-xs m-1" onClick={openSelected}>
+                open selected
+              </button>
+            )}
             <button className="btn btn-xs m-1" onClick={deleteSelected}>
-              remove selected
+              {type === "collection" ? "remove selected" : "close selected"}
             </button>
           </div>
         )}
