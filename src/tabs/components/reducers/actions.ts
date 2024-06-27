@@ -8,7 +8,6 @@ export const SET_COLLECTION_WITH_LOCAL_STORAGE =
 export const REMOVE_COLLECTION = "REMOVE_COLLECTION"
 export const SET_CURRENT = "SET_CURRENT"
 export const SET_CURRENT_ID = "SET_CURRENT_ID"
-export const SET_SELECTED_LIST = "SET_SELECTED_LIST"
 export const IMPORT_DATA = "IMPORT_DATA"
 export const EXPORT_DATA = "EXPORT_DATA"
 export const ADD_TAB = "ADD_TAB"
@@ -47,10 +46,6 @@ export const setCurrentId = (id: number | string) => ({
 export const setCurrent = (collection: Collection | chrome.windows.Window) => ({
   type: SET_CURRENT,
   payload: collection
-})
-export const setSelectedList = (list) => ({
-  type: SET_SELECTED_LIST,
-  payload: list
 })
 export const addTab = (tab) => ({ type: ADD_TAB, payload: tab })
 export const updateTab = (tab) => ({ type: UPDATE_TAB, payload: tab })

@@ -1,11 +1,11 @@
-import { useEffect, useRef } from "react"
+import { useRef } from "react"
 import Pinned from "react:~assets/svg/pin.svg"
 
 import { fromNow, shortURL } from "~tabs/utils"
 import { useTabEvents, useWindowEvents } from "~tabs/utils/platform"
 
 import { useGlobalCtx } from "./context"
-import { setCurrentId, setSelectedList } from "./reducers/actions"
+import { setCurrentId } from "./reducers/actions"
 
 const SideBar = ({}) => {
   const init = useRef(false)
@@ -18,7 +18,6 @@ const SideBar = ({}) => {
       // windowOrCollection = window
     }
     dispatch(setCurrentId(windowOrCollection.id))
-    dispatch(setSelectedList([]))
   }
   const {
     state: { windows, collections, current },

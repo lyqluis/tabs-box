@@ -1,17 +1,13 @@
 import { useEffect, useRef, useState } from "react"
 import { ReactSortable } from "react-sortablejs"
 
+import useSeletedList from "~tabs/hooks/useSelect"
 import { openTabs } from "~tabs/utils/platform"
 
 import { ListItem } from "."
 import { useGlobalCtx } from "../context"
 import { useDialog } from "../Dialog/DialogContext"
-import {
-  removeTab,
-  setCollection,
-  setSelectedList,
-  setWindow
-} from "../reducers/actions"
+import { removeTab, setCollection, setWindow } from "../reducers/actions"
 
 const listIndexShift = (arr, from, to) => {
   const direction = from < to ? 1 : -1
@@ -35,9 +31,10 @@ interface ListProps {
 const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
   const [tabs, setTabs] = useState(window?.tabs ?? [])
   const {
-    state: { current, selectedList },
+    state: { current },
     dispatch
   } = useGlobalCtx()
+  const { selectedList, setSelectedList } = useSeletedList(current.id)
   const { openDialog } = useDialog()
 
   console.log("List Component refreshed, props-window", window, tabs)
@@ -47,10 +44,10 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
       // add
       const existed = selectedList.find((t) => t.url === tab.url)
       if (existed) return
-      dispatch(setSelectedList([...selectedList, tab]))
+      setSelectedList([...selectedList, tab])
     } else {
       // remove
-      dispatch(setSelectedList(selectedList.filter((t) => t.url !== tab.url)))
+      setSelectedList(selectedList.filter((t) => t.url !== tab.url))
     }
   }
 
@@ -65,15 +62,15 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
     const selectedCount = selectedList.length
     if (selectedCount === window.tabs.length) {
       // remove all
-      dispatch(setSelectedList([]))
+      setSelectedList([])
     } else {
       // select all
-      dispatch(setSelectedList([...window.tabs]))
+      setSelectedList([...window.tabs])
     }
   }
   const openSelected = () => {
     openTabs(selectedList)
-    dispatch(setSelectedList([]))
+    setSelectedList([])
   }
   const deleteSelected = () => {
     if (type === "collection") {
@@ -95,7 +92,7 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
       selectedList.map((tab) => dispatch(removeTab(tab.id, tab.windowId)))
     }
     // TODO type is window/collection.window
-    dispatch(setSelectedList([]))
+    setSelectedList([])
     dispatchEdit(true)
   }
 
