@@ -42,10 +42,11 @@
 - [-] feature: apply/save changes to windows/local
   - [x] apply/save button
     - when window/collection edited, apply/save button should change to a red/eye-catching color to remind users to click
+    - [?] when save/apply, check if the collection/window is empty
   - [x] window's apply feature
   - [x] collection's save feature
     - [x] multi windows save in one collection
-  - [-] bugs: can't close duplicated tabs in window
+  - [x] bugs: can't close duplicated tabs in window
 - [x] Dialog Box
   - create a global `Dialog`, use `useReducer` to store Dialog state
   - use gobal context `DialogProvider` to provide `openDialog` and `closeDialog` methods to other component
@@ -132,7 +133,7 @@
   ```
   - 2. use `useSyncExternalStore` to subscribe to an external store and message list (https://juejin.cn/post/7223705034412802107#heading-10)
   - [ ] bugs
-    - [-] transition animations for conditional rendering
+    - [x] transition animations for conditional rendering
 - [ ] search feature
 - [x] export & import feature
   - [x] data foramt

@@ -1,7 +1,7 @@
+import { useRefresh } from "~tabs/hooks/useRefresh"
 import useSeletedList from "~tabs/hooks/useSelect"
 import { fromNow } from "~tabs/utils"
 import { closeWindow, CURRENT_WINDOW, openWindow } from "~tabs/utils/platform"
-import { useRefresh } from "~tabs/utils/useRefresh"
 import { formatedWindow } from "~tabs/utils/window"
 
 import { useGlobalCtx } from "./context"
@@ -139,7 +139,10 @@ const ContentLayout = ({ selectedItem, children }) => {
                 className="menu dropdown-content z-[1] max-h-[350%] flex-col flex-nowrap overflow-y-scroll rounded-box bg-base-100 p-2 shadow"
               >
                 {collections.map((collection) => (
-                  <li onClick={() => saveCollection(collection)}>
+                  <li
+                    onClick={() => saveCollection(collection)}
+                    key={collection.id}
+                  >
                     <a>{collection.title}</a>
                   </li>
                 ))}

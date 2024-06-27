@@ -5,7 +5,15 @@ import { useDialog } from "./DialogContext"
 const Dialog = forwardRef((props, ref) => {
   const dialogRef = useRef(null)
   const {
-    state: { title, message, confirmText, cancelText, onConfirm, onCancel },
+    state: {
+      title,
+      message,
+      content,
+      confirmText,
+      cancelText,
+      onConfirm,
+      onCancel
+    },
     closeDialog
   } = useDialog()
 
@@ -27,6 +35,7 @@ const Dialog = forwardRef((props, ref) => {
       <div className="modal-box">
         <h3 className="text-lg font-bold">{title}</h3>
         <p className="py-4">{message}</p>
+        {content && <div>{content}</div>}
         <div className="modal-action">
           <form method="dialog">
             {/* if there is a button in form, it will close the modal */}

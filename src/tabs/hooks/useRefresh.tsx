@@ -8,8 +8,7 @@ import {
   updateEditedList
 } from "~tabs/components/reducers/actions"
 import { getAllCollections } from "~tabs/store"
-
-import { getAllWindows } from "./platform"
+import { getAllWindows } from "~tabs/utils/platform"
 
 export const useRefresh = () => {
   const {

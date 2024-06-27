@@ -25,8 +25,9 @@ export const updateCollection = (collection) => {
 export const compareCollections = (
   collections1: Collection[], // formated collections imported
   collections2: Collection[] // collection from recuder
-) => {
+): Collection[] => {
   console.log("compare", collections1, collections2)
+  if (!collections2?.length) return collections1
 
   // ?? no necessary
   collections1.sort((a, b) => a.created - b.created)
@@ -111,7 +112,11 @@ export const exportFile = (data, ext = "json") => {
   link.click()
 }
 
-export const importFile = () => {
+type importFileProps = {
+  // add some callback
+  onFileConfirmed?: () => void
+}
+export const importFile = ({ onFileConfirmed }): Promise<Collection[]> => {
   return new Promise((resolve, reject) => {
     // create a file input
     let input = document.createElement("input")
@@ -119,6 +124,8 @@ export const importFile = () => {
 
     // bind change event
     input.addEventListener("change", (event) => {
+      console.log("📁 on file confirmed")
+      onFileConfirmed && onFileConfirmed()
       const files = event.target.files
       if (!files || !files.length) {
         input = null
@@ -133,6 +140,7 @@ export const importFile = () => {
           console.log("import data:", data)
           // formate parse data
           const formatedData = formatJSON(data)
+          console.log("📁 resolve file data")
           resolve(formatedData)
         } catch (e) {
           reject(e)
