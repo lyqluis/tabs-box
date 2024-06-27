@@ -1,3 +1,4 @@
+import useSeletedList from "~tabs/hooks/useSelect"
 import { fromNow } from "~tabs/utils"
 import { closeWindow, CURRENT_WINDOW, openWindow } from "~tabs/utils/platform"
 import { useRefresh } from "~tabs/utils/useRefresh"
@@ -16,9 +17,10 @@ import TitleInput from "./TitleInput"
 
 const ContentLayout = ({ selectedItem, children }) => {
   const {
-    state: { windows, selectedList, collections },
+    state: { windows, collections },
     dispatch
   } = useGlobalCtx()
+  const { selectedList } = useSeletedList(selectedItem.id)
   const { openDialog } = useDialog()
   const type = selectedItem.created ? "collection" : "window"
   const allTabsNumber =

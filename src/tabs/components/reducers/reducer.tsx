@@ -21,7 +21,6 @@ import {
   SET_COLLECTIONS,
   SET_CURRENT,
   SET_CURRENT_ID,
-  SET_SELECTED_LIST,
   SET_WINDOW,
   SET_WINDOWS,
   setCollections,
@@ -113,19 +112,13 @@ const reducer = (state, action) => {
     }
     case REMOVE_COLLECTION: {
       const target = action.payload
-      const newCollections = state.collections.filter(
-        (c) => c.id !== target.id
-      )
+      const newCollections = state.collections.filter((c) => c.id !== target.id)
       // set to local store
       localRemoveCollection(target)
       return {
         ...state,
-        collections: newCollections,
+        collections: newCollections
       }
-    }
-    case SET_SELECTED_LIST: {
-      const newList = action.payload
-      return { ...state, selectedList: newList }
     }
     case EXPORT_DATA: {
       const { collections } = state
