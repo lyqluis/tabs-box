@@ -1,23 +1,45 @@
-import { useState } from "react"
+import { useEffect, useState, type ReactNode } from "react"
 
-const LoadingBtn = ({
+type LoadingBtnProps = {
+  onClick: () => void
+  loadingTime?: number // 与 loadingFlag 二选一
+  loadingFlag?: boolean
+  children: ReactNode
+  className?: string
+  disabled?: boolean // ?
+}
+
+const LoadingBtn: React.FC<LoadingBtnProps> = ({
   onClick,
-  loadingTime = 2000,
+  loadingTime,
+  loadingFlag,
   children,
   className = "btn btn-outline btn-primary p-2",
   disabled = false // ?
 }) => {
+  // TODO loading by time / loading by custom flag
   const [loading, setLoading] = useState(false)
   const [innerDisabled, setInnerDisabled] = useState(false)
   const handleClick = () => {
-    setLoading(true)
-    setInnerDisabled(true)
-    setTimeout(() => {
-      setInnerDisabled(false)
-      setLoading(false)
-    }, loadingTime)
+    if (loadingTime || loadingFlag) {
+      setLoading(true)
+      setInnerDisabled(true)
+
+      loadingTime &&
+        setTimeout(() => {
+          setInnerDisabled(false)
+          setLoading(false)
+        }, loadingTime)
+    }
     onClick && onClick()
   }
+
+  useEffect(() => {
+    if (!loadingFlag) {
+      setLoading(loadingFlag)
+      setInnerDisabled(loadingFlag)
+    }
+  }, [loadingFlag])
 
   return (
     <button

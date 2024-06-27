@@ -8,7 +8,6 @@ export const SET_COLLECTION_WITH_LOCAL_STORAGE =
 export const REMOVE_COLLECTION = "REMOVE_COLLECTION"
 export const SET_CURRENT = "SET_CURRENT"
 export const SET_CURRENT_ID = "SET_CURRENT_ID"
-export const IMPORT_DATA = "IMPORT_DATA"
 export const EXPORT_DATA = "EXPORT_DATA"
 export const ADD_TAB = "ADD_TAB"
 export const REMOVE_TAB = "REMOVE_TAB"
@@ -64,8 +63,4 @@ export const updateEditedList = (editedData) => ({
   payload: editedData
 })
 
-export const importData = (data) => ({
-  type: IMPORT_DATA,
-  payload: data
-})
 export const exportData = () => ({ type: EXPORT_DATA })

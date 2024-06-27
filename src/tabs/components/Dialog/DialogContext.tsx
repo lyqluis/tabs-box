@@ -6,11 +6,13 @@ const DialogContext = createContext(null)
 
 const OPEN_DIALOG = "OPEN_DIALOG"
 const CLOSE_DIALOG = "CLOSE_DIALOG"
+const SET_DIALOG = "SET_DIALOG"
 
 const dialogState = {
   isOpen: false,
   title: "Dialog Box",
   message: "",
+  content: null,
   confirmText: "Confirm",
   cancelText: "Cancel",
   onConfirm: null, // () => void 0
@@ -24,6 +26,8 @@ const dialogReducer = (state, action) => {
       return { ...state, isOpen: true, ...action.payload }
     case CLOSE_DIALOG:
       return { ...state, ...dialogState }
+    case SET_DIALOG:
+      return { ...state, ...action.payload }
     default:
       return state
   }
@@ -36,20 +40,25 @@ export const DialogProvider = ({ children }) => {
   const openDialog = ({
     message,
     title,
+    content,
     onConfirm,
     confirmText = "Confirm",
     cancelText = "Cancel"
   }) => {
     dispatch({
       type: OPEN_DIALOG,
-      payload: { message, title, onConfirm, confirmText, cancelText }
+      payload: { message, title, content, onConfirm, confirmText, cancelText }
     })
     dialogRef.current.showModal()
   }
   const closeDialog = () => dispatch({ type: OPEN_DIALOG })
+  const setDialog = (dialogState) =>
+    dispatch({ type: SET_DIALOG, payload: dialogState })
 
   return (
-    <DialogContext.Provider value={{ state, openDialog, closeDialog }}>
+    <DialogContext.Provider
+      value={{ state, openDialog, setDialog, closeDialog }}
+    >
       {children}
       <Dialog ref={dialogRef}></Dialog>
     </DialogContext.Provider>

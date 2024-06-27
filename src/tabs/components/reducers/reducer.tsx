@@ -4,7 +4,6 @@ import { localRemoveCollection, localSaveCollection } from "~tabs/store"
 
 import { Provider } from "../context"
 import {
-  compareCollections,
   createCollection,
   exportFile,
   generateData,
@@ -13,7 +12,6 @@ import {
 import {
   ADD_TAB,
   EXPORT_DATA,
-  IMPORT_DATA,
   REMOVE_COLLECTION,
   REMOVE_TAB,
   SET_COLLECTION,
@@ -127,21 +125,6 @@ const reducer = (state, action) => {
       // export
       exportFile(data)
       return state
-    }
-    case IMPORT_DATA: {
-      const data = action.payload
-      if (data) {
-        // compare new data and old one
-        const importCollections = data
-        const collections = state.collections
-        const newCollections = compareCollections(
-          importCollections,
-          collections
-        )
-        // local save
-        newCollections.map((collection) => localSaveCollection(collection))
-        return { ...state, collections: newCollections }
-      }
     }
     case ADD_TAB: {
       const tab = action.payload
