@@ -17,11 +17,10 @@ const LoadingBtn: React.FC<LoadingBtnProps> = ({
   className = "btn btn-outline btn-primary p-2",
   disabled = false // ?
 }) => {
-  // TODO loading by time / loading by custom flag
   const [loading, setLoading] = useState(false)
   const [innerDisabled, setInnerDisabled] = useState(false)
   const handleClick = () => {
-    if (loadingTime || loadingFlag) {
+    if (loadingTime !== undefined || loadingFlag !== undefined) {
       setLoading(true)
       setInnerDisabled(true)
 
