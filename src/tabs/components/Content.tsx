@@ -136,7 +136,7 @@ const ContentLayout = ({ selectedItem, children }) => {
               </div>
               <ul
                 tabIndex={0}
-                className="menu dropdown-content z-[1] max-h-[350%] flex-col flex-nowrap overflow-y-scroll rounded-box bg-base-100 p-2 shadow"
+                className="max-h-[calc(100vh / 2)] menu dropdown-content z-[1] flex-col flex-nowrap overflow-y-scroll rounded-box bg-base-100 p-2 shadow"
               >
                 {collections.map((collection) => (
                   <li
@@ -167,7 +167,7 @@ const ContentLayout = ({ selectedItem, children }) => {
 
 const Content = ({}) => {
   const {
-    state: { current, windows, collections },
+    state: { current },
     dispatch
   } = useGlobalCtx()
 
