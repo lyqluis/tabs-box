@@ -29,7 +29,12 @@ interface ListProps {
 
 // TODO any operation on the list should be push into history stack
 const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
-  const [tabs, setTabs] = useState(window?.tabs ?? [])
+  const [pinnedTabs, setPinnedTabs] = useState(
+    window?.tabs?.filter((tab) => tab.pinned) ?? []
+  )
+  const [tabs, setTabs] = useState(
+    window?.tabs?.filter((tab) => !tab.pinned) ?? []
+  )
   const {
     state: { current },
     dispatch
@@ -69,6 +74,7 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
     }
   }
   const openSelected = () => {
+    // TODO if select a window, open a new window
     openTabs(selectedList)
     setSelectedList([])
   }
@@ -107,7 +113,8 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
   }, [selectedList])
 
   useEffect(() => {
-    setTabs(window.tabs)
+    setPinnedTabs(window?.tabs?.filter((tab) => tab.pinned))
+    setTabs(window?.tabs?.filter((tab) => !tab.pinned))
   }, [window])
 
   // update tabs to the reducer
@@ -115,8 +122,8 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
     // old index -> new index
     const { oldIndex, newIndex } = e
     listIndexShift(tabs, oldIndex, newIndex)
-    const newWindow = { ...window, tabs: tabs }
-    if (current.created) {
+    const newWindow = { ...window, tabs: [...pinnedTabs, ...tabs] }
+    if (type === 'collection') {
       // current is collection
       const insertIdx = current.windows.findIndex((w) => w.id === newWindow.id)
       if (insertIdx > -1) {
@@ -131,10 +138,11 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
     dispatchEdit(true)
   }
 
-  if (!tabs || !tabs.length) return
+  if ((!pinnedTabs || !pinnedTabs.length) && (!tabs || !tabs.length)) return
 
   return (
     <div className="relative text-clip p-5">
+      {/* list operation */}
       <div className="sticky top-0 mb-4 mt-4 flex h-5 items-center justify-start pl-5">
         {selectedItemCount > 0 && (
           <label className="label mr-3 cursor-pointer">
@@ -161,6 +169,25 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
           </div>
         )}
       </div>
+      {/* pinned tabs */}
+      <ReactSortable
+        tag="ul"
+        list={pinnedTabs}
+        setList={setPinnedTabs}
+        disabled={true}
+      >
+        {pinnedTabs.map((tab, i) => {
+          return (
+            <ListItem
+              tab={tab}
+              key={`${window.id}-${tab.url}-${i}`}
+              checked={selectedList.includes(tab)}
+              onSelect={onSelect}
+            ></ListItem>
+          )
+        })}
+      </ReactSortable>
+      {/* rest tabs */}
       <ReactSortable
         tag="ul"
         list={tabs}
