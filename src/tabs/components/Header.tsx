@@ -1,15 +1,11 @@
-import { useEffect, useRef, useState } from "react"
-
 import useImport from "~tabs/hooks/useImport"
 import { applyWindow } from "~tabs/utils/platform"
 
 import { useGlobalCtx } from "./context"
-import { importFile } from "./data"
 import { useDialog } from "./Dialog/DialogContext"
 import LoadingBtn from "./LoadingBtn"
 import {
   exportData,
-  importData,
   removeCollection,
   setCollectionWithLocalStorage,
   updateEditedList
@@ -21,33 +17,13 @@ const Header = () => {
     state: { current, editedMap },
     dispatch
   } = useGlobalCtx()
-  const { openDialog, setDialog } = useDialog()
+  const { openDialog } = useDialog()
   const { importData, isImporting } = useImport()
-
-  // const [flag, setFlag] = useState(false)
-  // useEffect(() => {
-  //   console.log("useEffect, flag", flag)
-  //   if (flag) {
-  //     setDialog({ content: <span>asdfasdga</span> })
-  //   }
-  // }, [flag])
 
   if (!current) return null
 
   const type = current?.created ? "collection" : "window"
   const exportJSON = () => dispatch(exportData())
-
-  // const importJSON = async () => {
-  //   const data = await importFile({
-  //     onFileConfirmed: () => {
-  //       openDialog({
-  //         message: "processing",
-  //         content: <span className="loading loading-spinner loading-lg"></span>
-  //       })
-  //     }
-  //   })
-  //   dispatch(importData(data))
-  // }
 
   const apply = () => {
     applyWindow(current)
