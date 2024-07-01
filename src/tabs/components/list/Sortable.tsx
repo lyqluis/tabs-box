@@ -19,7 +19,7 @@ import { useRef, useState } from "react"
 import useSeletedList from "~tabs/hooks/useSelect"
 
 // Dnd Context
-export const Tst = ({ list, setList, children }) => {
+export const Sortable = ({ list, setList, children }) => {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {

@@ -8,6 +8,9 @@ import { ListItem } from "."
 import { useGlobalCtx } from "../context"
 import { useDialog } from "../Dialog/DialogContext"
 import { removeTab, setCollection, setWindow } from "../reducers/actions"
+import { Tst } from "../tst"
+
+// import ReactSortable from "./sortable"
 
 const listIndexShift = (arr, from, to) => {
   const direction = from < to ? 1 : -1
@@ -123,7 +126,7 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
     const { oldIndex, newIndex } = e
     listIndexShift(tabs, oldIndex, newIndex)
     const newWindow = { ...window, tabs: [...pinnedTabs, ...tabs] }
-    if (type === 'collection') {
+    if (type === "collection") {
       // current is collection
       const insertIdx = current.windows.findIndex((w) => w.id === newWindow.id)
       if (insertIdx > -1) {
@@ -170,8 +173,8 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
         )}
       </div>
       {/* pinned tabs */}
-      <ReactSortable
-        tag="ul"
+      {/* <ReactSortable
+        tag="ul"gi
         list={pinnedTabs}
         setList={setPinnedTabs}
         disabled={true}
@@ -186,10 +189,11 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
             ></ListItem>
           )
         })}
-      </ReactSortable>
+      </ReactSortable> */}
       {/* rest tabs */}
-      <ReactSortable
+      {/* <ReactSortable
         tag="ul"
+        multiDrag
         list={tabs}
         setList={setTabs}
         handle=".list-item__handle"
@@ -205,7 +209,9 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
             ></ListItem>
           )
         })}
-      </ReactSortable>
+      </ReactSortable> */}
+      <p>tst list</p>
+      <Tst></Tst>
     </div>
   )
 }
