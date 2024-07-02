@@ -8,7 +8,7 @@ import { ListItem } from "."
 import { useGlobalCtx } from "../context"
 import { useDialog } from "../Dialog/DialogContext"
 import { removeTab, setCollection, setWindow } from "../reducers/actions"
-import { Tst } from "../tst"
+import { Sortable } from "./Sortable"
 
 // import ReactSortable from "./sortable"
 
@@ -121,16 +121,15 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
   }, [window])
 
   // update tabs to the reducer
-  const onSortEnd = (e) => {
-    // old index -> new index
-    const { oldIndex, newIndex } = e
-    listIndexShift(tabs, oldIndex, newIndex)
+  const onSortEnd = (tabs) => {
+    // param is newest list from sortable, since can't get newest list at the moment
+    // console.log("on sort end", tabs)
     const newWindow = { ...window, tabs: [...pinnedTabs, ...tabs] }
     if (type === "collection") {
       // current is collection
       const insertIdx = current.windows.findIndex((w) => w.id === newWindow.id)
       if (insertIdx > -1) {
-        // create new collection
+        // update existed collection's windows
         current.windows.splice(insertIdx, 1, newWindow)
         dispatch(setCollection(current))
       }
@@ -173,31 +172,22 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
         )}
       </div>
       {/* pinned tabs */}
-      {/* <ReactSortable
-        tag="ul"gi
-        list={pinnedTabs}
-        setList={setPinnedTabs}
-        disabled={true}
-      >
-        {pinnedTabs.map((tab, i) => {
-          return (
-            <ListItem
-              tab={tab}
-              key={`${window.id}-${tab.url}-${i}`}
-              checked={selectedList.includes(tab)}
-              onSelect={onSelect}
-            ></ListItem>
-          )
-        })}
-      </ReactSortable> */}
-      {/* rest tabs */}
-      {/* <ReactSortable
-        tag="ul"
-        multiDrag
+      {pinnedTabs.map((tab, i) => {
+        return (
+          <ListItem
+            tab={tab}
+            key={`${window.id}-${tab.url}-${i}`}
+            checked={selectedList.includes(tab)}
+            onSelect={onSelect}
+          ></ListItem>
+        )
+      })}
+      {/* sortable tabs */}
+      <Sortable
         list={tabs}
         setList={setTabs}
-        handle=".list-item__handle"
-        onEnd={onSortEnd}
+        multiList={selectedList}
+        onSortEnd={onSortEnd}
       >
         {tabs.map((tab, i) => {
           return (
@@ -209,9 +199,7 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
             ></ListItem>
           )
         })}
-      </ReactSortable> */}
-      <p>tst list</p>
-      <Tst></Tst>
+      </Sortable>
     </div>
   )
 }
