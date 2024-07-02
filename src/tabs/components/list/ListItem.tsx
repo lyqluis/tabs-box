@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import DragableIcon from "react:~assets/svg/dragable.svg"
 import Pinned from "react:~assets/svg/pin.svg"
 
+import { useSortableItem } from "./Sortable"
+
 interface ListItemProps {
   tab: chrome.tabs.Tab
   onSelect?: () => void
@@ -9,7 +11,9 @@ interface ListItemProps {
 
 const ListItem = ({ tab, onSelect, checked }) => {
   // console.log("list item refreshed", tab.title, checked)
-
+  const { attributes, listeners, setNodeRef, style } = useSortableItem({
+    id: tab.id
+  })
   const [isHovered, setIsHovered] = useState(false)
   const [isSelected, setIsSelected] = useState(checked)
 
@@ -27,7 +31,8 @@ const ListItem = ({ tab, onSelect, checked }) => {
 
   return (
     <li
-      style={{ display: "flex" }}
+      ref={setNodeRef}
+      style={style}
       className={`flex flex-nowrap items-center overflow-hidden text-ellipsis whitespace-nowrap align-baseline text-base font-light hover:bg-slate-100
        ${isSelected ? "bg-slate-100" : ""}
       `}
@@ -41,7 +46,9 @@ const ListItem = ({ tab, onSelect, checked }) => {
           <Pinned className={`h-full w-full fill-slate-700`}></Pinned>
         ) : (
           <DragableIcon
-            className={`h-full w-full fill-slate-300 ${isHovered || isSelected ? "flex" : "hidden"}`}
+            className={`h-full w-full fill-slate-300 hover:cursor-grab focus:cursor-grabbing focus:outline-none ${isHovered || isSelected ? "flex" : "hidden"}`}
+            {...attributes}
+            {...listeners}
           ></DragableIcon>
         )}
       </i>
