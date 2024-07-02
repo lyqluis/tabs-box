@@ -8,6 +8,7 @@ import {
   updateEditedList
 } from "~tabs/components/reducers/actions"
 import { getAllCollections } from "~tabs/store"
+import { sortCollections } from "~tabs/utils/collection"
 import { getAllWindows } from "~tabs/utils/platform"
 
 export const useRefresh = () => {
@@ -30,15 +31,10 @@ export const useRefresh = () => {
   const getCollections = async () => {
     try {
       const allCollections = await getAllCollections()
-      // set pinned collection to the first of the list & sort by date
-      const pinnedCollections = allCollections
-        .filter((c) => c.pinned)
-        .sort((a, b) => b.updated - a.updated)
-      const restCollections = allCollections
-        .filter((c) => !c.pinned)
-        .sort((a, b) => b.updated - a.updated)
       console.log("all collectioins from store", allCollections)
-      dispatch(setCollections([...pinnedCollections, ...restCollections]))
+      // set pinned collection to the first of the list & sort by date
+      const sortedCollections = sortCollections(allCollections)
+      dispatch(setCollections(sortedCollections))
       return allCollections
     } catch (err) {
       console.error("Error get collections:", err)
