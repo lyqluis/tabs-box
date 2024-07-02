@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useReducer } from "react"
 
 import { localRemoveCollection, localSaveCollection } from "~tabs/store"
+import { sortCollections } from "~tabs/utils/collection"
 
 import { Provider } from "../context"
 import {
@@ -89,7 +90,7 @@ const reducer = (state, action) => {
       let removeCount = 1
       const newCollections = state.collections.slice()
       if (collection.created) {
-        // set existed collection
+        // update existed collection
         collection = updateCollection(collection)
         insertIdx = state.collections.findIndex(
           (c) => c.created === collection.created
@@ -103,10 +104,16 @@ const reducer = (state, action) => {
         removeCount = 0
       }
       newCollections.splice(insertIdx, removeCount, collection)
+      // sort new collections
+      const sortedCollections = sortCollections(newCollections)
       // set to local store
       localSaveCollection(collection)
       // switch current to the new one
-      return { ...state, collections: newCollections, currentId: collection.id }
+      return {
+        ...state,
+        collections: sortedCollections,
+        currentId: collection.id
+      }
     }
     case REMOVE_COLLECTION: {
       const target = action.payload

@@ -156,7 +156,7 @@
   - [ ] save last save (only useful to collections)
   - [?] any operations of the list should be push into history stack
 - [-] bugs
-  - [ ] update collection should auto update sort in SideBar
+  - [x] update collection should auto update sort in SideBar
 ### component
 - list => window
   - select list
