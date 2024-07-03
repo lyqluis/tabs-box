@@ -80,7 +80,7 @@ const ListItem = ({ tab, onSelect, checked, type }) => {
         className="m-0.5 flex w-6 
       flex-none items-center justify-center"
       >
-        {tab.status === "loading" ? (
+        {type === 'window' && tab.status === "loading" ? (
           <span className="loading loading-spinner loading-sm"></span>
         ) : (
           <img src={tab.favIconUrl} alt="" className="w-4" />
