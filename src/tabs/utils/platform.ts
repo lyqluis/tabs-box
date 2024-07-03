@@ -97,6 +97,10 @@ export const applyWindow = async (window) => {
   creates.length && creates.map((tab) => chrome.tabs.create({ ...tab }))
 }
 
+export const jumptToTab = (tab: chrome.tabs.Tab) => {
+  chrome.tabs.update(tab.id, { active: true })
+}
+
 export const openTabs = (tabs) => {
   if (Array.isArray(tabs)) {
     tabs.map((tab) => {
