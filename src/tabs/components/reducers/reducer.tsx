@@ -151,9 +151,12 @@ const reducer = (state, action) => {
       const windows = state.windows.slice()
       if (tab) {
         const { windowId, index } = tab
-        const window = windows.find((w) => w.id === windowId)
-        if (window) {
+        const windowIndex = windows.findIndex((w) => w.id === windowId)
+        if (windowIndex > -1) {
+          // copy a new window to let List component update
+          const window = { ...windows[windowIndex] }
           window.tabs.splice(index, 1, tab)
+          windows[windowIndex] = window
         }
         return { ...state, windows }
       }
@@ -161,13 +164,15 @@ const reducer = (state, action) => {
     case REMOVE_TAB: {
       console.log("🧠 reducer REMOVE_TAB", action.payload)
       const { tabId, windowId } = action.payload
-      const windows = state.windows
+      const windows = state.windows.slice()
       if (tabId && windowId) {
         const windowIndex = windows.findIndex((w) => w.id === windowId)
         if (windowIndex > -1) {
-          const window = windows[windowIndex]
+          // copy a new window to let List component update
+          const window = { ...windows[windowIndex] }
           const tabIndex = window.tabs.findIndex((t) => t.id === tabId)
           tabIndex > -1 && window.tabs.splice(tabIndex, 1)
+          windows[windowIndex] = window
         }
         return { ...state, windows }
       }
