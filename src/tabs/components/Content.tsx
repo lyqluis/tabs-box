@@ -1,7 +1,12 @@
 import { useRefresh } from "~tabs/hooks/useRefresh"
 import useSeletedList from "~tabs/hooks/useSelect"
 import { fromNow } from "~tabs/utils"
-import { closeWindow, CURRENT_WINDOW, openWindow } from "~tabs/utils/platform"
+import {
+  closeWindow,
+  CURRENT_WINDOW,
+  jumptToWindow,
+  openWindow
+} from "~tabs/utils/platform"
 import { formatedWindow } from "~tabs/utils/window"
 
 import { useGlobalCtx } from "./context"
@@ -27,6 +32,7 @@ const ContentLayout = ({ selectedItem, children }) => {
     type === "collection"
       ? selectedItem.windows.reduce((n, window) => (n += window.tabs.length), 0)
       : selectedItem.tabs.length
+  const isCurrentWindow = selectedItem.id === CURRENT_WINDOW.id
   const saveCollection = (collection?) => {
     if (collection) {
       // save window to existed collection
@@ -92,9 +98,7 @@ const ContentLayout = ({ selectedItem, children }) => {
             <TitleInput
               title={
                 selectedItem.title ??
-                (selectedItem.id === CURRENT_WINDOW.id
-                  ? "This Window"
-                  : "Window")
+                (isCurrentWindow ? "This Window" : "Window")
               }
               disable={type === "window"}
               setTitle={setCollectionTitle}
@@ -108,7 +112,15 @@ const ContentLayout = ({ selectedItem, children }) => {
             </p>
           </div>
         </div>
-
+        {/* go to */}
+        {type === "window" && windows.length > 1 && !isCurrentWindow && (
+          <button
+            className="btn btn-outline btn-primary p-2"
+            onClick={() => jumptToWindow(selectedItem.id)}
+          >
+            go to
+          </button>
+        )}
         {/* open */}
         {type === "collection" ? (
           <button
@@ -155,7 +167,7 @@ const ContentLayout = ({ selectedItem, children }) => {
           className="btn btn-outline btn-primary p-2"
           onClick={deleteWindowOrCollection}
         >
-          delete
+          {type === "window" ? "close" : "delete"}
         </button>
         {/* refresh */}
         <RefreshBtn></RefreshBtn>
