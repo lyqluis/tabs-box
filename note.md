@@ -158,7 +158,7 @@
 - [-] bugs
   - [x] update collection should auto update sort in SideBar
   - [x] click url to open tab in ListItem
-  - [ ] delete tab can not detected
+  - [x] delete tab can not detecte
 ### component
 - list => window
   - select list

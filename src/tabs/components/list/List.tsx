@@ -113,6 +113,8 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
   }, [selectedList])
 
   useEffect(() => {
+    console.log("effect in List, window changes")
+
     setPinnedTabs(window?.tabs?.filter((tab) => tab.pinned))
     setTabs(window?.tabs?.filter((tab) => !tab.pinned))
   }, [window])
