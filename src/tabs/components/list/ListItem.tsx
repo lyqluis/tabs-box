@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import DragableIcon from "react:~assets/svg/dragable.svg"
 import Pinned from "react:~assets/svg/pin.svg"
 
+import { jumptToTab, openTabs } from "~tabs/utils/platform"
+
 import { useSortableItem } from "./Sortable"
 
 interface ListItemProps {
@@ -9,7 +11,7 @@ interface ListItemProps {
   onSelect?: () => void
 }
 
-const ListItem = ({ tab, onSelect, checked }) => {
+const ListItem = ({ tab, onSelect, checked, type }) => {
   // console.log("list item refreshed", tab.title, checked)
   const { attributes, listeners, setNodeRef, style } = useSortableItem({
     id: tab.id
@@ -24,6 +26,18 @@ const ListItem = ({ tab, onSelect, checked }) => {
   }
   const onMouseOver = (e) => setIsHovered(true)
   const onMouseLeave = (e) => setIsHovered(false)
+
+  const handleClickUrl = (tab) => {
+    console.log("on click url", type)
+
+    if (type === "window") {
+      // if current is window, jumpt to the target tab
+      jumptToTab(tab)
+    } else {
+      // current is collection, open new tab
+      openTabs(tab)
+    }
+  }
 
   useEffect(() => {
     setIsSelected(checked)
@@ -75,7 +89,8 @@ const ListItem = ({ tab, onSelect, checked }) => {
       <span className="mr-2 flex-none">{tab.title}</span>
       {isHovered && (
         <a
-          className={`items-center overflow-hidden text-ellipsis whitespace-nowrap text-sm text-slate-400`}
+          className={`cursor-pointer items-center overflow-hidden text-ellipsis whitespace-nowrap text-sm text-slate-400`}
+          onClick={() => handleClickUrl(tab)}
         >
           {tab.url}
         </a>

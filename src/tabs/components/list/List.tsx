@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react"
-import { ReactSortable } from "react-sortablejs"
 
 import useSeletedList from "~tabs/hooks/useSelect"
 import { openTabs } from "~tabs/utils/platform"
@@ -9,8 +8,6 @@ import { useGlobalCtx } from "../context"
 import { useDialog } from "../Dialog/DialogContext"
 import { removeTab, setCollection, setWindow } from "../reducers/actions"
 import { Sortable } from "./Sortable"
-
-// import ReactSortable from "./sortable"
 
 const listIndexShift = (arr, from, to) => {
   const direction = from < to ? 1 : -1
@@ -179,6 +176,7 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
             key={`${window.id}-${tab.url}-${i}`}
             checked={selectedList.includes(tab)}
             onSelect={onSelect}
+            type={type}
           ></ListItem>
         )
       })}
@@ -196,6 +194,7 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
               key={`${window.id}-${tab.url}-${i}`}
               checked={selectedList.includes(tab)}
               onSelect={onSelect}
+              type={type}
             ></ListItem>
           )
         })}

@@ -157,6 +157,8 @@
   - [?] any operations of the list should be push into history stack
 - [-] bugs
   - [x] update collection should auto update sort in SideBar
+  - [x] click url to open tab in ListItem
+  - [ ] delete tab can not detected
 ### component
 - list => window
   - select list
