@@ -76,12 +76,11 @@ const reducer = (state, action) => {
     case SET_COLLECTION: {
       const collection = action.payload
       const newCollections = state.collections.slice()
-      const index = newCollections.findIndex(
-        (c) => c.created === collection.created
-      )
-      if (index < 0) return state
-      newCollections.splice(index, 1, collection)
-      return { ...state, collections: newCollections }
+      const index = newCollections.findIndex((c) => c.id === collection.id)
+      if (index > -1) {
+        newCollections.splice(index, 1, collection)
+        return { ...state, collections: newCollections }
+      }
     }
     case SET_COLLECTION_WITH_LOCAL_STORAGE: {
       // set single collection
@@ -209,7 +208,7 @@ export const ProviderWithReducer = ({
       current = state.collections.find((c) => c.id === currentId)
     }
     if (!current) current = state.windows[0]
-    console.log("auto find current", current)
+    console.log("🪝 auto find current", current)
     dispatch(setCurrent(current))
   }, [state.currentId, state.windows, state.collections])
 

@@ -1,12 +1,17 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 
 import useSeletedList from "~tabs/hooks/useSelect"
-import { openTabs } from "~tabs/utils/platform"
+import { openWindow } from "~tabs/utils/platform"
 
 import { ListItem } from "."
 import { useGlobalCtx } from "../context"
 import { useDialog } from "../Dialog/DialogContext"
-import { removeTab, setCollection, setWindow } from "../reducers/actions"
+import {
+  removeTab,
+  setCollection,
+  setCollectionWithLocalStorage,
+  setWindow
+} from "../reducers/actions"
 import { Sortable } from "./Sortable"
 
 const listIndexShift = (arr, from, to) => {
@@ -25,10 +30,20 @@ interface ListProps {
   window: chrome.windows.Window // from <windows[] | collection.windows[]>
   type?: string // window | collection
   dispatchEdit?: (isEdited?: boolean) => void
+  onSelect?: (any: any) => void
+  selectedList?: chrome.tabs.Tab[]
+  selectedMap?: any
 }
 
 // TODO any operation on the list should be push into history stack
-const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
+const List: React.FC<ListProps> = ({
+  window,
+  type,
+  onSelect,
+  selectedList,
+  dispatchEdit,
+  selectedMap
+}) => {
   const [pinnedTabs, setPinnedTabs] = useState(
     window?.tabs?.filter((tab) => tab.pinned) ?? []
   )
@@ -36,81 +51,84 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
     window?.tabs?.filter((tab) => !tab.pinned) ?? []
   )
   const {
-    state: { current },
+    state: { current, collections },
     dispatch
   } = useGlobalCtx()
-  const { selectedList, setSelectedList } = useSeletedList(current.id)
+  // const { selectedList, setSelectedList, openSelected } = useSeletedList(
+  //   current.id
+  // )
   const { openDialog } = useDialog()
 
   console.log("List Component refreshed, props-window", window, tabs)
 
-  const onSelect = ({ tab, isSelected }) => {
-    if (isSelected) {
-      // add
-      const existed = selectedList.find((t) => t.url === tab.url)
-      if (existed) return
-      setSelectedList([...selectedList, tab])
-    } else {
-      // remove
-      setSelectedList(selectedList.filter((t) => t.url !== tab.url))
-    }
-  }
+  // const onSelect = ({ tab, isSelected }) => {
+  //   if (isSelected) {
+  //     // add
+  //     const existed = selectedList.find((t) => t.url === tab.url)
+  //     if (existed) return
+  //     setSelectedList([...selectedList, tab])
+  //   } else {
+  //     // remove
+  //     setSelectedList(selectedList.filter((t) => t.url !== tab.url))
+  //   }
+  //   console.log("on select", tab, type, selectedList)
+  // }
 
   const allCheckBox = useRef(null)
   // const hasSelectedItem = selectedList.some((tab) => tab.windowId === window.id)
-  const selectedItemCount = selectedList.reduce((acc, tab) => {
-    if (tab.windowId === window.id) acc++
-    return acc
-  }, 0)
-  const selectAll = (e) => {
-    console.log("select all")
-    const selectedCount = selectedList.length
-    if (selectedCount === window.tabs.length) {
-      // remove all
-      setSelectedList([])
-    } else {
-      // select all
-      setSelectedList([...window.tabs])
-    }
-  }
-  const openSelected = () => {
-    // TODO if select a window, open a new window
-    openTabs(selectedList)
-    setSelectedList([])
-  }
-  const deleteSelected = () => {
-    if (type === "collection") {
-      // collection's tab
-      // use [save] button to delete from local
-      const newTabs = tabs.filter((tab) => !selectedList.includes(tab))
-      console.log("delete selected list, new tabs", newTabs)
+  // const selectedItemCount = useMemo(() => {
+  //   return selectedList.reduce((acc, tab) => {
+  //     if (tab.windowId === window.id) acc++
+  //     return acc
+  //   }, 0)
+  // }, [selectedList])
 
-      const newWindow = { ...window, tabs: newTabs }
-      const insertIdx = current.windows.findIndex((w) => w.id === newWindow.id)
-      if (insertIdx > -1) {
-        // create new collection
-        current.windows.splice(insertIdx, 1, newWindow)
-        dispatch(setCollection(current))
-      }
-    } else {
-      // window's tab, delete from reducer
-      // use [apply] button to update window
-      selectedList.map((tab) => dispatch(removeTab(tab.id, tab.windowId)))
-    }
-    // TODO type is window/collection.window
-    setSelectedList([])
-    dispatchEdit(true)
-  }
+  // const selectAll = (e) => {
+  //   console.log("select all")
+  //   const selectedCount = selectedList.length
+  //   if (selectedCount === window.tabs.length) {
+  //     // remove all
+  //     setSelectedList([])
+  //   } else {
+  //     // select all
+  //     setSelectedList([...window.tabs])
+  //   }
+  // }
+  const openSelectedWindow = () => openWindow(window)
 
-  useEffect(() => {
-    const selectCount = selectedList.length
-    if (!allCheckBox.current) return
-    if (selectCount > 0 && selectCount < window.tabs.length) {
-      allCheckBox.current.indeterminate = true
-    } else {
-      allCheckBox.current.indeterminate = false
-    }
-  }, [selectedList])
+  // const deleteSelected = () => {
+  //   if (type === "collection") {
+  //     // collection's tab
+  //     // use [save] button to delete from local
+  //     const newTabs = tabs.filter((tab) => !selectedList.includes(tab))
+  //     console.log("delete selected list, new tabs", newTabs)
+
+  //     const newWindow = { ...window, tabs: newTabs }
+  //     const insertIdx = current.windows.findIndex((w) => w.id === newWindow.id)
+  //     if (insertIdx > -1) {
+  //       // create new collection
+  //       current.windows.splice(insertIdx, 1, newWindow)
+  //       dispatch(setCollection(current))
+  //     }
+  //   } else {
+  //     // window's tab, delete from reducer
+  //     // use [apply] button to update window
+  //     selectedList.map((tab) => dispatch(removeTab(tab.id, tab.windowId)))
+  //   }
+  //   // TODO type is window/collection.window
+  //   setSelectedList([])
+  //   dispatchEdit(true)
+  // }
+
+  // useEffect(() => {
+  //   const selectCount = selectedList.length
+  //   if (!allCheckBox.current) return
+  //   if (selectCount > 0 && selectCount < window.tabs.length) {
+  //     allCheckBox.current.indeterminate = true
+  //   } else {
+  //     allCheckBox.current.indeterminate = false
+  //   }
+  // }, [selectedList])
 
   useEffect(() => {
     console.log("effect in List, window changes")
@@ -145,7 +163,7 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
     <div className="relative text-clip p-5">
       {/* list operation */}
       <div className="sticky top-0 mb-4 mt-4 flex h-5 items-center justify-start pl-5">
-        {selectedItemCount > 0 && (
+        {/* {selectedItemCount > 0 && (
           <label className="label mr-3 cursor-pointer">
             <input
               ref={allCheckBox}
@@ -155,20 +173,8 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
               onChange={selectAll}
             />
           </label>
-        )}
+        )} */}
         Window: {window.id}
-        {selectedItemCount > 0 && (
-          <div className="btn-wrapper ml-auto flex">
-            {type === "collection" && (
-              <button className="btn btn-xs m-1" onClick={openSelected}>
-                open selected
-              </button>
-            )}
-            <button className="btn btn-xs m-1" onClick={deleteSelected}>
-              {type === "collection" ? "remove selected" : "close selected"}
-            </button>
-          </div>
-        )}
       </div>
       {/* pinned tabs */}
       {pinnedTabs.map((tab, i) => {
@@ -176,7 +182,7 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
           <ListItem
             tab={tab}
             key={`${window.id}-${tab.url}-${i}`}
-            checked={selectedList.includes(tab)}
+            checked={selectedList?.includes(tab)}
             onSelect={onSelect}
             type={type}
           ></ListItem>
@@ -194,7 +200,7 @@ const List: React.FC<ListProps> = ({ window, type, dispatchEdit }) => {
             <ListItem
               tab={tab}
               key={`${window.id}-${tab.url}-${i}`}
-              checked={selectedList.includes(tab)}
+              checked={selectedList?.includes(tab)}
               onSelect={onSelect}
               type={type}
             ></ListItem>

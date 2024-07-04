@@ -20,12 +20,11 @@ import {
 } from "./reducers/actions"
 import TitleInput from "./TitleInput"
 
-const ContentLayout = ({ selectedItem, children }) => {
+const ContentLayout = ({ selectedItem, selectedList, children }) => {
   const {
     state: { windows, collections },
     dispatch
   } = useGlobalCtx()
-  const { selectedList } = useSeletedList(selectedItem.id)
   const { openDialog } = useDialog()
   const type = selectedItem.created ? "collection" : "window"
   const allTabsNumber =
@@ -85,6 +84,7 @@ const ContentLayout = ({ selectedItem, children }) => {
   return (
     <div className="flex flex-auto flex-col overflow-hidden">
       <div className="flex-none">
+        {/* title */}
         <div className="title-container flex items-center">
           <div className="avatar placeholder flex-none shrink-0 grow-0">
             <div className="w-12 rounded-full bg-neutral text-neutral-content">
@@ -148,7 +148,7 @@ const ContentLayout = ({ selectedItem, children }) => {
               </div>
               <ul
                 tabIndex={0}
-                className="max-h-[calc(100vh / 2)] menu dropdown-content z-[1] flex-col flex-nowrap overflow-y-scroll rounded-box bg-base-100 p-2 shadow"
+                className="menu dropdown-content z-[1] max-h-[50vh] flex-col flex-nowrap overflow-y-scroll rounded-box bg-base-100 p-2 shadow"
               >
                 {collections.map((collection) => (
                   <li
@@ -179,23 +179,68 @@ const ContentLayout = ({ selectedItem, children }) => {
 
 const Content = ({}) => {
   const {
-    state: { current },
+    state: { current, collections },
     dispatch
   } = useGlobalCtx()
 
   if (!current) return <h1>loading</h1>
 
   const type = current.created ? "collection" : "window"
+
   const dispatchEdit = (isEdited) => {
     dispatch(updateEditedList({ id: current.id, type, isEdited }))
   }
+  const {
+    selectedList,
+    tabsByWindowInfo,
+    setSelectedList,
+    onSelect,
+    openSelected,
+    deleteSelected
+  } = useSeletedList(current.id, type, dispatchEdit)
+
+  const SelectedOperations = (
+    <div
+      className={`btn-wrapper ml-auto ${selectedList.length > 0 ? "flex" : "invisible"} h-8`}
+    >
+      {type === "collection" && (
+        <button className="btn btn-xs m-1" onClick={openSelected}>
+          open selected
+        </button>
+      )}
+      {/* // TODO bug */}
+      <button className="btn btn-xs m-1" onClick={deleteSelected}>
+        {type === "collection" ? "remove selected" : "close selected"}
+      </button>
+      {/* // TODO */}
+      <div className="dropdown">
+        <div tabIndex={0} role="button" className="btn  btn-xs m-1">
+          move selected
+        </div>
+        <ul
+          tabIndex={0}
+          className="menu dropdown-content z-[1] max-h-[50vh] flex-col flex-nowrap overflow-y-scroll rounded-box bg-base-100 p-2 shadow"
+        >
+          {collections.map((collection) => (
+            <li
+              // todo onClick={() => addSelectedToCollection(collection.id)}
+              key={collection.id}
+            >
+              <a>{collection.title}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
 
   // window
   if (current.tabs) {
     return (
       <>
-        <ContentLayout selectedItem={current}>
-          <List window={current} type={type} dispatchEdit={dispatchEdit}></List>
+        <ContentLayout selectedItem={current} selectedList={selectedList}>
+          {SelectedOperations}
+          <List window={current} type={type} onSelect={onSelect}></List>
         </ContentLayout>
       </>
     )
@@ -205,13 +250,17 @@ const Content = ({}) => {
   const list = current.windows
   return (
     <>
-      <ContentLayout selectedItem={current}>
+      <ContentLayout selectedItem={current} selectedList={selectedList}>
+        {SelectedOperations}
         {list.map((window) => (
           <List
             key={window.id}
             window={window}
             type={type}
+            onSelect={onSelect}
+            selectedList={selectedList}
             dispatchEdit={dispatchEdit}
+            selectedMap={tabsByWindowInfo}
           ></List>
         ))}
       </ContentLayout>
