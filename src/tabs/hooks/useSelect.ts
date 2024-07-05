@@ -1,25 +1,31 @@
 import { useEffect, useMemo, useState } from "react"
 
 import { useGlobalCtx } from "~tabs/components/context"
-import { removeTab, setCollection } from "~tabs/components/reducers/actions"
+import {
+  addTabs,
+  removeTab,
+  removeTabs,
+  setCollection,
+  updateEditedList
+} from "~tabs/components/reducers/actions"
 import { openTabs } from "~tabs/utils/platform"
 
 // select several tabs in several windows of collections
-const useSeletedList = (currentId, type, dispatchEdit) => {
+const useSeletedList = (currentId, type) => {
   const {
     state: { current, collections },
     dispatch
   } = useGlobalCtx()
 
   const [selectedList, setSelectedList] = useState([])
-  const tabsByWindowInfo = useMemo(() => {
+  const tabsByWindowMap = useMemo(() => {
     return selectedList.reduce((map, tab) => {
-      if (!map[tab.windowId]) map[tab.windowId] = []
-      map[tab.windowId].push(tab)
+      if (!map.has(tab.windowId)) map.set(tab.windowId, [])
+      map.get(tab.windowId).push(tab)
       return map
-    }, {})
+    }, new Map())
   }, [selectedList])
-  console.log("tabs grouped by window", tabsByWindowInfo)
+  console.log("tabs grouped by window", tabsByWindowMap)
 
   const onSelect = ({ tab, isSelected }) => {
     if (isSelected) {
@@ -40,62 +46,42 @@ const useSeletedList = (currentId, type, dispatchEdit) => {
   }
   // delect from reducer
   const deleteSelected = () => {
-    if (type === "collection") {
-      // collection's tab
-      // should use [save] button to delete from local later
-      const collection = current
-      const windows = collection.windows.map((window) => {
-        const tabsByWindow = tabsByWindowInfo[window.id]
-        if (tabsByWindow.length) {
-          const newTabs = window.tabs.filter(
-            (tab) => !tabsByWindow.includes(tab)
-          )
-          // copy a new window object
-          return { ...window, tabs: newTabs }
-        }
-        return window
-      })
-      collection.windows = windows
-      dispatch(setCollection(collection))
-    } else {
-      // window's tab
-      // should use [apply] button to update window later
-      selectedList.map((tab) => dispatch(removeTab(tab.id, tab.windowId)))
-    }
+    const collectionId = type === "collection" ? current.id : ""
+    tabsByWindowMap.forEach((tabs, windowId) => {
+      const tabIds = tabs.map((tab) => tab.id)
+      dispatch(removeTabs({ tabIds, windowId, collectionId }))
+    })
     // TODO type is window/collection.window
     setSelectedList([])
-    dispatchEdit(true)
+    dispatch(updateEditedList({ id: current.id, type, isEdited: true }))
   }
 
-  // todo move with windowId changed
-  const addSelectedToCollection = (collectionId, copied = false) => {
-    const originCollection = current
-    const targetCollection = collections.find((c) => c.id === collectionId)
-    const collection = { ...targetCollection } // copy a new collection
-    // default save selected tabs to target colletion.windows[0]
-    const targetWindows = collection.windows
-    const targetWindow = collection.windows[0]
-    targetWindow.tabs.unshift(...selectedList)
-    // save as new windows
-    collection.windows = [...targetWindows]
-    // save as new collection
-    dispatch(setCollectionWithLocalStorage(collection))
-    // if not copied, remove selected tab from origin collection.window
-    if (!copied) {
-      const copiedWindows = [...originCollection.windows]
-      const windowIndex = originCollection.windows.findIndex(
-        (w) => w.id === window.id
+  const addSelectedToCollection = (collectionId, keep = false) => {
+    console.log("add selected to collection", collectionId)
+
+    const originId = type === "collection" ? current.id : ""
+    const collection = collections.find((c) => c.id === collectionId)
+    const targetWindowId = collection.windows[0].id
+    tabsByWindowMap.forEach((tabs, windowId) => {
+      dispatch(
+        addTabs({
+          tabs: selectedList,
+          windowId: targetWindowId,
+          collectionId
+        })
       )
-      const originWindow = originCollection.windows[windowIndex]
-      const copiedWindow = { ...originWindow }
-      copiedWindow.tabs = copiedWindow.tabs.filter(
-        (tab) => !selectedList.some((t) => t.id === tab.id)
-      )
-      copiedWindows[windowIndex] = copiedWindow
-      originCollection.windows = copiedWindows
-      dispatch(setCollectionWithLocalStorage(originCollection))
+      // delete tabs from origin collection
+      if (!keep && type === "collection") {
+        const tabIds = tabs.map((tab) => tab.id)
+        dispatch(removeTabs({ tabIds, windowId, collectionId: originId }))
+      }
+    })
+    // TODO type is window/collection.window
+    setSelectedList([])
+    dispatch(updateEditedList({ id: collectionId, type, isEdited: true }))
+    if (!keep) {
+      dispatch(updateEditedList({ id: originId, type, isEdited: true }))
     }
-    // reset selectes list
   }
 
   useEffect(() => {
@@ -108,11 +94,12 @@ const useSeletedList = (currentId, type, dispatchEdit) => {
 
   return {
     selectedList,
-    tabsByWindowInfo,
+    tabsByWindowMap,
     setSelectedList,
     onSelect,
     openSelected,
-    deleteSelected
+    deleteSelected,
+    addSelectedToCollection
   }
 }
 

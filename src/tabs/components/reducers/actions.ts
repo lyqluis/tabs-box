@@ -14,6 +14,20 @@ export const REMOVE_TAB = "REMOVE_TAB"
 export const UPDATE_TAB = "UPDATE_TAB"
 export const UPDATE_EDITED_LIST = "UPDATE_EDITED_LIST"
 
+// CRUD opertaions
+// collections
+export const ADD_COLLECTIONS = "ADD_COLLECTIONS"
+export const REMOVE_COLLECTIONS = "REMOVE_COLLECTIONS"
+export const UPDATE_COLLECTIONS = "UPDATE_COLLECTIONS"
+// windows
+export const ADD_WINDOW = "ADD_WINDOW"
+export const REMOVE_WINDOW = "REMOVE_WINDOW"
+export const UPDATE_WINDOW = "UPDATE_WINDOW"
+// tabs
+export const ADD_TABS = "ADD_TABS"
+export const REMOVE_TABS = "REMOVE_TABS"
+export const UPDATE_TABS = "UPDATE_TABS"
+
 export const setWindows = (windows: chrome.windows.Window[]) => ({
   type: SET_WINDOWS,
   payload: windows
@@ -48,9 +62,9 @@ export const setCurrent = (collection: Collection | chrome.windows.Window) => ({
 })
 export const addTab = (tab) => ({ type: ADD_TAB, payload: tab })
 export const updateTab = (tab) => ({ type: UPDATE_TAB, payload: tab })
-export const removeTab = (tabId, windowId) => ({
+export const removeTab = (tabId, windowId, collectionId) => ({
   type: REMOVE_TAB,
-  payload: { tabId, windowId }
+  payload: { tabId, windowId, collectionId }
 })
 
 type editedData = {
@@ -61,6 +75,38 @@ type editedData = {
 export const updateEditedList = (editedData) => ({
   type: UPDATE_EDITED_LIST,
   payload: editedData
+})
+
+export const addWindow = ({ window, collectionId }) => ({
+  type: ADD_WINDOW,
+  payload: { window, collectionId }
+})
+export const removeWindow = ({ windowId, collectionId }) => ({
+  type: REMOVE_WINDOW,
+  payload: { windowId, collectionId }
+})
+export const updateWindow = ({ window, collectionId }) => ({
+  type: UPDATE_WINDOW,
+  payload: { window, collectionId }
+})
+type AddTabs = {
+  tabs: Tab[]
+  windowId: string | number // target window's id
+  collectionId?: string | number // target collection's id
+}
+export const addTabs = ({ tabs, windowId, collectionId }: AddTabs) => ({
+  type: ADD_TABS,
+  payload: { tabs, windowId, collectionId }
+})
+
+type RemoveTabs = {
+  tabIds: string | number[]
+  windowId: string | number
+  collectionId?: string | number
+}
+export const removeTabs = ({ tabIds, windowId, collectionId }: RemoveTabs) => ({
+  type: REMOVE_TABS,
+  payload: { tabIds, windowId, collectionId }
 })
 
 export const exportData = () => ({ type: EXPORT_DATA })

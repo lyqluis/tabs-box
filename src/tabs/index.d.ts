@@ -1,3 +1,7 @@
+interface Tab extends chrome.tabs.Tab{}
+
+interface Window extends chrome.windows.Window {}
+
 interface Collection {
   id: string
   created: number
@@ -6,5 +10,5 @@ interface Collection {
   title?: string
   name?: string
   pinned?: string // pinned time
-  windows: chrome.windows.Window[]
+  windows: Window[]
 }
