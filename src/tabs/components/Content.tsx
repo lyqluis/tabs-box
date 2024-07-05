@@ -183,21 +183,22 @@ const Content = ({}) => {
     dispatch
   } = useGlobalCtx()
 
-  if (!current) return <h1>loading</h1>
-
   const type = current.created ? "collection" : "window"
+  const {
+    selectedList,
+    tabsByWindowMap,
+    setSelectedList,
+    onSelect,
+    openSelected,
+    deleteSelected,
+    addSelectedToCollection
+  } = useSeletedList(current.id, type)
+
+  if (!current) return <h1>loading</h1>
 
   const dispatchEdit = (isEdited) => {
     dispatch(updateEditedList({ id: current.id, type, isEdited }))
   }
-  const {
-    selectedList,
-    tabsByWindowInfo,
-    setSelectedList,
-    onSelect,
-    openSelected,
-    deleteSelected
-  } = useSeletedList(current.id, type, dispatchEdit)
 
   const SelectedOperations = (
     <div
@@ -221,14 +222,16 @@ const Content = ({}) => {
           tabIndex={0}
           className="menu dropdown-content z-[1] max-h-[50vh] flex-col flex-nowrap overflow-y-scroll rounded-box bg-base-100 p-2 shadow"
         >
-          {collections.map((collection) => (
-            <li
-              // todo onClick={() => addSelectedToCollection(collection.id)}
-              key={collection.id}
-            >
-              <a>{collection.title}</a>
-            </li>
-          ))}
+          {collections
+            .filter((c) => c.id !== current.id)
+            .map((collection) => (
+              <li
+                onClick={() => addSelectedToCollection(collection.id)}
+                key={collection.id}
+              >
+                <a>{collection.title}</a>
+              </li>
+            ))}
         </ul>
       </div>
     </div>
@@ -260,7 +263,7 @@ const Content = ({}) => {
             onSelect={onSelect}
             selectedList={selectedList}
             dispatchEdit={dispatchEdit}
-            selectedMap={tabsByWindowInfo}
+            selectedMap={tabsByWindowMap}
           ></List>
         ))}
       </ContentLayout>

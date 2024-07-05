@@ -2,6 +2,7 @@ import { useEffect, useMemo, useReducer } from "react"
 
 import { localRemoveCollection, localSaveCollection } from "~tabs/store"
 import { sortCollections } from "~tabs/utils/collection"
+import { addTabsToWindow, removeTabsFromWindow } from "~tabs/utils/window"
 
 import { Provider } from "../context"
 import {
@@ -12,9 +13,11 @@ import {
 } from "../data"
 import {
   ADD_TAB,
+  ADD_TABS,
   EXPORT_DATA,
   REMOVE_COLLECTION,
   REMOVE_TAB,
+  REMOVE_TABS,
   SET_COLLECTION,
   SET_COLLECTION_WITH_LOCAL_STORAGE,
   SET_COLLECTIONS,
@@ -184,6 +187,54 @@ const reducer = (state, action) => {
       const { id, type, isEdited } = action.payload
       state.editedMap[id] = isEdited
       return { ...state }
+    }
+    case ADD_TABS: {
+      console.log("🧠 reducer ADD_TABS", action.payload)
+      const { tabs, windowId } = action.payload
+      // change tabs' windowId to new windowId
+      tabs.map((tab) => {
+        tab.windowId = windowId
+        return tab
+      })
+      
+      const collectionId = action.payload.collectionId
+      // add tabs to collection.window
+      if (collectionId) {
+        const collections = state.collections.map((collection) => {
+          if (collection.id === collectionId) {
+            const windows = addTabsToWindow(tabs, windowId, collection.windows)
+            return { ...collection, windows }
+          }
+          return collection
+        })
+        return { ...state, collections }
+      }
+      // add tabs to window
+      const windows = addTabsToWindow(tabs, windowId, state.windows)
+      return { ...state, windows }
+    }
+    case REMOVE_TABS: {
+      console.log("🧠 reducer REMOVE_TABS", action.payload)
+      const { tabIds, windowId } = action.payload
+      const collectionId = action.payload.collectionId
+      // remove tabs from collection.window
+      if (collectionId) {
+        const collections = state.collections.map((collection) => {
+          if (collection.id === collectionId) {
+            const windows = removeTabsFromWindow(
+              tabIds,
+              windowId,
+              collection.windows
+            )
+            return { ...collection, windows }
+          }
+          return collection
+        })
+        return { ...state, collections }
+      }
+      // remove tabs from window
+      const windows = removeTabsFromWindow(tabIds, windowId, state.windows)
+      return { ...state, windows }
     }
     // other case...
   }
