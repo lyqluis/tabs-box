@@ -57,7 +57,6 @@ const useSeletedList = () => {
     dispatch(updateEditedList({ id: current.id, type, isEdited: true }))
   }
 
-  // TODO tabs from different windows in origin collection will add twice to target collection
   const addSelectedToCollection = (collectionId, keep = false) => {
     console.log("add selected to collection", collectionId)
 

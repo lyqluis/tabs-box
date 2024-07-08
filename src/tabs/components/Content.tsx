@@ -1,3 +1,5 @@
+import { useRef } from "react"
+
 import { useRefresh } from "~tabs/hooks/useRefresh"
 import useSeletedList from "~tabs/hooks/useSelect"
 import { fromNow } from "~tabs/utils"
@@ -11,6 +13,7 @@ import { formatedWindow } from "~tabs/utils/window"
 
 import { useGlobalCtx } from "./context"
 import { useDialog } from "./Dialog/DialogContext"
+import DropDown from "./DropDown"
 import { List } from "./list"
 import {
   removeCollection,
@@ -80,6 +83,7 @@ const ContentLayout = ({ selectedItem, selectedList, children }) => {
   }
 
   const { RefreshBtn } = useRefresh()
+  const saveToBtnRef = useRef(null)
 
   return (
     <div className="flex flex-auto flex-col overflow-hidden">
@@ -138,7 +142,23 @@ const ContentLayout = ({ selectedItem, selectedList, children }) => {
             >
               save as new collection
             </button>
-            <div className="dropdown">
+
+            <DropDown
+              buttonText="save to collection"
+              buttonClassName="btn btn-outline btn-primary join-item p-2"
+              // buttonStyle={{ borderStartEndRadius: 0, borderEndEndRadius: 0 }}
+              ref={saveToBtnRef}
+            >
+              {collections.map((collection) => (
+                <li
+                  onClick={() => saveCollection(collection)}
+                  key={collection.id}
+                >
+                  <a>{collection.title}</a>
+                </li>
+              ))}
+            </DropDown>
+            {/* <div className="dropdown">
               <div
                 tabIndex={0}
                 role="button"
@@ -159,7 +179,7 @@ const ContentLayout = ({ selectedItem, selectedList, children }) => {
                   </li>
                 ))}
               </ul>
-            </div>
+            </div> */}
           </div>
         )}
         {/* delete */}
@@ -192,11 +212,15 @@ const Content = ({}) => {
     deleteSelected,
     addSelectedToCollection
   } = useSeletedList()
-
+  const dropDownRef = useRef(null)
   if (!current) return <h1>loading</h1>
 
   const dispatchEdit = (isEdited) => {
     dispatch(updateEditedList({ id: current.id, type, isEdited }))
+  }
+  const handleMoveSelectedClick = (collectionId) => {
+    addSelectedToCollection(collectionId)
+    dropDownRef.current.close()
   }
 
   const SelectedOperations = (
@@ -212,27 +236,18 @@ const Content = ({}) => {
       <button className="btn btn-xs m-1" onClick={deleteSelected}>
         {type === "collection" ? "remove selected" : "close selected"}
       </button>
-      {/* // TODO */}
-      <div className="dropdown">
-        <div tabIndex={0} role="button" className="btn  btn-xs m-1">
-          move selected
-        </div>
-        <ul
-          tabIndex={0}
-          className="menu dropdown-content z-[1] max-h-[50vh] flex-col flex-nowrap overflow-y-scroll rounded-box bg-base-100 p-2 shadow"
-        >
-          {collections
-            .filter((c) => c.id !== current.id)
-            .map((collection) => (
-              <li
-                onClick={() => addSelectedToCollection(collection.id)}
-                key={collection.id}
-              >
-                <a>{collection.title}</a>
-              </li>
-            ))}
-        </ul>
-      </div>
+      <DropDown buttonText="move selected" ref={dropDownRef}>
+        {collections
+          .filter((c) => c.id !== current.id)
+          .map((collection) => (
+            <li
+              onClick={() => handleMoveSelectedClick(collection.id)}
+              key={collection.id}
+            >
+              <a>{collection.title}</a>
+            </li>
+          ))}
+      </DropDown>
     </div>
   )
 
