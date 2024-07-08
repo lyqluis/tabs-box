@@ -179,20 +179,19 @@ const ContentLayout = ({ selectedItem, selectedList, children }) => {
 
 const Content = ({}) => {
   const {
-    state: { current, collections },
+    state: { current, collections, currentId },
+    type,
     dispatch
   } = useGlobalCtx()
 
-  const type = current.created ? "collection" : "window"
   const {
     selectedList,
     tabsByWindowMap,
-    setSelectedList,
     onSelect,
     openSelected,
     deleteSelected,
     addSelectedToCollection
-  } = useSeletedList(current.id, type)
+  } = useSeletedList()
 
   if (!current) return <h1>loading</h1>
 
