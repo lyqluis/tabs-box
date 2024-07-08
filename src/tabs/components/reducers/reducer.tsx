@@ -196,7 +196,7 @@ const reducer = (state, action) => {
         tab.windowId = windowId
         return tab
       })
-      
+
       const collectionId = action.payload.collectionId
       // add tabs to collection.window
       if (collectionId) {
@@ -251,6 +251,10 @@ export const ProviderWithReducer = ({
     dispatch(setCollections(collections))
   }, [windows, collections])
 
+  const type = useMemo(() => {
+    return state.current?.created ? "collection" : "window"
+  }, [state.current])
+
   useEffect(() => {
     const currentId = state.currentId
     let current
@@ -263,5 +267,5 @@ export const ProviderWithReducer = ({
     dispatch(setCurrent(current))
   }, [state.currentId, state.windows, state.collections])
 
-  return <Provider value={{ state, dispatch }}>{children}</Provider>
+  return <Provider value={{ state, dispatch, type }}>{children}</Provider>
 }

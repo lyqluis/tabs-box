@@ -11,9 +11,10 @@ import {
 import { openTabs } from "~tabs/utils/platform"
 
 // select several tabs in several windows of collections
-const useSeletedList = (currentId, type) => {
+const useSeletedList = () => {
   const {
-    state: { current, collections },
+    state: { current, currentId, collections },
+    type,
     dispatch
   } = useGlobalCtx()
 
@@ -56,6 +57,7 @@ const useSeletedList = (currentId, type) => {
     dispatch(updateEditedList({ id: current.id, type, isEdited: true }))
   }
 
+  // TODO tabs from different windows in origin collection will add twice to target collection
   const addSelectedToCollection = (collectionId, keep = false) => {
     console.log("add selected to collection", collectionId)
 
@@ -65,7 +67,7 @@ const useSeletedList = (currentId, type) => {
     tabsByWindowMap.forEach((tabs, windowId) => {
       dispatch(
         addTabs({
-          tabs: selectedList,
+          tabs,
           windowId: targetWindowId,
           collectionId
         })
@@ -88,9 +90,9 @@ const useSeletedList = (currentId, type) => {
     setSelectedList([])
   }, [currentId])
 
-  useEffect(() => {
-    // console.log("🪝 selected list update", selectedList)
-  }, [selectedList])
+  // useEffect(() => {
+  //   console.log("🪝 selected list update", selectedList)
+  // }, [selectedList])
 
   return {
     selectedList,
