@@ -1,5 +1,6 @@
 import {
   forwardRef,
+  useEffect,
   useImperativeHandle,
   useRef,
   type CSSProperties,
@@ -28,6 +29,18 @@ const DropDown = forwardRef((props: DropDownProps, ref: any) => {
   useImperativeHandle(ref, () => ({
     close: () => (activeRef.current.open = false)
   }))
+
+  const handleClose = () => {
+    if (activeRef.current.open) {
+      activeRef.current.open = false
+    }
+  }
+  useEffect(() => {
+    document.body.addEventListener("click", handleClose)
+    return () => {
+      document.body.removeEventListener("click", handleClose)
+    }
+  }, [])
 
   return (
     <details className="dropdown" ref={activeRef}>
