@@ -142,11 +142,13 @@ const ContentLayout = ({ selectedItem, selectedList, children }) => {
             >
               save as new collection
             </button>
-
             <DropDown
               buttonText="save to collection"
               buttonClassName="btn btn-outline btn-primary join-item p-2"
-              // buttonStyle={{ borderStartEndRadius: 0, borderEndEndRadius: 0 }}
+              buttonStyle={{
+                borderTopRightRadius: "var(--rounded-btn, .5rem)",
+                borderBottomRightRadius: "var(--rounded-btn, .5rem)"
+              }}
               ref={saveToBtnRef}
             >
               {collections.map((collection) => (
