@@ -48,7 +48,10 @@ export const Sortable = ({ list, setList, children, onSortEnd, multiList }) => {
         const newIndex = items.findIndex((item) => item.id === over.id)
         let res
         // multi drag
-        if (multiList.some((item) => item.id === active.id)) {
+        if (
+          multiList.length > 1 &&
+          multiList.some((item) => item.id === active.id)
+        ) {
           let startIndex = newIndex
           res = items.slice()
           multiList.map((item) => {

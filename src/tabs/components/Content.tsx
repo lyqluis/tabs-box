@@ -160,28 +160,6 @@ const ContentLayout = ({ selectedItem, selectedList, children }) => {
                 </li>
               ))}
             </DropDown>
-            {/* <div className="dropdown">
-              <div
-                tabIndex={0}
-                role="button"
-                className="btn btn-outline btn-primary join-item p-2"
-              >
-                save to collection
-              </div>
-              <ul
-                tabIndex={0}
-                className="menu dropdown-content z-[1] max-h-[50vh] flex-col flex-nowrap overflow-y-scroll rounded-box bg-base-100 p-2 shadow"
-              >
-                {collections.map((collection) => (
-                  <li
-                    onClick={() => saveCollection(collection)}
-                    key={collection.id}
-                  >
-                    <a>{collection.title}</a>
-                  </li>
-                ))}
-              </ul>
-            </div> */}
           </div>
         )}
         {/* delete */}
@@ -259,7 +237,14 @@ const Content = ({}) => {
       <>
         <ContentLayout selectedItem={current} selectedList={selectedList}>
           {SelectedOperations}
-          <List window={current} type={type} onSelect={onSelect}></List>
+          <List
+            window={current}
+            type={type}
+            onSelect={onSelect}
+            selectedList={selectedList}
+            dispatchEdit={dispatchEdit}
+            selectedMap={tabsByWindowMap}
+          ></List>
         </ContentLayout>
       </>
     )
