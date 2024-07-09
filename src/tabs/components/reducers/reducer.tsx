@@ -255,10 +255,19 @@ export const ProviderWithReducer = ({
     return state.current?.created ? "collection" : "window"
   }, [state.current])
 
+  const current = useMemo(() => {
+    const currentId = state.currentId
+    let current = state.windows.find((w) => w.id === currentId)
+    if (!current) {
+      current = state.collections.find((c) => c.id === currentId)
+    }
+    if (!current) current = state.windows[0]
+    return current
+  }, [state.currentId, state.windows, state.collections])
+
   useEffect(() => {
     const currentId = state.currentId
-    let current
-    current = state.windows.find((w) => w.id === currentId)
+    let current = state.windows.find((w) => w.id === currentId)
     if (!current) {
       current = state.collections.find((c) => c.id === currentId)
     }
@@ -267,5 +276,7 @@ export const ProviderWithReducer = ({
     dispatch(setCurrent(current))
   }, [state.currentId, state.windows, state.collections])
 
-  return <Provider value={{ state, dispatch, type }}>{children}</Provider>
+  return (
+    <Provider value={{ state, dispatch, current, type }}>{children}</Provider>
+  )
 }
