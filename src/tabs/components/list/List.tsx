@@ -1,17 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 
-import useSeletedList from "~tabs/hooks/useSelect"
-import { openWindow } from "~tabs/utils/platform"
-
 import { ListItem } from "."
 import { useGlobalCtx } from "../context"
 import { useDialog } from "../Dialog/DialogContext"
-import {
-  removeTab,
-  setCollection,
-  setCollectionWithLocalStorage,
-  setWindow
-} from "../reducers/actions"
+import { setCollection, setWindow } from "../reducers/actions"
 import { Sortable } from "./Sortable"
 
 const listIndexShift = (arr, from, to) => {
@@ -29,20 +21,21 @@ const listIndexShift = (arr, from, to) => {
 interface ListProps {
   window: chrome.windows.Window // from <windows[] | collection.windows[]>
   type?: string // window | collection
+  selectedMap?: any
+  // selectedList?: chrome.tabs.Tab[]
   dispatchEdit?: (isEdited?: boolean) => void
   onSelect?: (any: any) => void
-  selectedList?: chrome.tabs.Tab[]
-  selectedMap?: any
+  setWindowTabs?: (id: Window["id"], tabs: Tab[]) => void
 }
 
 // TODO any operation on the list should be push into history stack
 const List: React.FC<ListProps> = ({
   window,
   type,
+  selectedMap,
   onSelect,
-  selectedList,
   dispatchEdit,
-  selectedMap
+  setWindowTabs
 }) => {
   const [pinnedTabs, setPinnedTabs] = useState(
     window?.tabs?.filter((tab) => tab.pinned) ?? []
@@ -54,81 +47,36 @@ const List: React.FC<ListProps> = ({
     state: { current, collections },
     dispatch
   } = useGlobalCtx()
-  // const { selectedList, setSelectedList, openSelected } = useSeletedList(
-  //   current.id
-  // )
+
   const { openDialog } = useDialog()
 
   console.log("List Component refreshed, props-window", window, tabs)
 
-  // const onSelect = ({ tab, isSelected }) => {
-  //   if (isSelected) {
-  //     // add
-  //     const existed = selectedList.find((t) => t.url === tab.url)
-  //     if (existed) return
-  //     setSelectedList([...selectedList, tab])
-  //   } else {
-  //     // remove
-  //     setSelectedList(selectedList.filter((t) => t.url !== tab.url))
-  //   }
-  //   console.log("on select", tab, type, selectedList)
-  // }
-
+  // TODO all select check box
+  // maybe no need selectedList prop, just need list in selectedMap's selected list
   const allCheckBox = useRef(null)
-  // const hasSelectedItem = selectedList.some((tab) => tab.windowId === window.id)
-  // const selectedItemCount = useMemo(() => {
-  //   return selectedList.reduce((acc, tab) => {
-  //     if (tab.windowId === window.id) acc++
-  //     return acc
-  //   }, 0)
-  // }, [selectedList])
+  const selectedList = selectedMap.get(window.id) ?? [] // otherwise multiList in sortable will fail
 
-  // const selectAll = (e) => {
-  //   console.log("select all")
-  //   const selectedCount = selectedList.length
-  //   if (selectedCount === window.tabs.length) {
-  //     // remove all
-  //     setSelectedList([])
-  //   } else {
-  //     // select all
-  //     setSelectedList([...window.tabs])
-  //   }
-  // }
-  const openSelectedWindow = () => openWindow(window)
+  const selectAll = (e) => {
+    const selectedCount = selectedList.length
+    if (selectedCount === window.tabs.length) {
+      // remove all
+      setWindowTabs(window.id, [])
+    } else {
+      // select all
+      setWindowTabs(window.id, [...window.tabs])
+    }
+  }
 
-  // const deleteSelected = () => {
-  //   if (type === "collection") {
-  //     // collection's tab
-  //     // use [save] button to delete from local
-  //     const newTabs = tabs.filter((tab) => !selectedList.includes(tab))
-  //     console.log("delete selected list, new tabs", newTabs)
-
-  //     const newWindow = { ...window, tabs: newTabs }
-  //     const insertIdx = current.windows.findIndex((w) => w.id === newWindow.id)
-  //     if (insertIdx > -1) {
-  //       // create new collection
-  //       current.windows.splice(insertIdx, 1, newWindow)
-  //       dispatch(setCollection(current))
-  //     }
-  //   } else {
-  //     // window's tab, delete from reducer
-  //     // use [apply] button to update window
-  //     selectedList.map((tab) => dispatch(removeTab(tab.id, tab.windowId)))
-  //   }
-  //   // TODO type is window/collection.window
-  //   setSelectedList([])
-  //   dispatchEdit(true)
-  // }
-
-  // useEffect(() => {
-  //   const selectCount = selectedList.length
-  //   if (!allCheckBox.current) return
-  //   if (selectCount > 0 && selectCount < window.tabs.length) {
-  //     allCheckBox.current.indeterminate = true
-  //   } else {
-  //     allCheckBox.current.indeterminate = false
-  //   }
-  // }, [selectedList])
+  useEffect(() => {
+    const selectCount = selectedList.length
+    if (!allCheckBox.current) return
+    if (selectCount > 0 && selectCount < window.tabs.length) {
+      allCheckBox.current.indeterminate = true
+    } else {
+      allCheckBox.current.indeterminate = false
+    }
+  }, [selectedList])
 
   useEffect(() => {
     console.log("effect in List, window changes")
@@ -163,17 +111,17 @@ const List: React.FC<ListProps> = ({
     <div className="relative text-clip p-5">
       {/* list operation */}
       <div className="sticky top-0 mb-4 mt-4 flex h-5 items-center justify-start pl-5">
-        {/* {selectedItemCount > 0 && (
+        {selectedList.length > 0 && (
           <label className="label mr-3 cursor-pointer">
             <input
               ref={allCheckBox}
               type="checkbox"
               className="checkbox-primary checkbox checkbox-sm"
-              checked={selectedItemCount === window.tabs.length}
+              checked={selectedList.length === window.tabs.length}
               onChange={selectAll}
             />
           </label>
-        )} */}
+        )}
         Window: {window.id}
       </div>
       {/* pinned tabs */}
@@ -182,7 +130,7 @@ const List: React.FC<ListProps> = ({
           <ListItem
             tab={tab}
             key={`${window.id}-${tab.url}-${i}`}
-            checked={selectedList?.includes(tab)}
+            checked={selectedList?.some((t) => tab.id === t.id)}
             onSelect={onSelect}
             type={type}
           ></ListItem>
@@ -200,7 +148,7 @@ const List: React.FC<ListProps> = ({
             <ListItem
               tab={tab}
               key={`${window.id}-${tab.url}-${i}`}
-              checked={selectedList?.includes(tab)}
+              checked={selectedList?.some((t) => tab.id === t.id)}
               onSelect={onSelect}
               type={type}
             ></ListItem>
