@@ -188,6 +188,7 @@ const Content = ({}) => {
     selectedList,
     tabsByWindowMap,
     onSelect,
+    setTabsByWindow,
     openSelected,
     deleteSelected,
     addSelectedToCollection
@@ -241,9 +242,10 @@ const Content = ({}) => {
             window={current}
             type={type}
             onSelect={onSelect}
-            selectedList={selectedList}
-            dispatchEdit={dispatchEdit}
+            // selectedList={selectedList}
             selectedMap={tabsByWindowMap}
+            dispatchEdit={dispatchEdit}
+            setWindowTabs={setTabsByWindow}
           ></List>
         </ContentLayout>
       </>
@@ -262,9 +264,10 @@ const Content = ({}) => {
             window={window}
             type={type}
             onSelect={onSelect}
-            selectedList={selectedList}
-            dispatchEdit={dispatchEdit}
+            // selectedList={selectedList}
             selectedMap={tabsByWindowMap}
+            dispatchEdit={dispatchEdit}
+            setWindowTabs={setTabsByWindow}
           ></List>
         ))}
       </ContentLayout>

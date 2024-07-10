@@ -1,4 +1,4 @@
-interface Tab extends chrome.tabs.Tab{}
+interface Tab extends chrome.tabs.Tab {}
 
 interface Window extends chrome.windows.Window {}
 

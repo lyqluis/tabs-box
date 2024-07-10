@@ -3,14 +3,12 @@ import { useEffect, useMemo, useState } from "react"
 import { useGlobalCtx } from "~tabs/components/context"
 import {
   addTabs,
-  removeTab,
   removeTabs,
-  setCollection,
   updateEditedList
 } from "~tabs/components/reducers/actions"
 import { openTabs } from "~tabs/utils/platform"
 
-// select several tabs in several windows of collections
+// TODO check all tabs box
 const useSeletedList = () => {
   const {
     state: { current, currentId, collections },
@@ -19,14 +17,17 @@ const useSeletedList = () => {
   } = useGlobalCtx()
 
   const [selectedList, setSelectedList] = useState([])
-  const tabsByWindowMap = useMemo(() => {
+
+  type windowId = Window["id"]
+  const tabsByWindowMap = useMemo<Map<windowId, Tab[]>>(() => {
     return selectedList.reduce((map, tab) => {
       if (!map.has(tab.windowId)) map.set(tab.windowId, [])
       map.get(tab.windowId).push(tab)
       return map
     }, new Map())
   }, [selectedList])
-  console.log("tabs grouped by window", tabsByWindowMap)
+  console.log("🪝 useSelect - selected list", selectedList)
+  console.log("🪝 useSelect - tabs grouped by window", tabsByWindowMap)
 
   const onSelect = ({ tab, isSelected }) => {
     if (isSelected) {
@@ -39,6 +40,13 @@ const useSeletedList = () => {
       setSelectedList(selectedList.filter((t) => t.url !== tab.url))
     }
     console.log("on select", tab, type, selectedList)
+  }
+
+  const setTabsByWindow = (windowId, tabs: Tab[]) => {
+    setSelectedList((list) => {
+      const restList = list.filter((tab) => tab.windowId !== windowId)
+      return [...restList, ...tabs]
+    })
   }
 
   const openSelected = () => {
@@ -97,6 +105,7 @@ const useSeletedList = () => {
     selectedList,
     tabsByWindowMap,
     setSelectedList,
+    setTabsByWindow,
     onSelect,
     openSelected,
     deleteSelected,
