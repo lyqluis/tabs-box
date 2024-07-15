@@ -22,6 +22,7 @@ import {
   updateEditedList
 } from "./reducers/actions"
 import TitleInput from "./TitleInput"
+import { Tst } from "./tst"
 
 const ContentLayout = ({ selectedItem, selectedList, children }) => {
   const {
@@ -242,7 +243,6 @@ const Content = ({}) => {
             window={current}
             type={type}
             onSelect={onSelect}
-            // selectedList={selectedList}
             selectedMap={tabsByWindowMap}
             dispatchEdit={dispatchEdit}
             setWindowTabs={setTabsByWindow}
@@ -258,18 +258,18 @@ const Content = ({}) => {
     <>
       <ContentLayout selectedItem={current} selectedList={selectedList}>
         {SelectedOperations}
-        {list.map((window) => (
+        {/* {list.map((window) => (
           <List
             key={window.id}
             window={window}
             type={type}
             onSelect={onSelect}
-            // selectedList={selectedList}
             selectedMap={tabsByWindowMap}
             dispatchEdit={dispatchEdit}
             setWindowTabs={setTabsByWindow}
           ></List>
-        ))}
+        ))} */}
+        <Tst></Tst>
       </ContentLayout>
     </>
   )
