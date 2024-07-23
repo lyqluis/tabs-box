@@ -258,7 +258,7 @@ const Content = ({}) => {
     <>
       <ContentLayout selectedItem={current} selectedList={selectedList}>
         {SelectedOperations}
-        {/* {list.map((window) => (
+        {list.map((window) => (
           <List
             key={window.id}
             window={window}
@@ -268,8 +268,8 @@ const Content = ({}) => {
             dispatchEdit={dispatchEdit}
             setWindowTabs={setTabsByWindow}
           ></List>
-        ))} */}
-        <Tst></Tst>
+        ))}
+        {/* <Tst></Tst> */}
       </ContentLayout>
     </>
   )
