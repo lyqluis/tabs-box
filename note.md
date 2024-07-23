@@ -28,8 +28,8 @@
     - [x] select all
     - delete selected from window
     - [x] delete selected from collection
-    - [ ] click outside list, cancel all selected
-    - [-] collection with multi windows works wrong, select tabs in one window, another window of collections' shows select box as well
+    - [-] click outside list, cancel all selected
+    - [x] collection with multi windows works wrong, select tabs in one window, another window of collections' shows select box as well
   - [ ] bugs:
     - [x] new tab can not be detected in reducer when deleted
 - [-] feature: open url/window/collection
@@ -39,10 +39,10 @@
 - [x] feature: real-time monitoring of the tabs/windows while staying on the app page
   - on tab crated, updated, removed, moved
   - on window crated, removed, [-] bound change
-- [-] feature: apply/save changes to windows/local
+- [x] feature: apply/save changes to windows/local
   - [x] apply/save button
     - when window/collection edited, apply/save button should change to a red/eye-catching color to remind users to click
-    - [?] when save/apply, check if the collection/window is empty
+    - [x] when save/apply, check if the collection/window is empty
   - [x] window's apply feature
   - [x] collection's save feature
     - [x] multi windows save in one collection
@@ -132,7 +132,7 @@
   }
   ```
   - 2. use `useSyncExternalStore` to subscribe to an external store and message list (https://juejin.cn/post/7223705034412802107#heading-10)
-  - [ ] bugs
+  - [-] bugs
     - [x] transition animations for conditional rendering
 - [ ] search feature
 - [x] export & import feature
@@ -142,13 +142,13 @@
     - [x] import compatible with format Session Buddy
   - [x] export
     - local save -(initial render)-> reducer -> export
-- [-] data & local
+- [x] data & local
   - [x] save through indexedDB
   - [x] add/set collection, toggle 'save' to save to the collections
   - [x] save sortable data
     - after drag sorted, update the new list data update in the reducer without local storage
   - [x] delete collection
-  - [ ] collection with multi windows
+  - [x] collection with multi windows
 - [ ] save in cloud feature
   - [ ] google drive
 - [ ] setting feature
@@ -159,6 +159,19 @@
   - [x] update collection should auto update sort in SideBar
   - [x] click url to open tab in ListItem
   - [x] delete tab can not detecte
+- [ ] feature: drag tabs between windows
+  - Sortable / App
+  - dnd context
+    - Sidbar
+      - Sidebar Item
+      - dropable container
+    - Content
+    - sortable context
+      - List (window)
+      - droppable container
+      - sortable context
+        - List Item (tab)
+        - useSortable
 ### component
 - list => window
   - select list

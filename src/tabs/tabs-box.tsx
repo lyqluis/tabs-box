@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 
 import Content from "./components/Content"
 import { DialogProvider } from "./components/Dialog/DialogContext"
+import { DndGlobalContext } from "./components/Dnd"
 import Header from "./components/Header"
 import { ProviderWithReducer } from "./components/reducers/reducer"
 import SideBar from "./components/SideBar"
@@ -65,6 +66,7 @@ const TabsBoxPage = () => {
     <ProviderWithReducer data={{ windows, collections }}>
       <HistoryProvider>
         <DialogProvider>
+          {/* <DndGlobalContext> */}
           <div className="flex">
             <SideBar></SideBar>
             <main className="flex h-screen w-full flex-col overflow-hidden">
@@ -73,6 +75,7 @@ const TabsBoxPage = () => {
             </main>
           </div>
           <ToastContainer></ToastContainer>
+          {/* </DndGlobalContext> */}
         </DialogProvider>
       </HistoryProvider>
     </ProviderWithReducer>

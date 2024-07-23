@@ -4,6 +4,7 @@ import { fromNow, shortURL } from "~tabs/utils"
 import { useTabEvents, useWindowEvents } from "~tabs/utils/platform"
 
 import { useGlobalCtx } from "./context"
+import { Droppable } from "./Dnd"
 import { setCurrentId } from "./reducers/actions"
 
 const SideBarItem = ({ item, isEdited, isSelected, onSelect }) => {
@@ -50,18 +51,20 @@ const SideBarItem = ({ item, isEdited, isSelected, onSelect }) => {
   }
 
   return (
-    <div className="indicator w-full">
-      {isEdited && (
-        <span className="badge indicator-item badge-warning badge-xs"></span>
-      )}
-      <li
-        className={`mb-2.5 flex h-20 w-full cursor-pointer flex-col justify-between overflow-hidden rounded-md p-3.5 
+    <Droppable item={item}>
+      <div className="indicator w-full">
+        {isEdited && (
+          <span className="badge indicator-item badge-warning badge-xs"></span>
+        )}
+        <li
+          className={`mb-2.5 flex h-20 w-full cursor-pointer flex-col justify-between overflow-hidden rounded-md p-3.5 
           font-light shadow hover:bg-danube-800 hover:text-danube-50 ${isSelected ? "bg-danube-800 font-medium text-danube-50" : ""}`}
-        onClick={() => onSelect(item)}
-      >
-        {itemContent}
-      </li>
-    </div>
+          onClick={() => onSelect(item)}
+        >
+          {itemContent}
+        </li>
+      </div>
+    </Droppable>
   )
 }
 

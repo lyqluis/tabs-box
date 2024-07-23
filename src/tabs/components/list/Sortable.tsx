@@ -74,14 +74,16 @@ export const Sortable = ({ list, setList, children, onSortEnd, multiList }) => {
   }
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragEnd={handleDragEnd}
-    >
-      <SortableContext items={list} strategy={verticalListSortingStrategy}>
-        {children}
-      </SortableContext>
-    </DndContext>
+    // <DndContext
+    //   sensors={sensors}
+    //   collisionDetection={closestCenter}
+    //   onDragEnd={handleDragEnd}
+    // >
+    // todo sortable item only can work in sortable context area
+    // ideal situation is that sortable works in sortable context and outer dropable context
+    <SortableContext items={list} strategy={verticalListSortingStrategy}>
+      {children}
+    </SortableContext>
+    // </DndContext>
   )
 }
