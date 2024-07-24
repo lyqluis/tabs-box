@@ -4,6 +4,7 @@ import { ListItem } from "."
 import { useGlobalCtx } from "../context"
 import { useDialog } from "../Dialog/DialogContext"
 import { setCollection, setWindow } from "../reducers/actions"
+import { TstListItem } from "./ListItem"
 import { Sortable } from "./Sortable"
 
 const listIndexShift = (arr, from, to) => {
@@ -108,7 +109,10 @@ const List: React.FC<ListProps> = ({
   if ((!pinnedTabs || !pinnedTabs.length) && (!tabs || !tabs.length)) return
 
   return (
-    <div className="relative text-clip p-5">
+    <div
+      className="relative text-clip p-5"
+      style={{ background: "lightyellow" }}
+    >
       {/* list operation */}
       <div className="sticky top-0 mb-4 mt-4 flex h-5 items-center justify-start pl-5">
         {selectedList.length > 0 && (
@@ -125,24 +129,31 @@ const List: React.FC<ListProps> = ({
         Window: {window.id}
       </div>
       {/* pinned tabs */}
-      {pinnedTabs.map((tab, i) => {
-        return (
-          <ListItem
-            tab={tab}
-            key={`${window.id}-${tab.url}-${i}`}
-            checked={selectedList?.some((t) => tab.id === t.id)}
-            onSelect={onSelect}
-            type={type}
-          ></ListItem>
-        )
-      })}
-      {/* sortable tabs */}
       <Sortable
         list={tabs}
         setList={setTabs}
         multiList={selectedList}
         onSortEnd={onSortEnd}
       >
+        {pinnedTabs.map((tab, i) => {
+          return (
+            <TstListItem
+              tab={tab}
+              key={`${window.id}-${tab.url}-${i}`}
+              checked={selectedList?.some((t) => tab.id === t.id)}
+              onSelect={onSelect}
+              type={type}
+            ></TstListItem>
+          )
+        })}
+        {/* </Sortable> */}
+        {/* sortable tabs */}
+        {/* <Sortable
+        list={tabs}
+        setList={setTabs}
+        multiList={selectedList}
+        onSortEnd={onSortEnd}
+      > */}
         {tabs.map((tab, i) => {
           return (
             <ListItem

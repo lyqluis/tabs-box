@@ -6,6 +6,7 @@ import Content from "./components/Content"
 import { DialogProvider } from "./components/Dialog/DialogContext"
 import { DndGlobalContext } from "./components/Dnd"
 import Header from "./components/Header"
+import { Sortable } from "./components/list/Sortable"
 import { ProviderWithReducer } from "./components/reducers/reducer"
 import SideBar from "./components/SideBar"
 import ToastContainer from "./components/Toast"
@@ -66,16 +67,23 @@ const TabsBoxPage = () => {
     <ProviderWithReducer data={{ windows, collections }}>
       <HistoryProvider>
         <DialogProvider>
-          {/* <DndGlobalContext> */}
-          <div className="flex">
-            <SideBar></SideBar>
-            <main className="flex h-screen w-full flex-col overflow-hidden">
-              <Header></Header>
-              <Content></Content>
-            </main>
-          </div>
-          <ToastContainer></ToastContainer>
-          {/* </DndGlobalContext> */}
+          <DndGlobalContext>
+            {/* <Sortable
+            // list={tabs}
+            // setList={setTabs}
+            // multiList={selectedList}
+            // onSortEnd={onSortEnd}
+            > */}
+              <div className="flex">
+                <SideBar></SideBar>
+                <main className="flex h-screen w-full flex-col overflow-hidden">
+                  <Header></Header>
+                  <Content></Content>
+                </main>
+              </div>
+              <ToastContainer></ToastContainer>
+            {/* </Sortable> */}
+          </DndGlobalContext>
         </DialogProvider>
       </HistoryProvider>
     </ProviderWithReducer>

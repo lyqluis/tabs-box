@@ -87,7 +87,7 @@ const ContentLayout = ({ selectedItem, selectedList, children }) => {
   const saveToBtnRef = useRef(null)
 
   return (
-    <div className="flex flex-auto flex-col overflow-hidden">
+    <div className="flex flex-auto flex-col overflow-hidden" style={{background: '#FFD700'}}>
       <div className="flex-none">
         {/* title */}
         <div className="title-container flex items-center">

@@ -14,6 +14,9 @@ import {
   verticalListSortingStrategy
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
+import { useEffect, useState } from "react"
+
+import { useGlobalCtx } from "../context"
 
 // sortable item
 export const useSortableItem = (sortableOptions) => {
@@ -33,6 +36,28 @@ export const useSortableItem = (sortableOptions) => {
 
 // dnd context
 export const Sortable = ({ list, setList, children, onSortEnd, multiList }) => {
+  // const {
+  //   state: { windows, collections },
+  //   current,
+  //   type,
+  //   dispatch
+  // } = useGlobalCtx()
+
+  // const [window, setWindow] = useState(
+  //   type === "window" ? current : current.windows[0]
+  // )
+
+  // const [pinnedTabs, setPinnedTabs] = useState(
+  //   window?.tabs?.filter((tab) => tab.pinned) ?? []
+  // )
+  // const [tabs, setTabs] = useState(
+  //   window?.tabs?.filter((tab) => !tab.pinned) ?? []
+  // )
+
+  // useEffect(() => {
+  //   setWindow(type === "window" ? current : current.windows[0])
+  // }, [current])
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
