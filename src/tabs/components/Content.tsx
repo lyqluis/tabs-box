@@ -1,7 +1,7 @@
 import { useRef } from "react"
 
 import { useRefresh } from "~tabs/hooks/useRefresh"
-import useSeletedList from "~tabs/hooks/useSelect"
+import { useSelectContext } from "~tabs/hooks/useSelect"
 import { fromNow } from "~tabs/utils"
 import {
   closeWindow,
@@ -87,7 +87,10 @@ const ContentLayout = ({ selectedItem, selectedList, children }) => {
   const saveToBtnRef = useRef(null)
 
   return (
-    <div className="flex flex-auto flex-col overflow-hidden" style={{background: '#FFD700'}}>
+    <div
+      className="flex flex-auto flex-col overflow-hidden"
+      style={{ background: "#FFD700" }}
+    >
       <div className="flex-none">
         {/* title */}
         <div className="title-container flex items-center">
@@ -193,7 +196,7 @@ const Content = ({}) => {
     openSelected,
     deleteSelected,
     addSelectedToCollection
-  } = useSeletedList()
+  } = useSelectContext()
   const dropDownRef = useRef(null)
   if (!current) return <h1>loading</h1>
 

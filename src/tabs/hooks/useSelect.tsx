@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { createContext, useContext, useEffect, useMemo, useState } from "react"
 
 import { useGlobalCtx } from "~tabs/components/context"
 import {
@@ -8,8 +8,11 @@ import {
 } from "~tabs/components/reducers/actions"
 import { openTabs } from "~tabs/utils/platform"
 
+const ctx = createContext(null)
+const { Provider } = ctx
+
 // TODO check all tabs box
-const useSeletedList = () => {
+export const SelectProvider = ({ children }) => {
   const {
     state: { current, currentId, collections },
     type,
@@ -101,16 +104,22 @@ const useSeletedList = () => {
   //   console.log("🪝 selected list update", selectedList)
   // }, [selectedList])
 
-  return {
-    selectedList,
-    tabsByWindowMap,
-    setSelectedList,
-    setTabsByWindow,
-    onSelect,
-    openSelected,
-    deleteSelected,
-    addSelectedToCollection
-  }
+  return (
+    <Provider
+      value={{
+        selectedList,
+        tabsByWindowMap,
+        setSelectedList,
+        setTabsByWindow,
+        onSelect,
+        openSelected,
+        deleteSelected,
+        addSelectedToCollection
+      }}
+    >
+      {children}
+    </Provider>
+  )
 }
 
-export default useSeletedList
+export const useSelectContext = () => useContext(ctx)
