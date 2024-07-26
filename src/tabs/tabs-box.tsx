@@ -1,15 +1,18 @@
 import "./style"
 
+import { DragOverlay } from "@dnd-kit/core"
 import { useEffect, useState } from "react"
 
 import Content from "./components/Content"
 import { DialogProvider } from "./components/Dialog/DialogContext"
 import { DndGlobalContext } from "./components/Dnd"
 import Header from "./components/Header"
+import { OverlayListItem } from "./components/list/ListItem"
 import { Sortable } from "./components/list/Sortable"
 import { ProviderWithReducer } from "./components/reducers/reducer"
 import SideBar from "./components/SideBar"
 import ToastContainer from "./components/Toast"
+import { SelectProvider } from "./hooks/useSelect"
 import { getAllCollections } from "./store"
 import { HistoryProvider } from "./utils/operationStack"
 import { getAllWindows } from "./utils/platform"
@@ -63,12 +66,14 @@ const TabsBoxPage = () => {
   if (loading) {
     return <h2>loading</h2>
   }
+
   return (
     <ProviderWithReducer data={{ windows, collections }}>
       <HistoryProvider>
         <DialogProvider>
-          <DndGlobalContext>
-            {/* <Sortable
+          <SelectProvider>
+            <DndGlobalContext>
+              {/* <Sortable
             // list={tabs}
             // setList={setTabs}
             // multiList={selectedList}
@@ -81,9 +86,14 @@ const TabsBoxPage = () => {
                   <Content></Content>
                 </main>
               </div>
+              <DragOverlay>
+                {/* {activeId ? <Item id={activeId} /> : null} */}
+                <OverlayListItem></OverlayListItem>
+              </DragOverlay>
               <ToastContainer></ToastContainer>
-            {/* </Sortable> */}
-          </DndGlobalContext>
+              {/* </Sortable> */}
+            </DndGlobalContext>
+          </SelectProvider>
         </DialogProvider>
       </HistoryProvider>
     </ProviderWithReducer>
