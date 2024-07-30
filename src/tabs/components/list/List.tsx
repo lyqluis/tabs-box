@@ -4,7 +4,6 @@ import { ListItem } from "."
 import { useGlobalCtx } from "../context"
 import { useDialog } from "../Dialog/DialogContext"
 import { setCollection, setWindow } from "../reducers/actions"
-import { TstListItem } from "./ListItem"
 import { Sortable } from "./Sortable"
 
 const listIndexShift = (arr, from, to) => {
@@ -21,12 +20,12 @@ const listIndexShift = (arr, from, to) => {
 
 interface ListProps {
   window: chrome.windows.Window // from <windows[] | collection.windows[]>
-  type?: string // window | collection
+  type?: "window" | "collection" // window | collection
   selectedMap?: any
   // selectedList?: chrome.tabs.Tab[]
   dispatchEdit?: (isEdited?: boolean) => void
   onSelect?: (any: any) => void
-  setWindowTabs?: (id: Window["id"], tabs: Tab[]) => void
+  setWindowTabs?: (id: WindowId, tabs: Tab[]) => void
 }
 
 // TODO any operation on the list should be push into history stack
@@ -128,33 +127,16 @@ const List: React.FC<ListProps> = ({
         )}
         Window: {window.id}
       </div>
-      {/* pinned tabs */}
+      {/* tabs */}
       <Sortable
         list={tabs}
         setList={setTabs}
         multiList={selectedList}
         onSortEnd={onSortEnd}
+        listId={window.id}
       >
+        {/* pinned tabs */}
         {pinnedTabs.map((tab, i) => {
-          return (
-            <TstListItem
-              tab={tab}
-              key={`${window.id}-${tab.url}-${i}`}
-              checked={selectedList?.some((t) => tab.id === t.id)}
-              onSelect={onSelect}
-              type={type}
-            ></TstListItem>
-          )
-        })}
-        {/* </Sortable> */}
-        {/* sortable tabs */}
-        {/* <Sortable
-        list={tabs}
-        setList={setTabs}
-        multiList={selectedList}
-        onSortEnd={onSortEnd}
-      > */}
-        {tabs.map((tab, i) => {
           return (
             <ListItem
               tab={tab}
@@ -164,6 +146,18 @@ const List: React.FC<ListProps> = ({
               type={type}
             ></ListItem>
           )
+        })}
+        {/* non-pinned tabs */}
+        {tabs.map((tab, i) => {
+          return !tab.hidden ? (
+            <ListItem
+              tab={tab}
+              key={`${window.id}-${tab.url}-${i}`}
+              checked={selectedList?.some((t) => tab.id === t.id)}
+              onSelect={onSelect}
+              type={type}
+            ></ListItem>
+          ) : null
         })}
       </Sortable>
     </div>

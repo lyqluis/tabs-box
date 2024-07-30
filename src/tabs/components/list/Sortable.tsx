@@ -34,8 +34,8 @@ export const useSortableItem = (sortableOptions) => {
   return { attributes, listeners, setNodeRef, style }
 }
 
-// dnd context
-export const Sortable = ({ list, setList, children, onSortEnd, multiList }) => {
+// dnd sortable context
+export const Sortable = ({ list, setList, children, onSortEnd, multiList, listId }) => {
   // const {
   //   state: { windows, collections },
   //   current,
@@ -106,7 +106,7 @@ export const Sortable = ({ list, setList, children, onSortEnd, multiList }) => {
     // >
     // todo sortable item only can work in sortable context area
     // ideal situation is that sortable works in sortable context and outer dropable context
-    <SortableContext items={list} strategy={verticalListSortingStrategy}>
+    <SortableContext items={list} strategy={verticalListSortingStrategy} id={listId}>
       {children}
     </SortableContext>
     // </DndContext>
