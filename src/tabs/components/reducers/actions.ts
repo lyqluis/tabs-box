@@ -23,6 +23,10 @@ export const UPDATE_COLLECTIONS = "UPDATE_COLLECTIONS"
 export const ADD_WINDOW = "ADD_WINDOW"
 export const REMOVE_WINDOW = "REMOVE_WINDOW"
 export const UPDATE_WINDOW = "UPDATE_WINDOW"
+
+export const ADD_WINDOWS = "ADD_WINDOWS"
+export const REMOVE_WINDOWS = "REMOVE_WINDOWS"
+export const UPDATE_WINDOWS = "UPDATE_WINDOWS"
 // tabs
 export const ADD_TABS = "ADD_TABS"
 export const REMOVE_TABS = "REMOVE_TABS"
@@ -89,10 +93,12 @@ export const updateWindow = ({ window, collectionId }) => ({
   type: UPDATE_WINDOW,
   payload: { window, collectionId }
 })
+
 type AddTabs = {
   tabs: Tab[]
-  windowId: string | number // target window's id
+  windowId: WindowId // target window's id
   collectionId?: string | number // target collection's id
+  index?: number // specified index
 }
 export const addTabs = ({ tabs, windowId, collectionId }: AddTabs) => ({
   type: ADD_TABS,
@@ -101,12 +107,28 @@ export const addTabs = ({ tabs, windowId, collectionId }: AddTabs) => ({
 
 type RemoveTabs = {
   tabIds: string | number[]
-  windowId: string | number
+  windowId: WindowId
   collectionId?: string | number
 }
 export const removeTabs = ({ tabIds, windowId, collectionId }: RemoveTabs) => ({
   type: REMOVE_TABS,
   payload: { tabIds, windowId, collectionId }
+})
+
+type UpdatedTabs = {
+  tabs: Tab[]
+  windowId: WindowId
+  collectionId?: string | number
+  index?: number
+}
+export const updateTabs = ({
+  tabs,
+  windowId,
+  collectionId,
+  index
+}: UpdatedTabs) => ({
+  type: UPDATE_TABS,
+  payload: { tabs, windowId, collectionId, index }
 })
 
 export const exportData = () => ({ type: EXPORT_DATA })

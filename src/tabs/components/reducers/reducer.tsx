@@ -1,8 +1,12 @@
 import { useEffect, useMemo, useReducer } from "react"
 
 import { localRemoveCollection, localSaveCollection } from "~tabs/store"
-import { sortCollections } from "~tabs/utils/collection"
-import { addTabsToWindow, removeTabsFromWindow } from "~tabs/utils/window"
+import { addWindowToCollection, sortCollections } from "~tabs/utils/collection"
+import {
+  addTabsToWindow,
+  removeTabsFromWindow,
+  setTabsInWindow
+} from "~tabs/utils/window"
 
 import { Provider } from "../context"
 import {
@@ -14,6 +18,7 @@ import {
 import {
   ADD_TAB,
   ADD_TABS,
+  ADD_WINDOW,
   EXPORT_DATA,
   REMOVE_COLLECTION,
   REMOVE_TAB,
@@ -29,7 +34,8 @@ import {
   setCurrent,
   setWindows,
   UPDATE_EDITED_LIST,
-  UPDATE_TAB
+  UPDATE_TAB,
+  UPDATE_TABS
 } from "./actions"
 
 interface State {
@@ -188,21 +194,41 @@ const reducer = (state, action) => {
       state.editedMap[id] = isEdited
       return { ...state }
     }
+    case ADD_WINDOW: {
+      console.log("🧠 reducer ADD_WINDOW", action.payload)
+      const { window, collectionId } = action.payload
+      // add window to collection.windows
+      if (collectionId) {
+        const collections = addWindowToCollection(
+          window,
+          collectionId,
+          state.collections
+        )
+        return { ...state, collections }
+      }
+      // add window to windows
+      const windows = [...state.windows, window]
+      return { ...state, windows }
+    }
     case ADD_TABS: {
       console.log("🧠 reducer ADD_TABS", action.payload)
-      const { tabs, windowId } = action.payload
+      const { tabs, windowId, collectionId, index } = action.payload
       // change tabs' windowId to new windowId
       tabs.map((tab) => {
         tab.windowId = windowId
         return tab
       })
 
-      const collectionId = action.payload.collectionId
       // add tabs to collection.window
       if (collectionId) {
         const collections = state.collections.map((collection) => {
           if (collection.id === collectionId) {
-            const windows = addTabsToWindow(tabs, windowId, collection.windows)
+            const windows = addTabsToWindow(
+              tabs,
+              windowId,
+              collection.windows,
+              index
+            )
             return { ...collection, windows }
           }
           return collection
@@ -210,7 +236,7 @@ const reducer = (state, action) => {
         return { ...state, collections }
       }
       // add tabs to window
-      const windows = addTabsToWindow(tabs, windowId, state.windows)
+      const windows = addTabsToWindow(tabs, windowId, state.windows, index)
       return { ...state, windows }
     }
     case REMOVE_TABS: {
@@ -234,6 +260,29 @@ const reducer = (state, action) => {
       }
       // remove tabs from window
       const windows = removeTabsFromWindow(tabIds, windowId, state.windows)
+      return { ...state, windows }
+    }
+    case UPDATE_TABS: {
+      console.log("🧠 reducer UPDATE_TABS", action.payload)
+      const { tabs, windowId, collectionId, index } = action.payload
+      // set tabs from collection.window
+      if (collectionId) {
+        const collections = state.collections.map((collection) => {
+          if (collection.id === collectionId) {
+            const windows = setTabsInWindow(
+              tabs,
+              windowId,
+              collection.windows,
+              index
+            )
+            return { ...collection, windows }
+          }
+          return collection
+        })
+        return { ...state, collections }
+      }
+      // set tabs from window
+      const windows = setTabsInWindow(tabs, windowId, state.windows)
       return { ...state, windows }
     }
     // other case...
