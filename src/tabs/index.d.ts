@@ -1,6 +1,15 @@
-interface Tab extends chrome.tabs.Tab {}
+interface Tab extends chrome.tabs.Tab {
+  hidden?: boolean // control the display while dragging
+  checked: boolean
+}
 
-interface Window extends chrome.windows.Window {}
+interface Window extends chrome.windows.Window {
+  id: sting | number // number refers to window, string refers to collection.window
+  collectionId?: string // ? need collectionId?
+  tabs: Tab[]
+}
+
+type WindowId = Window["id"]
 
 interface Collection {
   id: string
@@ -12,3 +21,5 @@ interface Collection {
   pinned?: string // pinned time
   windows: Window[]
 }
+
+type CollectionId = Collection["id"]

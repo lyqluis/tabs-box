@@ -4,18 +4,28 @@ import {
   DragOverlay,
   KeyboardSensor,
   PointerSensor,
+  pointerWithin,
+  rectIntersection,
   useDroppable,
   useSensor,
   useSensors
 } from "@dnd-kit/core"
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable"
-import { createContext, useContext, useMemo, useState } from "react"
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState
+} from "react"
 import { createPortal } from "react-dom"
 
 import { useSelectContext } from "~tabs/hooks/useSelect"
+import { createWindow } from "~tabs/utils/window"
 
 import { useGlobalCtx } from "./context"
 import { OverlayListItem } from "./list/ListItem"
+import { addTabs, addWindow, removeTabs, updateTabs } from "./reducers/actions"
 
 const ctx = createContext(null)
 const { Provider } = ctx
@@ -37,6 +47,10 @@ export const Droppable = ({ item = null, children }) => {
 
 export const DndGlobalContext = ({ children }) => {
   const [draggingItem, setDraggingItem] = useState(null)
+  const [dragState, setDragState] = useState({
+    originContainerId: null
+  })
+  const [originContainerId, setOriginContainerId] = useState(null)
   const [draggingCount, setDraggingCount] = useState(0)
 
   const sensors = useSensors(
@@ -48,10 +62,13 @@ export const DndGlobalContext = ({ children }) => {
   )
 
   const {
-    state: { collections, windows }
+    state: { collections, windows },
+    current,
+    type,
+    dispatch
   } = useGlobalCtx()
   // get window's selected list
-  const { tabsByWindowMap, setSelected } = useSelectContext()
+  const { tabsByWindowMap, setSelected, selectedList } = useSelectContext()
   const windowId = draggingItem?.windowId ?? 0
   const selectedWindowTabs = tabsByWindowMap.get(windowId)
   const selectedWindowTabsCount = selectedWindowTabs?.length ?? 0
@@ -66,13 +83,13 @@ export const DndGlobalContext = ({ children }) => {
     const selectedWindowTabsCount = selectedWindowTabs?.length ?? 0
     console.log("🖱️ on drag start", active, windowId, selectedWindowTabs)
 
-    // TODO get dragging element'width to set width
     // find dragging tab to set draggingItem for drag overlay
     let findDragging
     for (const window of windows) {
       const targetTab = window.tabs.find((t) => t.id === tabId)
       if (targetTab) {
         setDraggingItem(targetTab)
+        setOriginContainerId(targetTab.windowId)
         findDragging = true
         break
       }
@@ -84,6 +101,7 @@ export const DndGlobalContext = ({ children }) => {
         const targetTab = window.tabs.find((t) => t.id === tabId)
         if (targetTab) {
           setDraggingItem(targetTab)
+          setOriginContainerId(targetTab.windowId)
           break
         }
       }
@@ -106,22 +124,175 @@ export const DndGlobalContext = ({ children }) => {
   }
   const handleDragOver = (e) => {
     console.log("🖱️ on drag over", e)
+    // TODO
+    const { active, over } = e
+    if (!active || !over) return
+    const activeId = active.id
+    const overId = over.id
+
+    const activeContainerId = draggingItem.windowId ?? draggingItem.collectionId // since active.data?.current?.sortable?.containerId will change after set to the new window during the drag over event
+    const overContainerId = over.data?.current?.sortable?.containerId
+    console.log("--- on drag over", activeContainerId, overContainerId)
+
+    // * active & over is in the same list
+    if (activeContainerId === overContainerId) return
+
+    // * active is tab, over is sidebar item, do nothing
+    if (!overContainerId) {
+      return
+    }
+
+    const windowId = active.data?.current?.sortable?.containerId
+    const selectedWindowTabs = tabsByWindowMap.get(activeContainerId)
+    const selectedWindowTabsCount = selectedWindowTabs?.length ?? 0
+
+    // * active is tab, over is tab in the different list
+    // * witch only happens in the same collection.
+    // set active tab to the over tab's list
+    // single drag
+    let tabIds = [activeId]
+    let tabs = [draggingItem]
+    // multi drag
+    if (
+      selectedWindowTabsCount &&
+      selectedWindowTabs.some((t) => t.id === activeId)
+    ) {
+      tabIds = selectedWindowTabs.map((tab) => tab.id)
+      tabs = selectedWindowTabs
+    }
+    dispatch(
+      removeTabs({
+        tabIds,
+        windowId: activeContainerId,
+        collectionId: current.id
+      })
+    )
+    dispatch(
+      addTabs({
+        tabs,
+        windowId: overContainerId,
+        collectionId: current.id
+      })
+    )
   }
-  const handleDragEnd = ({ active }) => {
-    console.log("🖱️ on drag end", active)
+
+  // TODO
+  const handleDragEnd = ({ active, over }) => {
+    console.log("🖱️ on drag end", active, over)
     setDraggingItem(null)
+
+    const activeId = active.id
+    const overId = over.id
+
+    const activeContainerId = draggingItem.windowId ?? draggingItem.collectionId // since active.data?.current?.sortable?.containerId will change after set to the new window during the drag over event
+    const overContainerId = over.data?.current?.sortable?.containerId
+
+    // single drag
+    let tabs = [draggingItem]
+    // multi drag
+    if (
+      selectedWindowTabsCount &&
+      selectedWindowTabs.some((t) => t.id === activeId)
+    ) {
+      tabs = selectedWindowTabs
+    }
+    // * active is tab from other list, over is tab
+    // * & active is tab, over is tab in the same list
+    if (activeContainerId === overContainerId) {
+      // console.log("active container id === over container id")
+
+      // active is tab is in the index of new order
+      if (activeId !== overId) {
+        // TODO: update new order of the list
+        // todo bug: over.index is wrong with pinned list item
+        const newIndex = over?.data?.current?.sortable?.index
+        dispatch(
+          updateTabs({
+            tabs,
+            windowId: activeContainerId,
+            collectionId: current.id,
+            index: newIndex
+          })
+        )
+      }
+    }
+
+    // * active is tab, over is sidebar item, do nothing
+    // if (!overContainerId) {
+    //   const overId = over.id ?? over.data?.id // collection id
+    //   if (!overId) return
+    //   // multi drag
+    //   if (
+    //     selectedWindowTabsCount &&
+    //     selectedWindowTabs.some((t) => t.id === activeId)
+    //   ) {
+    //     // todo if multi drag from the same list
+    //     if (type === "collection") {
+    //       dispatch(
+    //         removeTabs({
+    //           tabIds: s,
+    //           windowId: activeContainerId,
+    //           collectionId: current.id
+    //         })
+    //       )
+    //     }
+    //     // todo multi drag from different list
+    //   }
+    //   // single drag
+    //   if (type === "collection") {
+    //     dispatch(
+    //       removeTabs({
+    //         tabIds: [activeId],
+    //         windowId: activeContainerId,
+    //         collectionId: current.id
+    //       })
+    //     )
+    //   }
+    //   return
+    // }
+
     // make selected items hidden in drag start visible
     if (selectedWindowTabsCount) {
-      setSelected({ hidden: false }, windowId)
+      // need to set both tabs in active tab & over tab's window
+      setSelected({ hidden: false })
     }
   }
+
+  /**
+   * TODO Custom collision detection strategy optimized for multiple containers
+   *
+   * - First, find any droppable containers intersecting with the pointer.
+   * - If there are none, find intersecting containers with the active draggable.
+   * - If there are no intersecting containers, return the last matched intersection
+   *
+   */
+  const collisionDetectionStrategy = useCallback(
+    (args) => {
+      // TODO
+      // find any intersecting droppable
+      const pointerIntersections = pointerWithin(args)
+      const intersections =
+        pointerIntersections.length > 0
+          ? // If there are droppables intersecting with the pointer, return those
+            pointerIntersections
+          : rectIntersection(args)
+      console.log("💥 intersections", intersections)
+      // TODO if intersections includes sidebar item, return side bar item
+      const sideBar = intersections.find((intersection) =>
+        collections.some((c) => c.id === intersection.id)
+      )
+      if (sideBar) return [sideBar]
+      // DO NOT use default - rectangle intersection
+      // Since it will let styled of draggable item outside droppabel container disappear
+      return closestCenter({ ...args })
+    },
+    [draggingItem]
+  )
 
   return (
     <DndContext
       sensors={sensors}
-      // todo customize detection
-      // collisionDetection={collisionDetectionStrategy} // DO NOT use default - rectangle intersection, since it will let styled of draggable item outside droppabel container disappear
-      collisionDetection={closestCenter} // DO NOT use default - rectangle intersection, since it will let styled of draggable item outside droppabel container disappear
+      collisionDetection={collisionDetectionStrategy}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
