@@ -106,7 +106,7 @@ export const addTabs = ({ tabs, windowId, collectionId }: AddTabs) => ({
 })
 
 type RemoveTabs = {
-  tabIds: string | number[]
+  tabIds: (string | number)[]
   windowId: WindowId
   collectionId?: string | number
 }

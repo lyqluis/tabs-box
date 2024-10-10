@@ -190,9 +190,20 @@ component -> context/reducer -> local
   => component --[?save]--> local
 
 ### drag tabs
-1. [x] drag tabs in the same window/list
+- [x] collection
+  1. [x] drag tabs in the same window/list
   => update list order
-2. [x] drag tabs to another window/list(same collection)
+  2. [x] drag tabs to another window/list(same collection)
   => update old window tabs, new window tabs and order
-3. [ ] drag tabs to another collection
+  3. [x] drag tabs to another collection
   => remove tabs from window of old collection, add new window with tabs to new collection
+
+- [ ] window
+  1. [ ] drag tabs in the same window/list
+  => update list order
+  2. [ ] drag tabs to another window/list(same collection)
+  => update old window tabs, new window tabs and order
+  3. [ ] drag tabs to another collection
+  => remove tabs from window of old collection, add new window with tabs to new collection
+
+- [ ] save drag changes locally
