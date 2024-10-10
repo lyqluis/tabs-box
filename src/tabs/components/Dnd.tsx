@@ -106,10 +106,6 @@ export const DndGlobalContext = ({ children }) => {
       }
     }
 
-    // TODO if selected list length > 1, change layout style to multiple
-    // calculate y-offset only if the item is alreay selected
-    // select the item if it's not selected
-
     // hide other selected items if necessary (exclude dragging tab)
     if (
       selectedWindowTabsCount &&
@@ -131,7 +127,13 @@ export const DndGlobalContext = ({ children }) => {
 
     const activeContainerId = draggingItem.windowId ?? draggingItem.collectionId // since active.data?.current?.sortable?.containerId will change after set to the new window during the drag over event
     const overContainerId = over.data?.current?.sortable?.containerId
-    console.log("--- on drag over", activeContainerId, overContainerId)
+    console.log(
+      "--- on drag over",
+      activeId,
+      overId,
+      activeContainerId,
+      overContainerId
+    )
 
     // * active & over is in the same list
     if (activeContainerId === overContainerId) return
@@ -200,9 +202,9 @@ export const DndGlobalContext = ({ children }) => {
     }
 
     if (activeContainerId === overContainerId) {
-      // * active is tab from other list, over is tab
+      // * active is tab, over is tab in the other list (since active's container id is changed in drag over)
       // * & active is tab, over is tab in the same list
-      // console.log("active container id === over container id")
+      console.log("active container id === over container id")
 
       // active is tab is in the index of new order
       if (activeId !== overId) {

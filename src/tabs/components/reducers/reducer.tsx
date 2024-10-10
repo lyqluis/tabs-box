@@ -283,7 +283,7 @@ const reducer = (state, action) => {
         return { ...state, collections }
       }
       // set tabs from window
-      const windows = setTabsInWindow(tabs, windowId, state.windows)
+      const windows = setTabsInWindow(tabs, windowId, state.windows, index)
       return { ...state, windows }
     }
     // other case...

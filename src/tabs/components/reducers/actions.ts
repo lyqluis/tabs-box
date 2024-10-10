@@ -126,9 +126,15 @@ export const updateTabs = ({
   windowId,
   collectionId,
   index
-}: UpdatedTabs) => ({
-  type: UPDATE_TABS,
-  payload: { tabs, windowId, collectionId, index }
-})
+}: UpdatedTabs) => {
+  console.log("action -- @windowid", windowId, "@collectionId", collectionId)
+  if (windowId === collectionId) {
+    collectionId = undefined
+  }
+  return {
+    type: UPDATE_TABS,
+    payload: { tabs, windowId, collectionId, index }
+  }
+}
 
 export const exportData = () => ({ type: EXPORT_DATA })

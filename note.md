@@ -199,11 +199,11 @@ component -> context/reducer -> local
   => remove tabs from window of old collection, add new window with tabs to new collection
 
 - [ ] window
-  1. [ ] drag tabs in the same window/list
+  1. [x] drag tabs in the same window/list
   => update list order
-  2. [ ] drag tabs to another window/list(same collection)
-  => update old window tabs, new window tabs and order
-  3. [ ] drag tabs to another collection
-  => remove tabs from window of old collection, add new window with tabs to new collection
+  2. [ ] drag tabs to another window(sidebar)
+  => update new window tabs list
+  3. [x] drag tabs to another collection
+  => add new window with tabs to new collection
 
-- [ ] save drag changes locally
+- [x] save drag changes locally
