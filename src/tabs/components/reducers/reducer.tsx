@@ -204,6 +204,7 @@ const reducer = (state, action) => {
           collectionId,
           state.collections
         )
+        console.log("@collections", collections)
         return { ...state, collections }
       }
       // add window to windows

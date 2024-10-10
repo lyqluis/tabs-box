@@ -2,15 +2,34 @@ import { arrayMove } from "@dnd-kit/sortable"
 
 import { generateId } from "."
 
-export const createWindow = (tabs: Tab[], window?: Window) => {
+export const createWindow = (
+  tabs: Tab[],
+  collectionId?: string,
+  window?: Window
+) => {
   if (!window) {
+    const id = generateId()
+    tabs = tabs.map((tab) => {
+      tab.windowId = id
+      tab.hidden = false
+      tab.checked = false
+      return tab
+    })
     return {
-      id: generateId(),
-      tabs
+      id,
+      tabs,
+      collectionId
     }
   }
 
-  window.id = generateId()
+  const id = generateId()
+  tabs = tabs.map((tab) => {
+    tab.windowId = id
+    tab.hidden = false
+    tab.checked = false
+    return tab
+  })
+  window.id = id
   window.tabs = tabs
   return window
 }

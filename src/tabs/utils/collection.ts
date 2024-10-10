@@ -7,3 +7,24 @@ export const sortCollections = (collections: Collection[]): Collection[] => {
     .sort((a, b) => b.updated - a.updated)
   return [...pinnedCollections, ...restCollections]
 }
+
+
+/**
+ * @func: add new window in target collection, return new collections with new target collection with new window
+ * @param {Window} window
+ * @param {CollectionId} collectionId target collection id
+ * @param {Collection} collections reducer's collections
+ * @return {Collection[]} new collections
+ */
+export const addWindowToCollection = (
+  window: Window,
+  collectionId: CollectionId,
+  collections: Collection[]
+): Collection[] => {
+  return collections.map((collection) => {
+    if (collection.id === collectionId) {
+      return { ...collection, windows: [...collection.windows, window] }
+    }
+    return collection
+  })
+}

@@ -1,12 +1,13 @@
 interface Tab extends chrome.tabs.Tab {
+  id: string | number
   hidden?: boolean // control the display while dragging
   checked: boolean
 }
 
 interface Window extends chrome.windows.Window {
   id: sting | number // number refers to window, string refers to collection.window
-  collectionId?: string // ? need collectionId?
   tabs: Tab[]
+  collectionId?: string // ? need collectionId?
 }
 
 type WindowId = Window["id"]

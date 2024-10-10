@@ -2,7 +2,6 @@ import {
   closestCenter,
   DndContext,
   DragOverlay,
-  KeyboardSensor,
   PointerSensor,
   pointerWithin,
   rectIntersection,
@@ -11,13 +10,7 @@ import {
   useSensors
 } from "@dnd-kit/core"
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable"
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState
-} from "react"
+import { createContext, useCallback, useContext, useState } from "react"
 import { createPortal } from "react-dom"
 
 import { useSelectContext } from "~tabs/hooks/useSelect"
@@ -25,7 +18,13 @@ import { createWindow } from "~tabs/utils/window"
 
 import { useGlobalCtx } from "./context"
 import { OverlayListItem } from "./list/ListItem"
-import { addTabs, addWindow, removeTabs, updateTabs } from "./reducers/actions"
+import {
+  addTabs,
+  addWindow,
+  removeTabs,
+  updateEditedList,
+  updateTabs
+} from "./reducers/actions"
 
 const ctx = createContext(null)
 const { Provider } = ctx
@@ -122,9 +121,9 @@ export const DndGlobalContext = ({ children }) => {
       setDraggingCount(1)
     }
   }
+  // TODO
   const handleDragOver = (e) => {
     console.log("🖱️ on drag over", e)
-    // TODO
     const { active, over } = e
     if (!active || !over) return
     const activeId = active.id
@@ -179,7 +178,6 @@ export const DndGlobalContext = ({ children }) => {
   // TODO
   const handleDragEnd = ({ active, over }) => {
     console.log("🖱️ on drag end", active, over)
-    setDraggingItem(null)
 
     const activeId = active.id
     const overId = over.id
@@ -188,23 +186,26 @@ export const DndGlobalContext = ({ children }) => {
     const overContainerId = over.data?.current?.sortable?.containerId
 
     // single drag
+    let tabIds = [activeId]
     let tabs = [draggingItem]
     // multi drag
+    const selectedWindowTabs = tabsByWindowMap.get(activeContainerId)
+    const selectedWindowTabsCount = selectedWindowTabs?.length ?? 0
     if (
       selectedWindowTabsCount &&
       selectedWindowTabs.some((t) => t.id === activeId)
     ) {
+      tabIds = selectedWindowTabs.map((tab) => tab.id)
       tabs = selectedWindowTabs
     }
-    // * active is tab from other list, over is tab
-    // * & active is tab, over is tab in the same list
+
     if (activeContainerId === overContainerId) {
+      // * active is tab from other list, over is tab
+      // * & active is tab, over is tab in the same list
       // console.log("active container id === over container id")
 
       // active is tab is in the index of new order
       if (activeId !== overId) {
-        // TODO: update new order of the list
-        // todo bug: over.index is wrong with pinned list item
         const newIndex = over?.data?.current?.sortable?.index
         dispatch(
           updateTabs({
@@ -215,47 +216,36 @@ export const DndGlobalContext = ({ children }) => {
           })
         )
       }
-    }
+      dispatch(updateEditedList({ id: current.id, type, isEdited: true }))
+    } else {
+      // * active is tab, over is sidebar item
+      if (!overId) return
 
-    // * active is tab, over is sidebar item, do nothing
-    // if (!overContainerId) {
-    //   const overId = over.id ?? over.data?.id // collection id
-    //   if (!overId) return
-    //   // multi drag
-    //   if (
-    //     selectedWindowTabsCount &&
-    //     selectedWindowTabs.some((t) => t.id === activeId)
-    //   ) {
-    //     // todo if multi drag from the same list
-    //     if (type === "collection") {
-    //       dispatch(
-    //         removeTabs({
-    //           tabIds: s,
-    //           windowId: activeContainerId,
-    //           collectionId: current.id
-    //         })
-    //       )
-    //     }
-    //     // todo multi drag from different list
-    //   }
-    //   // single drag
-    //   if (type === "collection") {
-    //     dispatch(
-    //       removeTabs({
-    //         tabIds: [activeId],
-    //         windowId: activeContainerId,
-    //         collectionId: current.id
-    //       })
-    //     )
-    //   }
-    //   return
-    // }
+      // remove tabs from active window
+      dispatch(
+        removeTabs({
+          tabIds,
+          windowId: activeContainerId,
+          collectionId: current.id
+        })
+      )
+      // create new window with tabs in the target collection
+      const newWindow = createWindow(tabs, overId)
+      dispatch(addWindow({ window: newWindow, collectionId: overId }))
+
+      dispatch(updateEditedList({ id: current.id, type, isEdited: true }))
+      dispatch(
+        updateEditedList({ id: overId, type: "collection", isEdited: true })
+      )
+    }
 
     // make selected items hidden in drag start visible
     if (selectedWindowTabsCount) {
       // need to set both tabs in active tab & over tab's window
       setSelected({ hidden: false })
     }
+
+    setDraggingItem(null)
   }
 
   /**
