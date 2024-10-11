@@ -12,30 +12,22 @@ import { useSortableItem } from "./Sortable"
 
 interface ListItemProps {
   tab: Tab
-  checked: boolean
+  // checked: boolean
   type: "window" | "collection"
   overlay?: boolean
   onSelect?: (props) => void
 }
 
-const ListItem: FC<ListItemProps> = ({
-  tab,
-  checked,
-  type,
-  overlay,
-  onSelect
-}) => {
+const ListItem: FC<ListItemProps> = ({ tab, type, overlay, onSelect }) => {
   // console.log("list item refreshed", tab.title, checked)
   const { attributes, listeners, setNodeRef, style } = useSortableItem({
     id: tab.id
   })
-  const { draggingItem, setDraggingItem } = useDndContext()
+  const { draggingItem } = useDndContext()
   const [isHovered, setIsHovered] = useState(false)
-  const [isSelected, setIsSelected] = useState(checked)
 
   const onChange = (e) => {
-    const newSelected = !isSelected
-    setIsSelected(newSelected)
+    const newSelected = !tab.checked
     onSelect({ tab, isSelected: newSelected })
   }
   const onMouseOver = (e) => setIsHovered(true)
@@ -53,10 +45,6 @@ const ListItem: FC<ListItemProps> = ({
     }
   }
 
-  useEffect(() => {
-    setIsSelected(checked)
-  }, [checked])
-
   return (
     <li
       ref={setNodeRef}
@@ -65,7 +53,7 @@ const ListItem: FC<ListItemProps> = ({
         opacity: !overlay && draggingItem?.id === tab.id ? 0.5 : 1
       }}
       className={`flex flex-nowrap items-center overflow-hidden text-ellipsis whitespace-nowrap align-baseline text-base font-light hover:bg-slate-100
-       ${isSelected ? "bg-slate-100" : ""}
+       ${tab.checked ? "bg-slate-100" : ""}
       `}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
@@ -81,7 +69,7 @@ const ListItem: FC<ListItemProps> = ({
           ></Pinned>
         ) : (
           <DragableIcon
-            className={`h-full w-full fill-slate-300 hover:cursor-grab focus:cursor-grabbing focus:outline-none ${isHovered || isSelected ? "flex" : "hidden"}`}
+            className={`h-full w-full fill-slate-300 hover:cursor-grab focus:cursor-grabbing focus:outline-none ${isHovered || tab.checked ? "flex" : "hidden"}`}
             {...attributes}
             {...listeners}
           ></DragableIcon>
@@ -92,7 +80,7 @@ const ListItem: FC<ListItemProps> = ({
           <input
             type="checkbox"
             className="checkbox-primary checkbox checkbox-sm"
-            checked={isSelected}
+            checked={tab.checked ?? false}
             onChange={onChange}
           />
         </label>
@@ -129,20 +117,17 @@ interface OverlayListItemProps {
   count?: number // number of selected list item
 }
 export const OverlayListItem: FC<OverlayListItemProps> = ({ count }) => {
-  const { draggingItem, setDraggingItem } = useDndContext()
+  const { draggingItem } = useDndContext()
   const { selectedList } = useSelectContext()
-  console.log("overlay", draggingItem)
 
-  // todo find out whether dragging tab is selected
-  // if some tabs selected, but dragg item is not selected, multi tag shows
   if (draggingItem) {
     if (count > 1) {
       return (
-        <div className="indicator" style={{ width: "auto", display: "flex" }}>
+        <div className="indicator" style={{ width: "auto", display: "block" }}>
           <span className="badge indicator-item badge-secondary">{count}</span>
           <ListItem
             tab={draggingItem}
-            checked={selectedList.some((t) => t.id === draggingItem.id)}
+            // checked={selectedList.some((t) => t.id === draggingItem.id)}
             overlay
           ></ListItem>
         </div>
@@ -151,7 +136,7 @@ export const OverlayListItem: FC<OverlayListItemProps> = ({ count }) => {
       return (
         <ListItem
           tab={draggingItem}
-          checked={selectedList.some((t) => t.id === draggingItem.id)}
+          // checked={selectedList.some((t) => t.id === draggingItem.id)}
           overlay
         ></ListItem>
       )
