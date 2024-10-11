@@ -29,8 +29,13 @@ export const oldSelectProvider = ({ children }) => {
       return map
     }, new Map())
   }, [selectedList])
-  
-  console.log("🪝 useSelect - @selected list", selectedList, '@tabs grouped by window', tabsByWindowMap)
+
+  console.log(
+    "🪝 useSelect - @selected list",
+    selectedList,
+    "@tabs grouped by window",
+    tabsByWindowMap
+  )
 
   const onSelect = ({ tab, isSelected }) => {
     if (isSelected) {
@@ -172,7 +177,10 @@ export const SelectProvider = ({ children }) => {
         return current.tabs.filter((t) => t.checked)
       } else {
         return current.windows.reduce(
-          (checkedTabs, window) => [...checkedTabs, ...window.tabs.filter((t) => t.checked)],
+          (checkedTabs, window) => [
+            ...checkedTabs,
+            ...window.tabs.filter((t) => t.checked)
+          ],
           []
         )
       }
@@ -187,7 +195,12 @@ export const SelectProvider = ({ children }) => {
     }, new Map())
   }, [selectedList])
 
-  console.log("🪝 useSelect - @selected list", selectedList, '@tabs grouped by window map', tabsByWindowMap)
+  console.log(
+    "🪝 useSelect - @selected list",
+    selectedList,
+    "@tabs grouped by window map",
+    tabsByWindowMap
+  )
 
   const onSelect = ({ tab, isSelected }) => {
     tab.checked = isSelected
@@ -303,7 +316,12 @@ export const SelectProvider = ({ children }) => {
   }
 
   useEffect(() => {
-    setSelectedList([])
+    setSelectedList((list) => {
+      list.map((tab) => {
+        tab.checked = false
+      })
+      return []
+    })
   }, [currentId])
 
   return (
