@@ -4,7 +4,9 @@ import { useGlobalCtx } from "~tabs/components/context"
 import {
   addTab,
   removeTab,
+  removeTabs,
   setCurrent,
+  setWindow,
   setWindows,
   updateTab
 } from "~tabs/components/reducers/actions"
@@ -90,11 +92,19 @@ export const applyWindow = async (window) => {
   const oldTabs = target.tabs
   const tabs = window.tabs
   const { creates, moves, removes } = compareTabs(oldTabs, tabs)
-  console.log("🌍 apply window", creates, moves, removes)
+  console.log(
+    "🌍 apply window",
+    "@creates",
+    creates,
+    "@moves",
+    moves,
+    "@removes",
+    removes
+  )
   moves.length &&
     moves.map((tab) => chrome.tabs.move(tab.id, { index: tab.index }))
   removes.length && chrome.tabs.remove(removes)
-  creates.length && creates.map((tab) => chrome.tabs.create({ ...tab }))
+  creates.length && openTabs(creates, target.id)
 }
 
 export const jumptToWindow = (id) => {
@@ -105,13 +115,14 @@ export const jumptToTab = (tab: chrome.tabs.Tab) => {
   chrome.tabs.update(tab.id, { active: true })
 }
 
-export const openTabs = (tabs) => {
+export const openTabs = (tabs, windowId?: number) => {
   if (Array.isArray(tabs)) {
     tabs.map((tab) => {
       chrome.tabs.create({
         url: tab.url,
         pinned: tab.pinned,
-        active: false
+        active: false,
+        windowId
       })
     })
     return
@@ -155,7 +166,13 @@ export const useTabEvents = () => {
 
   const onTabCreated = async (tab) => {
     console.log("on tab created", tab)
-    dispatch(addTab(tab))
+    try {
+      const window = await getWindow(tab.windowId)
+      console.log("--gat all tabs", window)
+      dispatch(setWindow(window))
+    } catch (err) {
+      console.error("Error get all tabs:", err)
+    }
   }
   const onTabUpdated = (id, info, tab) => {
     console.log("on tab update", tab)
@@ -163,7 +180,7 @@ export const useTabEvents = () => {
   }
   const onTabRemoved = async (id, { windowId }) => {
     console.log("on tab remove", id, "in", windowId)
-    dispatch(removeTab(id, windowId))
+    dispatch(removeTabs({ tabIds: [id], windowId }))
   }
   const onTabMoved = async (id, { fromIndex, toIndex, windowId }) => {
     console.log("on tab move", id, windowId)

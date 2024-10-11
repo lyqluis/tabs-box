@@ -217,6 +217,10 @@ const reducer = (state, action) => {
       // change tabs' windowId to new windowId
       tabs.map((tab) => {
         tab.windowId = windowId
+        if (!collectionId) {  // add tabs to sidebar window
+          tab.hidden = false
+          tab.checked = false
+        }
         return tab
       })
 

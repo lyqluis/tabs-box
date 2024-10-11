@@ -117,6 +117,7 @@ export const DndGlobalContext = ({ children }) => {
       setDraggingCount(1)
     }
   }
+
   // TODO
   const handleDragOver = (e) => {
     console.log("🖱️ on drag over", e)
@@ -204,9 +205,9 @@ export const DndGlobalContext = ({ children }) => {
     if (activeContainerId === overContainerId) {
       // * active is tab, over is tab in the other list (since active's container id is changed in drag over)
       // * & active is tab, over is tab in the same list
-      console.log("active container id === over container id")
+      console.log("active is tab, over is tab")
 
-      // active is tab is in the index of new order
+      // active is tab in the index of new order
       if (activeId !== overId) {
         const newIndex = over?.data?.current?.sortable?.index
         dispatch(
@@ -220,25 +221,43 @@ export const DndGlobalContext = ({ children }) => {
       }
       dispatch(updateEditedList({ id: current.id, type, isEdited: true }))
     } else {
-      // * active is tab, over is sidebar item
+      // * active is tab
       if (!overId) return
 
-      // remove tabs from active window
-      dispatch(
-        removeTabs({
-          tabIds,
-          windowId: activeContainerId,
-          collectionId: current.id
-        })
-      )
-      // create new window with tabs in the target collection
-      const newWindow = createWindow(tabs, overId)
-      dispatch(addWindow({ window: newWindow, collectionId: overId }))
+      if (typeof overId === 'number') {
+        // * over is window in sidebar
+        console.log("active is tab, over is sidebar window")
+        // no need to remove tab, add tabs to target window
+        dispatch(
+          addTabs({
+            tabs,
+            windowId: overId
+          })
+        )
 
-      dispatch(updateEditedList({ id: current.id, type, isEdited: true }))
-      dispatch(
-        updateEditedList({ id: overId, type: "collection", isEdited: true })
-      )
+        dispatch(
+          updateEditedList({ id: overId, type: "window", isEdited: true })
+        )
+      } else {
+        // * over is collection in sidebar
+        console.log('active is tab, over is sidebar collection');
+        // remove tabs from active window
+        dispatch(
+          removeTabs({
+            tabIds,
+            windowId: activeContainerId,
+            collectionId: current.id
+          })
+        )
+        // create new window with tabs in the target collection
+        const newWindow = createWindow(tabs, overId)
+        dispatch(addWindow({ window: newWindow, collectionId: overId }))
+
+        dispatch(updateEditedList({ id: current.id, type, isEdited: true }))
+        dispatch(
+          updateEditedList({ id: overId, type: "collection", isEdited: true })
+        )
+      }
     }
 
     // make selected items hidden in drag start visible
@@ -260,7 +279,6 @@ export const DndGlobalContext = ({ children }) => {
    */
   const collisionDetectionStrategy = useCallback(
     (args) => {
-      // TODO
       // find any intersecting droppable
       const pointerIntersections = pointerWithin(args)
       const intersections =
@@ -268,11 +286,17 @@ export const DndGlobalContext = ({ children }) => {
           ? // If there are droppables intersecting with the pointer, return those
             pointerIntersections
           : rectIntersection(args)
-      console.log("💥 intersections", intersections)
-      // TODO if intersections includes sidebar item, return side bar item
-      const sideBar = intersections.find((intersection) =>
-        collections.some((c) => c.id === intersection.id)
-      )
+
+      // console.log("💥 intersections", intersections)
+
+      // if intersections includes sidebar item, return side bar item
+      const sideBar =
+        intersections.find((intersection) =>
+          windows.some((w) => w.id === intersection.id)
+        ) ??
+        intersections.find((intersection) =>
+          collections.some((c) => c.id === intersection.id)
+        )
       if (sideBar) return [sideBar]
       // DO NOT use default - rectangle intersection
       // Since it will let styled of draggable item outside droppabel container disappear

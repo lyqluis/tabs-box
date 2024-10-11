@@ -66,7 +66,7 @@ export const setCurrent = (collection: Collection | chrome.windows.Window) => ({
 })
 export const addTab = (tab) => ({ type: ADD_TAB, payload: tab })
 export const updateTab = (tab) => ({ type: UPDATE_TAB, payload: tab })
-export const removeTab = (tabId, windowId, collectionId) => ({
+export const removeTab = (tabId, windowId, collectionId?) => ({
   type: REMOVE_TAB,
   payload: { tabId, windowId, collectionId }
 })
@@ -110,10 +110,12 @@ type RemoveTabs = {
   windowId: WindowId
   collectionId?: string | number
 }
-export const removeTabs = ({ tabIds, windowId, collectionId }: RemoveTabs) => ({
-  type: REMOVE_TABS,
-  payload: { tabIds, windowId, collectionId }
-})
+export const removeTabs = ({ tabIds, windowId, collectionId }: RemoveTabs) => {
+  return {
+    type: REMOVE_TABS,
+    payload: { tabIds, windowId, collectionId }
+  }
+}
 
 type UpdatedTabs = {
   tabs: Tab[]
@@ -128,9 +130,7 @@ export const updateTabs = ({
   index
 }: UpdatedTabs) => {
   console.log("action -- @windowid", windowId, "@collectionId", collectionId)
-  if (windowId === collectionId) {
-    collectionId = undefined
-  }
+  if (windowId === collectionId) collectionId = undefined
   return {
     type: UPDATE_TABS,
     payload: { tabs, windowId, collectionId, index }
