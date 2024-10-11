@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react"
+import WindowIcon from "react:~assets/svg/window.svg"
 
 import { ListItem } from "."
 import { useGlobalCtx } from "../context"
@@ -19,13 +20,13 @@ const listIndexShift = (arr, from, to) => {
 }
 
 interface ListProps {
-  window: chrome.windows.Window // from <windows[] | collection.windows[]>
+  window: Window // from <windows[] | collection.windows[]>
   type?: "window" | "collection" // window | collection
   selectedMap?: any
   // selectedList?: chrome.tabs.Tab[]
   dispatchEdit?: (isEdited?: boolean) => void
   onSelect?: (any: any) => void
-  setWindowTabs?: (id: WindowId, tabs: Tab[]) => void
+  setWindowTabs?: (id: WindowId, isSelected: boolean) => void
 }
 
 // TODO any operation on the list should be push into history stack
@@ -61,10 +62,10 @@ const List: React.FC<ListProps> = ({
     const selectedCount = selectedList.length
     if (selectedCount === window.tabs.length) {
       // remove all
-      setWindowTabs(window.id, [])
+      setWindowTabs(window.id, false)
     } else {
       // select all
-      setWindowTabs(window.id, [...window.tabs])
+      setWindowTabs(window.id, true)
     }
   }
 
@@ -114,8 +115,8 @@ const List: React.FC<ListProps> = ({
     >
       {/* list operation */}
       <div className="sticky top-0 mb-4 mt-4 flex h-5 items-center justify-start pl-5">
-        {selectedList.length > 0 && (
-          <label className="label mr-3 cursor-pointer">
+        {selectedList.length > 0 ? (
+          <label className="label cursor-pointer">
             <input
               ref={allCheckBox}
               type="checkbox"
@@ -124,8 +125,14 @@ const List: React.FC<ListProps> = ({
               onChange={selectAll}
             />
           </label>
+        ) : (
+          <WindowIcon className="h-full w-7 fill-slate-700"></WindowIcon>
         )}
-        Window: {window.id}
+        <span className="ml-2 text-base font-bold">Window</span>
+        {/* // todo: remove window.id */}
+        {`: ${window.id}`}
+        <button className="btn btn-xs m-1">open window</button>
+        <button className="btn btn-xs m-1">delete window</button>
       </div>
       {/* tabs */}
       <Sortable
@@ -137,7 +144,7 @@ const List: React.FC<ListProps> = ({
       >
         {/* pinned tabs */}
         {pinnedTabs.map((tab, i) => {
-          return (
+          return !tab.hidden ? (
             <ListItem
               tab={tab}
               key={`${window.id}-${tab.url}-${i}`}
@@ -145,7 +152,7 @@ const List: React.FC<ListProps> = ({
               onSelect={onSelect}
               type={type}
             ></ListItem>
-          )
+          ) : null
         })}
         {/* non-pinned tabs */}
         {tabs.map((tab, i) => {
