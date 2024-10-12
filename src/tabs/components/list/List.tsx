@@ -1,10 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import WindowIcon from "react:~assets/svg/window.svg"
 
+import { openWindow } from "~tabs/utils/platform"
+
 import { ListItem } from "."
 import { useGlobalCtx } from "../context"
 import { useDialog } from "../Dialog/DialogContext"
-import { setCollection, setWindow } from "../reducers/actions"
+import {
+  removeWindow,
+  setCollection,
+  setWindow,
+  updateEditedList
+} from "../reducers/actions"
 import { Sortable } from "./Sortable"
 
 const listIndexShift = (arr, from, to) => {
@@ -131,8 +138,39 @@ const List: React.FC<ListProps> = ({
         <span className="ml-2 text-base font-bold">Window</span>
         {/* // todo: remove window.id */}
         {`: ${window.id}`}
-        <button className="btn btn-xs m-1">open window</button>
-        <button className="btn btn-xs m-1">delete window</button>
+        {/* // TODO quick action*/}
+        {type === "collection" && (
+          <>
+            <button
+              className="btn btn-xs m-1"
+              onClick={() => openWindow(window)}
+            >
+              open window
+            </button>
+            <button
+              className="btn btn-xs m-1"
+              onClick={() => {
+                // todo show tips
+                dispatch(
+                  removeWindow({
+                    windowId: window.id,
+                    collectionId: current.id
+                  })
+                )
+                // edit recorder
+                dispatch(
+                  updateEditedList({
+                    id: current.id,
+                    type: "collection",
+                    isEdited: true
+                  })
+                )
+              }}
+            >
+              delete window
+            </button>
+          </>
+        )}
       </div>
       {/* tabs */}
       <Sortable

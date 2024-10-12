@@ -71,12 +71,12 @@ export const removeTab = (tabId, windowId, collectionId?) => ({
   payload: { tabId, windowId, collectionId }
 })
 
-type editedData = {
+type EditedData = {
   id: number | string
   type: "window" | "collection"
   isEdited: boolean
 }
-export const updateEditedList = (editedData) => ({
+export const updateEditedList = (editedData: EditedData) => ({
   type: UPDATE_EDITED_LIST,
   payload: editedData
 })
