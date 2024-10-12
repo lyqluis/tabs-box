@@ -43,7 +43,7 @@ export const formatedWindow = (window) => {
 }
 
 /**
- * @func: add new tabs in target window, return new windows with new target window with new tabs
+ * @func: add new tabs to target window, return new windows with new target window with new tabs
  * @param {Tab[]} tabs
  * @param {string|number} windowId target window's id
  * @param {Window[]} windows
@@ -70,7 +70,7 @@ export const addTabsToWindow = (
 }
 
 /**
- * @func: remove tabs in target window, return new windows with new target window with new tabs
+ * @func: remove tabs from target window, return new windows with new target window with new tabs
  * @param {number|string[]} tabIds tabs' id
  * @param {string|number} windowId target window's id
  * @param {Window[]} windows

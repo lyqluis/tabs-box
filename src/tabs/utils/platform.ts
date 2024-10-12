@@ -42,7 +42,7 @@ export const getWindow = async (id) => {
   return window
 }
 
-export const openWindow = async (window) => {
+export const openWindow = async (window): WindowId => {
   const createData = {
     focused: false,
     // setSelfAsOpener: false,

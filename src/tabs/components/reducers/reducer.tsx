@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useReducer } from "react"
 
 import { localRemoveCollection, localSaveCollection } from "~tabs/store"
-import { addWindowToCollection, sortCollections } from "~tabs/utils/collection"
+import { addWindowToCollection, removeWindowFromCollection, sortCollections } from "~tabs/utils/collection"
 import {
   addTabsToWindow,
   removeTabsFromWindow,
@@ -23,6 +23,7 @@ import {
   REMOVE_COLLECTION,
   REMOVE_TAB,
   REMOVE_TABS,
+  REMOVE_WINDOW,
   SET_COLLECTION,
   SET_COLLECTION_WITH_LOCAL_STORAGE,
   SET_COLLECTIONS,
@@ -211,13 +212,27 @@ const reducer = (state, action) => {
       const windows = [...state.windows, window]
       return { ...state, windows }
     }
+    // TODO: REMOVE_WINDOW, UPDATE_WINDOW
+    case REMOVE_WINDOW: {
+      console.log("🧠 reducer REMOVE_WINDOW", action.payload)
+      const { windowId, collectionId } = action.payload
+      if (collectionId) {
+        const collections = removeWindowFromCollection(
+          windowId,
+          collectionId,
+          state.collections
+        )
+        return { ...state, collections }
+      }
+    }
     case ADD_TABS: {
       console.log("🧠 reducer ADD_TABS", action.payload)
       const { tabs, windowId, collectionId, index } = action.payload
       // change tabs' windowId to new windowId
       tabs.map((tab) => {
         tab.windowId = windowId
-        if (!collectionId) {  // add tabs to sidebar window
+        if (!collectionId) {
+          // add tabs to sidebar window
           tab.hidden = false
           tab.checked = false
         }
