@@ -14,18 +14,6 @@ import {
 } from "../reducers/actions"
 import { Sortable } from "./Sortable"
 
-const listIndexShift = (arr, from, to) => {
-  const direction = from < to ? 1 : -1
-  const step = direction === 1 ? 1 : -1
-
-  const target = arr[from]
-  for (let i = from; i !== to; i += step) {
-    arr[i] = arr[i + step]
-  }
-  arr[to] = target
-  return arr
-}
-
 interface ListProps {
   window: Window // from <windows[] | collection.windows[]>
   type?: "window" | "collection" // window | collection
@@ -138,7 +126,7 @@ const List: React.FC<ListProps> = ({
         <span className="ml-2 text-base font-bold">Window</span>
         {/* // todo: remove window.id */}
         {`: ${window.id}`}
-        {/* // TODO quick action*/}
+        {/* quick action*/}
         {type === "collection" && (
           <>
             <button
@@ -150,7 +138,6 @@ const List: React.FC<ListProps> = ({
             <button
               className="btn btn-xs m-1"
               onClick={() => {
-                // todo show tips
                 dispatch(
                   removeWindow({
                     windowId: window.id,
