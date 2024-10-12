@@ -13,7 +13,8 @@ import { getAllWindows } from "~tabs/utils/platform"
 
 export const useRefresh = () => {
   const {
-    state: { current, windows, collections },
+    state: { windows, collections },
+    current,
     dispatch
   } = useGlobalCtx()
 

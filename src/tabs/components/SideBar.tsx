@@ -5,7 +5,6 @@ import { useTabEvents, useWindowEvents } from "~tabs/utils/platform"
 
 import { useGlobalCtx } from "./context"
 import { Droppable } from "./Dnd"
-import { Sortable } from "./list/Sortable"
 import { setCurrentId } from "./reducers/actions"
 
 const SideBarItem = ({ item, isEdited, isSelected, onSelect }) => {
