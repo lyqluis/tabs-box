@@ -22,7 +22,6 @@ import {
   updateEditedList
 } from "./reducers/actions"
 import TitleInput from "./TitleInput"
-import { Tst } from "./tst"
 
 const ContentLayout = ({ selectedItem, selectedList, children }) => {
   const {
@@ -183,7 +182,8 @@ const ContentLayout = ({ selectedItem, selectedList, children }) => {
 
 const Content = ({}) => {
   const {
-    state: { current, collections, currentId },
+    state: { collections, currentId },
+    current,
     type,
     dispatch
   } = useGlobalCtx()
@@ -201,7 +201,7 @@ const Content = ({}) => {
   if (!current) return <h1>loading</h1>
 
   const dispatchEdit = (isEdited) => {
-    dispatch(updateEditedList({ id: current.id, type, isEdited }))
+    dispatch(updateEditedList({ id: currentId, type, isEdited }))
   }
   const handleMoveSelectedClick = (collectionId) => {
     addSelectedToCollection(collectionId)
@@ -223,7 +223,7 @@ const Content = ({}) => {
       </button>
       <DropDown buttonText="move selected" ref={dropDownRef}>
         {collections
-          .filter((c) => c.id !== current.id)
+          .filter((c) => c.id !== currentId)
           .map((collection) => (
             <li
               onClick={() => handleMoveSelectedClick(collection.id)}

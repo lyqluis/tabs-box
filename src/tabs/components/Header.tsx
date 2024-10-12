@@ -14,7 +14,9 @@ import { toast } from "./Toast"
 
 const Header = () => {
   const {
-    state: { current, editedMap },
+    state: { editedMap },
+    current,
+    type,
     dispatch
   } = useGlobalCtx()
   const { openDialog } = useDialog()
@@ -22,7 +24,6 @@ const Header = () => {
 
   if (!current) return null
 
-  const type = current?.created ? "collection" : "window"
   const exportJSON = () => dispatch(exportData())
 
   const apply = () => {
@@ -30,7 +31,7 @@ const Header = () => {
     dispatch(updateEditedList({ id: current.id, type, isEdited: false }))
   }
   const save = () => {
-    if (current.windows.length === 1 && !current.windows[0].tabs.length) {
+    if (current.windows.length <= 1 && !current?.windows[0]?.tabs?.length) {
       openDialog({
         title: "Warn",
         message: `collection ${current.title} will be permanently deleted`,

@@ -52,7 +52,7 @@ const List: React.FC<ListProps> = ({
     window?.tabs?.filter((tab) => !tab.pinned) ?? []
   )
   const {
-    state: { current, collections },
+    current,
     dispatch
   } = useGlobalCtx()
 

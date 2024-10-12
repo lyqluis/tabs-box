@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useReducer } from "react"
 
 import { localRemoveCollection, localSaveCollection } from "~tabs/store"
-import { addWindowToCollection, removeWindowFromCollection, sortCollections } from "~tabs/utils/collection"
+import {
+  addWindowToCollection,
+  removeWindowFromCollection,
+  sortCollections
+} from "~tabs/utils/collection"
 import {
   addTabsToWindow,
   removeTabsFromWindow,
@@ -27,12 +31,10 @@ import {
   SET_COLLECTION,
   SET_COLLECTION_WITH_LOCAL_STORAGE,
   SET_COLLECTIONS,
-  SET_CURRENT,
   SET_CURRENT_ID,
   SET_WINDOW,
   SET_WINDOWS,
   setCollections,
-  setCurrent,
   setWindows,
   UPDATE_EDITED_LIST,
   UPDATE_TAB,
@@ -44,7 +46,6 @@ interface State {
   windows: chrome.windows.Window[]
   collections: Collection[]
   currentId: number | string
-  current: chrome.windows.Window | Collection
   selectedList: chrome.tabs.Tab[]
   editedMap: object
 }
@@ -54,7 +55,6 @@ const initialJSON: State = {
   source: {},
   windows: [],
   collections: [],
-  current: null,
   currentId: null,
   selectedList: []
 }
@@ -68,8 +68,6 @@ const reducer = (state, action) => {
   switch (action.type) {
     case SET_CURRENT_ID:
       return { ...state, currentId: action.payload }
-    case SET_CURRENT:
-      return { ...state, current: action.payload }
     case SET_WINDOWS:
       // console.log("🧠 reducer SET_WINDOWS", action.payload)
       return { ...state, windows: action.payload }
@@ -320,10 +318,6 @@ export const ProviderWithReducer = ({
     dispatch(setCollections(collections))
   }, [windows, collections])
 
-  const type = useMemo(() => {
-    return state.current?.created ? "collection" : "window"
-  }, [state.current])
-
   const current = useMemo(() => {
     const currentId = state.currentId
     let current = state.windows.find((w) => w.id === currentId)
@@ -331,19 +325,14 @@ export const ProviderWithReducer = ({
       current = state.collections.find((c) => c.id === currentId)
     }
     if (!current) current = state.windows[0]
+    console.log("📝 memo@current", current)
     return current
   }, [state.currentId, state.windows, state.collections])
 
-  useEffect(() => {
-    const currentId = state.currentId
-    let current = state.windows.find((w) => w.id === currentId)
-    if (!current) {
-      current = state.collections.find((c) => c.id === currentId)
-    }
-    if (!current) current = state.windows[0]
-    console.log("🪝 auto find current", current)
-    dispatch(setCurrent(current))
-  }, [state.currentId, state.windows, state.collections])
+  const type = useMemo(() => {
+    // console.log("📝 memo@type", type)
+    return current?.created ? "collection" : "window"
+  }, [current])
 
   return (
     <Provider value={{ state, dispatch, current, type }}>{children}</Provider>
