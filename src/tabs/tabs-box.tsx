@@ -86,10 +86,6 @@ const TabsBoxPage = () => {
                   <Content></Content>
                 </main>
               </div>
-              <DragOverlay>
-                {/* {activeId ? <Item id={activeId} /> : null} */}
-                <OverlayListItem></OverlayListItem>
-              </DragOverlay>
               <ToastContainer></ToastContainer>
               {/* </Sortable> */}
             </DndGlobalContext>
