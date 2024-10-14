@@ -5,13 +5,13 @@ import {
   PointerSensor,
   pointerWithin,
   rectIntersection,
+  useDraggable,
   useDroppable,
   useSensor,
   useSensors
 } from "@dnd-kit/core"
-import { sortableKeyboardCoordinates } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 import { createContext, useCallback, useContext, useState } from "react"
-import { createPortal } from "react-dom"
 
 import { useSelectContext } from "~tabs/hooks/useSelect"
 import { createWindow } from "~tabs/utils/window"
@@ -22,16 +22,20 @@ import {
   addTabs,
   addWindow,
   removeTabs,
+  removeWindow,
   updateEditedList,
-  updateTabs
+  updateTabs,
+  updateWindow
 } from "./reducers/actions"
 
 const ctx = createContext(null)
 const { Provider } = ctx
 export const useDndContext = () => useContext(ctx)
 
-// Droppable
-// wrapper the SideBar Item
+/**
+ * Droppable
+ * wrapper the SideBar Item
+ */
 export const Droppable = ({ item = null, children }) => {
   const { setNodeRef, isOver } = useDroppable({
     id: item?.id ?? "area"
@@ -39,6 +43,32 @@ export const Droppable = ({ item = null, children }) => {
 
   return (
     <div ref={setNodeRef} style={{ background: isOver ? "orange" : "" }}>
+      {children}
+    </div>
+  )
+}
+
+/**
+ * Draggable
+ * make window in the collection draggable to sidebar item
+ */
+export const Draggable = ({ window = null, className, style, children }) => {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: window?.id
+  })
+  const transStyle = {
+    ...style,
+    transform: CSS.Translate.toString(transform)
+  }
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={transStyle}
+      className={className}
+      {...listeners}
+      {...attributes}
+    >
       {children}
     </div>
   )
@@ -73,56 +103,87 @@ export const DndGlobalContext = ({ children }) => {
   const selectedWindowTabsCount = selectedWindowTabs?.length ?? 0
 
   const handleDragStart = ({ active }) => {
-    // get dragging tab id & window id
-    const tabId = active.id
-    const windowId = active.data?.current?.sortable?.containerId
-    if (!tabId || !windowId) return
+    // get dragging item id & container id
+    const activeId = active.id
+    const containerId = active.data?.current?.sortable?.containerId
+    if (!activeId || !containerId) return
 
-    const selectedWindowTabs = tabsByWindowMap.get(windowId)
-    const selectedWindowTabsCount = selectedWindowTabs?.length ?? 0
-    console.log("🖱️ on drag start", active, windowId, selectedWindowTabs)
-
-    // find dragging tab to set draggingItem for drag overlay
-    let findDragging
-    for (const window of windows) {
-      const targetTab = window.tabs.find((t) => t.id === tabId)
+    // dragging always happens in current(window/colelction)
+    // * find active(dragging item) is window or tab
+    let activeItem
+    if (type === "window") {
+      // current is window, dragging item is tab
+      console.log("🖱️ on drag start - dragging tab", active)
+      const targetTab = current.tabs.find((t) => t.id === activeId)
       if (targetTab) {
+        activeItem = targetTab
         setDraggingItem(targetTab)
         setOriginContainerId(targetTab.windowId)
-        findDragging = true
-        break
       }
-    }
-    if (!findDragging) {
-      for (const collection of collections) {
-        const window = collection.windows.find((w) => w.id === windowId)
-        if (!window) continue
-        const targetTab = window.tabs.find((t) => t.id === tabId)
-        if (targetTab) {
-          setDraggingItem(targetTab)
-          setOriginContainerId(targetTab.windowId)
-          break
+    } else {
+      // current is collection, dragging item is window or tab
+      for (const window of current.windows) {
+        if (activeId === window.id) {
+          // dragging item is window
+          console.log("🖱️ on drag start - dragging window", active)
+          activeItem = window
+          setDraggingItem(window)
+          setOriginContainerId(window.collectionId)
+          break // ?
+        } else if (containerId === window.id) {
+          // dragging item is tab
+          console.log("🖱️ on drag start - dragging tab", active)
+          const targetTab = window.tabs.find((t) => t.id === activeId)
+          if (targetTab) {
+            activeItem = targetTab
+            setDraggingItem(targetTab)
+            setOriginContainerId(targetTab.windowId)
+            break
+          }
         }
       }
     }
 
-    // hide other selected items if necessary (exclude dragging tab)
+    // * handle tabs hidden
+    // - dragging is window, all tabs in all current windows hidden
+    const draggingType = activeItem.tabs ? "window" : "tab"
+    if (draggingType === "window") {
+      current.windows.map((window) => {
+        dispatch(
+          updateTabs({
+            tabs: window.tabs.map((t) => ({ ...t, hidden: true })),
+            windowId: window.id,
+            collectionId: window.collectionId ?? current.id
+          })
+        )
+      })
+      return
+    }
+
+    // - dragging is tab, hide other selected tabs if necessary
+    const selectedWindowTabs = tabsByWindowMap.get(activeItem.windowId)
+    const selectedWindowTabsCount = selectedWindowTabs?.length ?? 0
+    console.log(
+      "🖱️ on drag start - dragging tab @selectedWindowTabs",
+      selectedWindowTabs
+    )
+
     if (
       selectedWindowTabsCount &&
-      selectedWindowTabs.some((t) => t.id === tabId)
+      selectedWindowTabs.some((t) => t.id === activeId)
     ) {
-      setSelected({ hidden: true }, windowId, (tab) => tab.id !== tabId)
+      setSelected({ hidden: true }, windowId, (tab) => tab.id !== activeId)
       setDraggingCount(selectedWindowTabsCount)
     } else {
       setDraggingCount(1)
     }
   }
 
-  // TODO
   const handleDragOver = (e) => {
-    console.log("🖱️ on drag over", e)
+    console.log("🖱️ on drag over", e, "@draggingItem", draggingItem)
     const { active, over } = e
     if (!active || !over) return
+
     const activeId = active.id
     const overId = over.id
 
@@ -135,6 +196,9 @@ export const DndGlobalContext = ({ children }) => {
       activeContainerId,
       overContainerId
     )
+
+    // * active is window
+    if (draggingItem.tabs) return
 
     // * active & over is in the same list
     if (activeContainerId === overContainerId) return
@@ -178,16 +242,94 @@ export const DndGlobalContext = ({ children }) => {
     )
   }
 
-  // TODO
   const handleDragEnd = ({ active, over }) => {
     console.log("🖱️ on drag end", active, over)
 
     const activeId = active.id
     const overId = over.id
 
-    const activeContainerId = draggingItem.windowId ?? draggingItem.collectionId // since active.data?.current?.sortable?.containerId will change after set to the new window during the drag over event
+    const activeContainerId =
+      draggingItem.windowId ??
+      draggingItem.collectionId ??
+      active.data?.current?.sortable?.containerId // since active.data?.current?.sortable?.containerId will change after set to the new window during the drag over event
     const overContainerId = over.data?.current?.sortable?.containerId
 
+    // * active is window
+    if (draggingItem.tabs) {
+      console.log(
+        "-- @acitveId",
+        activeId,
+        "@overId",
+        overId,
+        "@activeContainerId",
+        activeContainerId,
+        "@overContainerId",
+        overContainerId
+      )
+
+      if (activeContainerId === overContainerId) {
+        // * 1. reorder in the collection
+        // active is window, over is window in the same collection
+        if (activeId !== overId) {
+          const newIndex = over?.data?.current?.sortable?.index
+          dispatch(
+            updateWindow({
+              window: draggingItem,
+              collectionId: current.id,
+              index: newIndex
+            })
+          )
+          dispatch(updateEditedList({ id: current.id, type, isEdited: true }))
+        }
+      } else {
+        // * 2. move window to other sidebar collection
+        // active is window, over is sidebar collection
+        // no need to remove window, just add it to the target collection
+        if (!overId) return
+
+        if (typeof overId !== "number") {
+          console.log("active is window, over is sidebar collection")
+          // remove window from current collection
+          dispatch(
+            removeWindow({
+              windowId: draggingItem.id,
+              collectionId: current.id
+            })
+          )
+          // add window to target collection
+          dispatch(addWindow({ window: draggingItem, collectionId: overId }))
+          // update edit map
+          dispatch(updateEditedList({ id: current.id, type, isEdited: true }))
+          dispatch(
+            updateEditedList({ id: overId, type: "collection", isEdited: true })
+          )
+        }
+      }
+
+      // set all windows'tabs visible
+      current.windows.map((window) => {
+        dispatch(
+          updateTabs({
+            tabs: window.tabs.map((t) => ({ ...t, hidden: false })),
+            windowId: window.id,
+            collectionId: window.collectionId ?? current.id
+          })
+        )
+      })
+      // in case dragging window moved to other collection not in the current windows
+      dispatch(
+        updateTabs({
+          tabs: draggingItem.tabs.map((t) => ({ ...t, hidden: false })),
+          windowId: draggingItem.id,
+          collectionId: draggingItem.collectionId ?? overId
+        })
+      )
+
+      setDraggingItem(null)
+      return
+    }
+
+    // * active is tab
     // single drag
     let tabIds = [activeId]
     let tabs = [draggingItem]
@@ -224,7 +366,7 @@ export const DndGlobalContext = ({ children }) => {
       // * active is tab
       if (!overId) return
 
-      if (typeof overId === 'number') {
+      if (typeof overId === "number") {
         // * over is window in sidebar
         console.log("active is tab, over is sidebar window")
         // no need to remove tab, add tabs to target window
@@ -240,7 +382,7 @@ export const DndGlobalContext = ({ children }) => {
         )
       } else {
         // * over is collection in sidebar
-        console.log('active is tab, over is sidebar collection');
+        console.log("active is tab, over is sidebar collection")
         // remove tabs from active window
         dispatch(
           removeTabs({

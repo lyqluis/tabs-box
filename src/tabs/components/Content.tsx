@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { useRefresh } from "~tabs/hooks/useRefresh"
 import { useSelectContext } from "~tabs/hooks/useSelect"
@@ -15,6 +15,7 @@ import { useGlobalCtx } from "./context"
 import { useDialog } from "./Dialog/DialogContext"
 import DropDown from "./DropDown"
 import { List } from "./list"
+import { Sortable } from "./list/Sortable"
 import {
   removeCollection,
   setCollectionWithLocalStorage,
@@ -22,6 +23,7 @@ import {
   updateEditedList
 } from "./reducers/actions"
 import TitleInput from "./TitleInput"
+import { Tst } from "./tst"
 
 const ContentLayout = ({ selectedItem, selectedList, children }) => {
   const {
@@ -198,6 +200,15 @@ const Content = ({}) => {
     addSelectedToCollection
   } = useSelectContext()
   const dropDownRef = useRef(null)
+  // set list for sortable
+  const [windowList, setWindowList] = useState(current?.windows ?? [])
+  useEffect(() => {
+    setWindowList(current?.windows ?? [])
+  }, [current, collections])
+  const onSortEnd = (e) => {
+    console.log("on window sort end", e)
+  }
+
   if (!current) return <h1>loading</h1>
 
   const dispatchEdit = (isEdited) => {
@@ -254,24 +265,31 @@ const Content = ({}) => {
       </>
     )
   }
-
   // collection
   const list = current.windows
   return (
     <>
       <ContentLayout selectedItem={current} selectedList={selectedList}>
         {SelectedOperations}
-        {list.map((window) => (
-          <List
-            key={window.id}
-            window={window}
-            type={type}
-            onSelect={onSelect}
-            selectedMap={tabsByWindowMap}
-            dispatchEdit={dispatchEdit}
-            setWindowTabs={setTabsByWindow}
-          ></List>
-        ))}
+        <Sortable
+          list={windowList}
+          setList={setWindowList}
+          // multiList={selectedList}
+          onSortEnd={onSortEnd}
+          listId={current.id}
+        >
+          {windowList.map((window) => (
+            <List
+              key={window.id}
+              window={window}
+              type={type}
+              onSelect={onSelect}
+              selectedMap={tabsByWindowMap}
+              dispatchEdit={dispatchEdit}
+              setWindowTabs={setTabsByWindow}
+            ></List>
+          ))}
+        </Sortable>
         {/* <Tst></Tst> */}
       </ContentLayout>
     </>

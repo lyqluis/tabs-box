@@ -14,9 +14,6 @@ import {
   verticalListSortingStrategy
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { useEffect, useState } from "react"
-
-import { useGlobalCtx } from "../context"
 
 // sortable item
 export const useSortableItem = (sortableOptions) => {
@@ -35,7 +32,14 @@ export const useSortableItem = (sortableOptions) => {
 }
 
 // dnd sortable context
-export const Sortable = ({ list, setList, children, onSortEnd, multiList, listId }) => {
+export const Sortable = ({
+  list,
+  setList,
+  children,
+  onSortEnd,
+  multiList,
+  listId
+}) => {
   // const {
   //   state: { windows, collections },
   //   current,
@@ -106,7 +110,11 @@ export const Sortable = ({ list, setList, children, onSortEnd, multiList, listId
     // >
     // todo sortable item only can work in sortable context area
     // ideal situation is that sortable works in sortable context and outer dropable context
-    <SortableContext items={list} strategy={verticalListSortingStrategy} id={listId}>
+    <SortableContext
+      items={list}
+      strategy={verticalListSortingStrategy}
+      id={listId}
+    >
       {children}
     </SortableContext>
     // </DndContext>

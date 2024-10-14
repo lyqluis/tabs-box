@@ -31,7 +31,7 @@ export const ADD_TABS = "ADD_TABS"
 export const REMOVE_TABS = "REMOVE_TABS"
 export const UPDATE_TABS = "UPDATE_TABS"
 
-export const setWindows = (windows: chrome.windows.Window[]) => ({
+export const setWindows = (windows: Window[]) => ({
   type: SET_WINDOWS,
   payload: windows
 })
@@ -39,7 +39,7 @@ export const setCollections = (collections: Collection[]) => ({
   type: SET_COLLECTIONS,
   payload: collections
 })
-export const setWindow = (window: chrome.windows.Window) => ({
+export const setWindow = (window: Window) => ({
   type: SET_WINDOW,
   payload: window
 })
@@ -85,9 +85,18 @@ export const removeWindow = ({ windowId, collectionId }) => ({
   type: REMOVE_WINDOW,
   payload: { windowId, collectionId }
 })
-export const updateWindow = ({ window, collectionId }) => ({
+type UpdatedWindow = {
+  window: Window
+  collectionId?: string
+  index?: number
+}
+export const updateWindow = ({
+  window,
+  collectionId,
+  index
+}: UpdatedWindow) => ({
   type: UPDATE_WINDOW,
-  payload: { window, collectionId }
+  payload: { window, collectionId, index }
 })
 
 type AddTabs = {

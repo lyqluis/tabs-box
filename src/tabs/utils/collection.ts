@@ -1,3 +1,5 @@
+import { updateWindowInWindows } from "./window"
+
 export const sortCollections = (collections: Collection[]): Collection[] => {
   const pinnedCollections = collections
     .filter((c) => c.pinned)
@@ -48,5 +50,28 @@ export const removeWindowFromCollection = (
       return { ...collection, windows }
     }
     return collection
+  })
+}
+
+/**
+ * @func: update window in target collection.windows, return new collections with new target collection with new windows
+ * @param {number|string} windowId
+ * @param {CollectionId} collectionId target collection id
+ * @param {Collection} collections reducer's collections
+ * @param {number} index new index of window
+ * @return {Collection[]} new collections
+ */
+export const updateWindowInCollections = (
+  window: Window,
+  collectionId: string,
+  collections: Collection[],
+  index?: number
+): (Window | Collection)[] => {
+  return collections.map((colletion) => {
+    if (colletion.id === collectionId) {
+      const windows = updateWindowInWindows(window, colletion.windows, index)
+      return { ...colletion, windows }
+    }
+    return colletion
   })
 }
