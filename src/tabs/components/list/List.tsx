@@ -1,3 +1,5 @@
+import { useDraggable } from "@dnd-kit/core"
+import { CSS } from "@dnd-kit/utilities"
 import { useEffect, useMemo, useRef, useState } from "react"
 import WindowIcon from "react:~assets/svg/window.svg"
 
@@ -6,13 +8,14 @@ import { openWindow } from "~tabs/utils/platform"
 import { ListItem } from "."
 import { useGlobalCtx } from "../context"
 import { useDialog } from "../Dialog/DialogContext"
+import { Draggable } from "../Dnd"
 import {
   removeWindow,
   setCollection,
   setWindow,
   updateEditedList
 } from "../reducers/actions"
-import { Sortable } from "./Sortable"
+import { Sortable, useSortableItem } from "./Sortable"
 
 interface ListProps {
   window: Window // from <windows[] | collection.windows[]>
@@ -39,17 +42,11 @@ const List: React.FC<ListProps> = ({
   const [tabs, setTabs] = useState(
     window?.tabs?.filter((tab) => !tab.pinned) ?? []
   )
-  const {
-    current,
-    dispatch
-  } = useGlobalCtx()
-
+  const { current, dispatch } = useGlobalCtx()
   const { openDialog } = useDialog()
 
-  console.log("List Component refreshed, props-window", window, tabs)
+  // console.log("List Component refreshed, props-window", window, tabs)
 
-  // TODO all select check box
-  // maybe no need selectedList prop, just need list in selectedMap's selected list
   const allCheckBox = useRef(null)
   const selectedList = selectedMap.get(window.id) ?? [] // otherwise multiList in sortable will fail
 
@@ -81,8 +78,12 @@ const List: React.FC<ListProps> = ({
     setTabs(window?.tabs?.filter((tab) => !tab.pinned))
   }, [window])
 
+  const { attributes, listeners, setNodeRef, style } = useSortableItem({
+    id: window.id
+  })
+
   // update tabs to the reducer
-  const onSortEnd = (tabs) => {
+  const onTabSortEnd = (tabs) => {
     // param is newest list from sortable, since can't get newest list at the moment
     // console.log("on sort end", tabs)
     const newWindow = { ...window, tabs: [...pinnedTabs, ...tabs] }
@@ -102,12 +103,16 @@ const List: React.FC<ListProps> = ({
   }
 
   if ((!pinnedTabs || !pinnedTabs.length) && (!tabs || !tabs.length)) return
-
   return (
     <div
       className="relative text-clip p-5"
-      style={{ background: "lightyellow" }}
+      // style={{ background: "lightyellow" }}
+      ref={setNodeRef}
+      style={{ background: "lightyellow", ...style }}
     >
+      <button {...listeners} {...attributes}>
+        drag handle
+      </button>
       {/* list operation */}
       <div className="sticky top-0 mb-4 mt-4 flex h-5 items-center justify-start pl-5">
         {selectedList.length > 0 ? (
@@ -164,7 +169,7 @@ const List: React.FC<ListProps> = ({
         list={tabs}
         setList={setTabs}
         multiList={selectedList}
-        onSortEnd={onSortEnd}
+        onSortEnd={onTabSortEnd}
         listId={window.id}
       >
         {/* pinned tabs */}

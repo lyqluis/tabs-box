@@ -201,7 +201,7 @@ component -> context/reducer -> local
     => update old window tabs, new window tabs and order
   3. [x] drag tabs to another collection
     => remove tabs from window of old collection, add new window with tabs to new collection
-  4. [ ] drag window to another collection
+  4. [x] drag window to another collection
     => remove window from old collection, add window to new collection
   - [x] save drag changes locally
 

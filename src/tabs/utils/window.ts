@@ -135,3 +135,30 @@ export const setTabsInWindow = (
     return window
   })
 }
+
+/**
+ * @func: set new window in target windows, return new windows with new target window
+ * @param {Window} window window with new props
+ * @param {Window[]} windows collections.windows / reducer's windows
+ * @return {Window[]} new windows
+ */
+export const updateWindowInWindows = (
+  window: Window,
+  windows: Window[],
+  index?: number
+): Window[] => {
+  // update window with new order
+  if (index !== undefined) {
+    const oldIndex = windows.findIndex((w) => w.id === window.id)
+    if (oldIndex !== -1) {
+      return arrayMove(windows, oldIndex, index)
+    }
+  }
+  // update window in place
+  return windows.map((w) => {
+    if (w.id === window.id) {
+      return window
+    }
+    return w
+  })
+}

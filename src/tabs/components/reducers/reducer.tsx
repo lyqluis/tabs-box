@@ -4,12 +4,15 @@ import { localRemoveCollection, localSaveCollection } from "~tabs/store"
 import {
   addWindowToCollection,
   removeWindowFromCollection,
-  sortCollections
+  sortCollections,
+  updateWindow,
+  updateWindowInCollections
 } from "~tabs/utils/collection"
 import {
   addTabsToWindow,
   removeTabsFromWindow,
-  setTabsInWindow
+  setTabsInWindow,
+  updateWindowInWindows
 } from "~tabs/utils/window"
 
 import { Provider } from "../context"
@@ -38,7 +41,8 @@ import {
   setWindows,
   UPDATE_EDITED_LIST,
   UPDATE_TAB,
-  UPDATE_TABS
+  UPDATE_TABS,
+  UPDATE_WINDOW
 } from "./actions"
 
 interface State {
@@ -210,10 +214,10 @@ const reducer = (state, action) => {
       const windows = [...state.windows, window]
       return { ...state, windows }
     }
-    // TODO: REMOVE_WINDOW, UPDATE_WINDOW
     case REMOVE_WINDOW: {
       console.log("🧠 reducer REMOVE_WINDOW", action.payload)
       const { windowId, collectionId } = action.payload
+      // remove window from collection.windows
       if (collectionId) {
         const collections = removeWindowFromCollection(
           windowId,
@@ -222,6 +226,27 @@ const reducer = (state, action) => {
         )
         return { ...state, collections }
       }
+      // remove window from windows
+      const windows = state.windows.filter((w) => w.id !== windowId)
+      return { ...state, windows }
+    }
+    // TODO: UPDATE_WINDOW
+    case UPDATE_WINDOW: {
+      console.log("🧠 reducer UPDATE_WINDOW", action.payload)
+      const { window, collectionId, index } = action.payload
+      // update window in collection.windows
+      if (collectionId) {
+        const collections = updateWindowInCollections(
+          window,
+          collectionId,
+          state.collections,
+          index
+        )
+        return { ...state, collections }
+      }
+      // update window in windows
+      const windows = updateWindowInWindows(window, state.windows, index)
+      return { ...state, windows }
     }
     case ADD_TABS: {
       console.log("🧠 reducer ADD_TABS", action.payload)
