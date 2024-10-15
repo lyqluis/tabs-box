@@ -5,7 +5,6 @@ import {
   addWindowToCollection,
   removeWindowFromCollection,
   sortCollections,
-  updateWindow,
   updateWindowInCollections
 } from "~tabs/utils/collection"
 import {

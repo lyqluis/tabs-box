@@ -72,7 +72,7 @@ type EditedData = {
   type: "window" | "collection"
   isEdited: boolean
 }
-export const updateEditedList = (editedData: EditedData) => ({
+export const updateEditedList = (editedData: EditedData | string) => ({
   type: UPDATE_EDITED_LIST,
   payload: editedData
 })

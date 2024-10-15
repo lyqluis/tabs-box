@@ -190,10 +190,13 @@ export const DndGlobalContext = ({ children }) => {
     const activeContainerId = draggingItem.windowId ?? draggingItem.collectionId // since active.data?.current?.sortable?.containerId will change after set to the new window during the drag over event
     const overContainerId = over.data?.current?.sortable?.containerId
     console.log(
-      "--- on drag over",
+      "--- on drag over @activeId",
       activeId,
+      "@overId",
       overId,
+      "@activeContainerId",
       activeContainerId,
+      "@overContainerId",
       overContainerId
     )
 
@@ -201,12 +204,11 @@ export const DndGlobalContext = ({ children }) => {
     if (draggingItem.tabs) return
 
     // * active & over is in the same list
-    if (activeContainerId === overContainerId) return
+    if (activeContainerId === overContainerId || activeContainerId === overId)
+      return
 
     // * active is tab, over is sidebar item, do nothing
-    if (!overContainerId) {
-      return
-    }
+    if (!overContainerId) return
 
     const windowId = active.data?.current?.sortable?.containerId
     const selectedWindowTabs = tabsByWindowMap.get(activeContainerId)
@@ -344,13 +346,13 @@ export const DndGlobalContext = ({ children }) => {
       tabs = selectedWindowTabs
     }
 
-    if (activeContainerId === overContainerId) {
+    if (activeContainerId === overContainerId || activeContainerId === overId) {
       // * active is tab, over is tab in the other list (since active's container id is changed in drag over)
       // * & active is tab, over is tab in the same list
-      console.log("active is tab, over is tab")
 
       // active is tab in the index of new order
       if (activeId !== overId) {
+        console.log("active is tab, over is tab, activeId !== overId")
         const newIndex = over?.data?.current?.sortable?.index
         dispatch(
           updateTabs({
@@ -360,8 +362,8 @@ export const DndGlobalContext = ({ children }) => {
             index: newIndex
           })
         )
+        dispatch(updateEditedList({ id: current.id, type, isEdited: true }))
       }
-      dispatch(updateEditedList({ id: current.id, type, isEdited: true }))
     } else {
       // * active is tab
       if (!overId) return
@@ -429,7 +431,11 @@ export const DndGlobalContext = ({ children }) => {
             pointerIntersections
           : rectIntersection(args)
 
-      // console.log("💥 intersections", intersections)
+      console.log("💥 intersections", intersections)
+
+      // dragging is tab, and over is the window/list in the content, always return over tab first
+      if (intersections[0]?.data?.droppableContainer?.data?.current?.sortable)
+        return [intersections[0]]
 
       // if intersections includes sidebar item, return side bar item
       const sideBar =
@@ -441,7 +447,7 @@ export const DndGlobalContext = ({ children }) => {
         )
       if (sideBar) return [sideBar]
       // DO NOT use default - rectangle intersection
-      // Since it will let styled of draggable item outside droppabel container disappear
+      // since it will let styled of draggable item outside droppabel container disappear
       return closestCenter({ ...args })
     },
     [draggingItem]
