@@ -14,7 +14,7 @@ import { toast } from "./Toast"
 
 const Header = () => {
   const {
-    state: { editedMap },
+    state: { windows, collections, editedMap },
     current,
     type,
     dispatch
