@@ -26,7 +26,7 @@ import {
   updateTabs,
   updateWindow
 } from "../reducers/actions"
-import { OverlayListItem } from "./Overlay"
+import { OverlayList } from "./Overlay"
 
 const ctx = createContext(null)
 const { Provider } = ctx
@@ -431,7 +431,7 @@ export const DndGlobalContext = ({ children }) => {
             pointerIntersections
           : rectIntersection(args)
 
-      console.log("💥 intersections", intersections)
+      // console.log("💥 intersections", intersections)
 
       // dragging is tab, and over is the window/list in the content, always return over tab first
       if (intersections[0]?.data?.droppableContainer?.data?.current?.sortable)
@@ -464,7 +464,7 @@ export const DndGlobalContext = ({ children }) => {
       <Provider value={{ draggingItem, setDraggingItem }}>
         {children}
         <DragOverlay>
-          <OverlayListItem count={draggingCount}></OverlayListItem>
+          <OverlayList count={draggingCount}></OverlayList>
         </DragOverlay>
       </Provider>
     </DndContext>

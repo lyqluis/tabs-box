@@ -7,13 +7,8 @@ import { openWindow } from "~tabs/utils/platform"
 import { ListItem } from "."
 import { useGlobalCtx } from "../context"
 import { useDialog } from "../Dialog/DialogContext"
-import { Sortable, useSortableItem } from "../Dnd"
-import {
-  removeWindow,
-  setCollection,
-  setWindow,
-  updateEditedList
-} from "../reducers/actions"
+import { Sortable, useDndContext, useSortableItem } from "../Dnd"
+import { removeWindow, updateEditedList } from "../reducers/actions"
 
 interface ListProps {
   window: Window // from <windows[] | collection.windows[]>
@@ -41,6 +36,7 @@ const List: React.FC<ListProps> = ({
     window?.tabs?.filter((tab) => !tab.pinned) ?? []
   )
   const { current, dispatch } = useGlobalCtx()
+  const { draggingItem } = useDndContext()
   const { openDialog } = useDialog()
 
   // console.log("List Component refreshed, props-window", window, tabs)
@@ -84,22 +80,29 @@ const List: React.FC<ListProps> = ({
   return (
     <div
       className="relative text-clip p-5"
-      // style={{ background: "lightyellow" }}
       ref={setNodeRef}
-      style={{ background: "lightyellow", ...style }}
+      style={{
+        background: "lightyellow",
+        ...style,
+        opacity: draggingItem?.id === window.id ? 0.5 : 1
+      }}
     >
       {/* list operation */}
-      <div className="sticky top-0 mb-4 mt-4 flex h-5 items-center justify-start">
+      <div
+        className={`sticky top-0 mb-4 mt-4 flex h-5 items-center justify-start ${type === "window" ? "pl-5" : ""}`}
+      >
         {/* draggable */}
-        <i
-          className={`list-item__handle flex h-5 w-5 flex-none items-center justify-start`}
-        >
-          <DragableIcon
-            className={`flex h-full w-full fill-slate-300 hover:cursor-grab focus:cursor-grabbing focus:outline-none`}
-            {...attributes}
-            {...listeners}
-          ></DragableIcon>
-        </i>
+        {type === "collection" && (
+          <i
+            className={`list-item__handle flex h-5 w-5 flex-none items-center justify-start`}
+          >
+            <DragableIcon
+              className={`flex h-full w-full fill-slate-300 hover:cursor-grab focus:cursor-grabbing focus:outline-none`}
+              {...attributes}
+              {...listeners}
+            ></DragableIcon>
+          </i>
+        )}
         {selectedList.length > 0 ? (
           <label className="label cursor-pointer">
             <input
@@ -116,7 +119,7 @@ const List: React.FC<ListProps> = ({
         <span className="ml-2 text-base font-bold">Window</span>
         {/* // todo: remove window.id */}
         {`: ${window.id}`}
-        {/* quick action*/}
+        {/* quick action */}
         {type === "collection" && (
           <>
             <button
