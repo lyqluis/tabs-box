@@ -13,9 +13,9 @@ import { formatedWindow } from "~tabs/utils/window"
 
 import { useGlobalCtx } from "./context"
 import { useDialog } from "./Dialog/DialogContext"
+import { Sortable } from "./Dnd"
 import DropDown from "./DropDown"
 import { List } from "./list"
-import { Sortable } from "./list/Sortable"
 import {
   removeCollection,
   setCollectionWithLocalStorage,
@@ -23,7 +23,6 @@ import {
   updateEditedList
 } from "./reducers/actions"
 import TitleInput from "./TitleInput"
-import { Tst } from "./tst"
 
 const ContentLayout = ({ selectedItem, selectedList, children }) => {
   const {
@@ -266,18 +265,12 @@ const Content = ({}) => {
     )
   }
   // collection
-  const list = current.windows
+  // const list = current.windows
   return (
     <>
       <ContentLayout selectedItem={current} selectedList={selectedList}>
         {SelectedOperations}
-        <Sortable
-          list={windowList}
-          setList={setWindowList}
-          // multiList={selectedList}
-          onSortEnd={onSortEnd}
-          listId={current.id}
-        >
+        <Sortable list={windowList} listId={current.id}>
           {windowList.map((window) => (
             <List
               key={window.id}
