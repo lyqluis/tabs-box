@@ -24,18 +24,19 @@
   - [x] detect tabs witch are loading
   - [ ] URL that exceeds fades out with a gradient
   - [x] open collection feature
-  - [-] selected feature
+  - [x] selected feature
     - [x] select all
     - delete selected from window
     - [x] delete selected from collection
     - [-] click outside list, cancel all selected
     - [x] collection with multi windows works wrong, select tabs in one window, another window of collections' shows select box as well
-  - [ ] bugs:
-    - [x] new tab can not be detected in reducer when deleted
-- [-] feature: open url/window/collection
+  - [ ] quick actions to open window / delete window
+  - [ ] list's draggable handler, dnd style
+  - [ ] list's dnd overlay
+- [x] feature: open url/window/collection
   - [x] open colleciton in new window
   - [x] open one tab / tabs selected
-  - [ ] open one window / windows selected
+  - [x] open one window / windows selected
 - [x] feature: real-time monitoring of the tabs/windows while staying on the app page
   - on tab crated, updated, removed, moved
   - on window crated, removed, [-] bound change
@@ -159,7 +160,8 @@
   - [x] update collection should auto update sort in SideBar
   - [x] click url to open tab in ListItem
   - [x] delete tab can not detecte
-- [ ] feature: drag tabs between windows
+  - [x] List: new tab can not be detected in reducer when deleted
+- [x] feature: drag tabs between windows
   - Sortable / App
   - dnd context
     - Sidbar
@@ -172,6 +174,7 @@
       - sortable context
         - List Item (tab)
         - useSortable
+
 ### component
 - list => window
   - select list

@@ -1,14 +1,10 @@
-import { useDraggable, type Over } from "@dnd-kit/core"
-import { CSS } from "@dnd-kit/utilities"
-import { useEffect, useState, type FC, type ReactNode } from "react"
+import { useState, type FC } from "react"
 import DragableIcon from "react:~assets/svg/dragable.svg"
 import Pinned from "react:~assets/svg/pin.svg"
 
-import { useSelectContext } from "~tabs/hooks/useSelect"
 import { jumptToTab, openTabs } from "~tabs/utils/platform"
 
-import { useDndContext } from "../Dnd"
-import { useSortableItem } from "./Sortable"
+import { useDndContext, useSortableItem } from "../Dnd"
 
 interface ListItemProps {
   tab: Tab
@@ -53,8 +49,7 @@ const ListItem: FC<ListItemProps> = ({ tab, type, overlay, onSelect }) => {
         opacity: !overlay && draggingItem?.id === tab.id ? 0.5 : 1
       }}
       className={`flex flex-nowrap items-center overflow-hidden text-ellipsis whitespace-nowrap align-baseline text-base font-light hover:bg-slate-100
-       ${tab.checked ? "bg-slate-100" : ""}
-      `}
+       ${tab.checked ? "bg-slate-100" : ""}`}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
     >
@@ -112,34 +107,3 @@ const ListItem: FC<ListItemProps> = ({ tab, type, overlay, onSelect }) => {
 }
 
 export default ListItem
-
-interface OverlayListItemProps {
-  count?: number // number of selected list item
-}
-export const OverlayListItem: FC<OverlayListItemProps> = ({ count }) => {
-  const { draggingItem } = useDndContext()
-  const { selectedList } = useSelectContext()
-
-  if (draggingItem) {
-    if (count > 1) {
-      return (
-        <div className="indicator" style={{ width: "auto", display: "block" }}>
-          <span className="badge indicator-item badge-secondary">{count}</span>
-          <ListItem
-            tab={draggingItem}
-            // checked={selectedList.some((t) => t.id === draggingItem.id)}
-            overlay
-          ></ListItem>
-        </div>
-      )
-    } else {
-      return (
-        <ListItem
-          tab={draggingItem}
-          // checked={selectedList.some((t) => t.id === draggingItem.id)}
-          overlay
-        ></ListItem>
-      )
-    }
-  }
-}

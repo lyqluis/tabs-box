@@ -16,8 +16,7 @@ import { createContext, useCallback, useContext, useState } from "react"
 import { useSelectContext } from "~tabs/hooks/useSelect"
 import { createWindow } from "~tabs/utils/window"
 
-import { useGlobalCtx } from "./context"
-import { OverlayListItem } from "./list/ListItem"
+import { useGlobalCtx } from "../context"
 import {
   addTabs,
   addWindow,
@@ -26,7 +25,8 @@ import {
   updateEditedList,
   updateTabs,
   updateWindow
-} from "./reducers/actions"
+} from "../reducers/actions"
+import { OverlayListItem } from "./Overlay"
 
 const ctx = createContext(null)
 const { Provider } = ctx

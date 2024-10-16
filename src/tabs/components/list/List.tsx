@@ -1,6 +1,5 @@
-import { useDraggable } from "@dnd-kit/core"
-import { CSS } from "@dnd-kit/utilities"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import DragableIcon from "react:~assets/svg/dragable.svg"
 import WindowIcon from "react:~assets/svg/window.svg"
 
 import { openWindow } from "~tabs/utils/platform"
@@ -8,14 +7,13 @@ import { openWindow } from "~tabs/utils/platform"
 import { ListItem } from "."
 import { useGlobalCtx } from "../context"
 import { useDialog } from "../Dialog/DialogContext"
-import { Draggable } from "../Dnd"
+import { Sortable, useSortableItem } from "../Dnd"
 import {
   removeWindow,
   setCollection,
   setWindow,
   updateEditedList
 } from "../reducers/actions"
-import { Sortable, useSortableItem } from "./Sortable"
 
 interface ListProps {
   window: Window // from <windows[] | collection.windows[]>
@@ -82,26 +80,6 @@ const List: React.FC<ListProps> = ({
     id: window.id
   })
 
-  // update tabs to the reducer
-  const onTabSortEnd = (tabs) => {
-    // param is newest list from sortable, since can't get newest list at the moment
-    // console.log("on sort end", tabs)
-    const newWindow = { ...window, tabs: [...pinnedTabs, ...tabs] }
-    if (type === "collection") {
-      // current is collection
-      const insertIdx = current.windows.findIndex((w) => w.id === newWindow.id)
-      if (insertIdx > -1) {
-        // update existed collection's windows
-        current.windows.splice(insertIdx, 1, newWindow)
-        dispatch(setCollection(current))
-      }
-    } else {
-      // current is window
-      dispatch(setWindow(newWindow))
-    }
-    dispatchEdit(true)
-  }
-
   if ((!pinnedTabs || !pinnedTabs.length) && (!tabs || !tabs.length)) return
   return (
     <div
@@ -110,11 +88,18 @@ const List: React.FC<ListProps> = ({
       ref={setNodeRef}
       style={{ background: "lightyellow", ...style }}
     >
-      <button {...listeners} {...attributes}>
-        drag handle
-      </button>
       {/* list operation */}
-      <div className="sticky top-0 mb-4 mt-4 flex h-5 items-center justify-start pl-5">
+      <div className="sticky top-0 mb-4 mt-4 flex h-5 items-center justify-start">
+        {/* draggable */}
+        <i
+          className={`list-item__handle flex h-5 w-5 flex-none items-center justify-start`}
+        >
+          <DragableIcon
+            className={`flex h-full w-full fill-slate-300 hover:cursor-grab focus:cursor-grabbing focus:outline-none`}
+            {...attributes}
+            {...listeners}
+          ></DragableIcon>
+        </i>
         {selectedList.length > 0 ? (
           <label className="label cursor-pointer">
             <input
@@ -165,13 +150,7 @@ const List: React.FC<ListProps> = ({
         )}
       </div>
       {/* tabs */}
-      <Sortable
-        list={tabs}
-        setList={setTabs}
-        multiList={selectedList}
-        onSortEnd={onTabSortEnd}
-        listId={window.id}
-      >
+      <Sortable list={tabs} listId={window.id}>
         {/* pinned tabs */}
         {pinnedTabs.map((tab, i) => {
           return !tab.hidden ? (
