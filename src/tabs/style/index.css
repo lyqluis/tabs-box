@@ -6,3 +6,26 @@
   cursor: move;
   cursor: -webkit-grabbing;
 }
+
+/* scrollbar */
+.scrollbar::-webkit-scrollbar {
+  width: 20px;
+}
+.scrollbar::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+.scrollbar::-webkit-scrollbar-track-piece {
+  background-color: transparent;
+}
+.scrollbar::-webkit-scrollbar-thumb {
+  border: 6px solid transparent;
+  border-radius: 1000px;
+  background-clip: padding-box;
+  background-color: transparent;
+}
+.scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+}
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #aaa;
+}
