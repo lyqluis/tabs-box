@@ -161,7 +161,7 @@
   - [x] click url to open tab in ListItem
   - [x] delete tab can not detecte
   - [x] List: new tab can not be detected in reducer when deleted
-  - [ ] **move selected to other collection, moved tabs should be unchecked or checked should be detected by useSelected**
+  - [x] move selected to other collection, moved tabs should be detected by useSelected or unchecked
 - [x] feature: drag tabs between windows
   - Sortable / App
   - dnd context

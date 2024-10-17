@@ -185,7 +185,7 @@ export const SelectProvider = ({ children }) => {
         )
       }
     })
-  }, [windows, collections])
+  }, [windows, collections, current])
 
   const tabsByWindowMap = useMemo<Map<WindowId, Tab[]>>(() => {
     return selectedList.reduce((map, tab) => {
@@ -314,15 +314,6 @@ export const SelectProvider = ({ children }) => {
       dispatch(updateEditedList({ id: originId, type, isEdited: true }))
     }
   }
-
-  useEffect(() => {
-    setSelectedList((list) => {
-      list.map((tab) => {
-        tab.checked = false
-      })
-      return []
-    })
-  }, [currentId])
 
   return (
     <Provider
