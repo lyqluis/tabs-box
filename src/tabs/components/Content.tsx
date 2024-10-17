@@ -24,13 +24,12 @@ import {
 } from "./reducers/actions"
 import TitleInput from "./TitleInput"
 
-const ContentLayout = ({ selectedItem, selectedList, children }) => {
+const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
   const {
     state: { windows, collections },
     dispatch
   } = useGlobalCtx()
   const { openDialog } = useDialog()
-  const type = selectedItem.created ? "collection" : "window"
   const allTabsNumber =
     type === "collection"
       ? selectedItem.windows.reduce((n, window) => (n += window.tabs.length), 0)
@@ -85,11 +84,30 @@ const ContentLayout = ({ selectedItem, selectedList, children }) => {
 
   const { RefreshBtn } = useRefresh()
   const saveToBtnRef = useRef(null)
+  
+  // cancel selected outside
+  const ContentLayoutRef = useRef(null)
+  const { setSelected } = useSelectContext()
+  const cancelAllSelected = (e) => {
+    const contentNode = ContentLayoutRef.current
+    const outsideNodes = [
+      contentNode.children[0],
+      contentNode.children[1],
+      contentNode.children[1].children[0],
+      contentNode.children[1].children[1],
+      contentNode.children[1].children[1].children[0]
+    ]
+    if (outsideNodes.includes(e.target)) {
+      setSelected({ checked: false })
+    }
+  }
 
   return (
     <div
+      ref={ContentLayoutRef}
       className="flex flex-auto flex-col overflow-hidden"
       style={{ background: "#FFD700" }}
+      onClick={cancelAllSelected}
     >
       <div className="flex-none">
         {/* title */}
@@ -124,7 +142,7 @@ const ContentLayout = ({ selectedItem, selectedList, children }) => {
         {type === "window" && windows.length > 1 && !isCurrentWindow && (
           <button
             className="btn btn-outline btn-primary p-2"
-            onClick={() => jumptToWindow(selectedItem.id)}
+            onClick={(e) => jumptToWindow(selectedItem.id)}
           >
             go to
           </button>
@@ -204,9 +222,6 @@ const Content = ({}) => {
   useEffect(() => {
     setWindowList(current?.windows ?? [])
   }, [current, collections])
-  const onSortEnd = (e) => {
-    console.log("on window sort end", e)
-  }
 
   if (!current) return <h1>loading</h1>
 
@@ -250,7 +265,11 @@ const Content = ({}) => {
   if (current.tabs) {
     return (
       <>
-        <ContentLayout selectedItem={current} selectedList={selectedList}>
+        <ContentLayout
+          selectedItem={current}
+          selectedList={selectedList}
+          type={type}
+        >
           {SelectedOperations}
           <List
             window={current}
@@ -268,7 +287,11 @@ const Content = ({}) => {
   // const list = current.windows
   return (
     <>
-      <ContentLayout selectedItem={current} selectedList={selectedList}>
+      <ContentLayout
+        selectedItem={current}
+        selectedList={selectedList}
+        type={type}
+      >
         {SelectedOperations}
         <Sortable list={windowList} listId={current.id}>
           {windowList.map((window) => (

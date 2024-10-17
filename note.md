@@ -26,9 +26,9 @@
   - [x] open collection feature
   - [x] selected feature
     - [x] select all
-    - delete selected from window
+    - [x] delete selected from window
     - [x] delete selected from collection
-    - [-] click outside list, cancel all selected
+    - [x] click outside list, cancel all selected
     - [x] collection with multi windows works wrong, select tabs in one window, another window of collections' shows select box as well
   - [x] quick actions to open window / delete window
   - [x] list's draggable handler, dnd style
@@ -156,11 +156,12 @@
 - [-] restore feature
   - [ ] save last save (only useful to collections)
   - [?] any operations of the list should be push into history stack
-- [-] bugs
+- [ ] bugs
   - [x] update collection should auto update sort in SideBar
   - [x] click url to open tab in ListItem
   - [x] delete tab can not detecte
   - [x] List: new tab can not be detected in reducer when deleted
+  - [ ] **move selected to other collection, moved tabs should be unchecked or checked should be detected by useSelected**
 - [x] feature: drag tabs between windows
   - Sortable / App
   - dnd context
