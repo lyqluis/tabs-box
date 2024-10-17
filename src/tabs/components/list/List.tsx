@@ -36,6 +36,7 @@ const List: React.FC<ListProps> = ({
     window?.tabs?.filter((tab) => !tab.pinned) ?? []
   )
   const { current, dispatch } = useGlobalCtx()
+  // console.log('List - @useDndContext', useDndContext())
   const { draggingItem } = useDndContext()
   const { openDialog } = useDialog()
 
