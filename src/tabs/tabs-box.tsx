@@ -9,6 +9,7 @@ import Header from "./components/Header"
 import { ProviderWithReducer } from "./components/reducers/reducer"
 import SideBar from "./components/SideBar"
 import ToastContainer from "./components/Toast"
+import { Tst } from "./components/tst"
 import { SelectProvider } from "./hooks/useSelect"
 import { getAllCollections } from "./store"
 import { HistoryProvider } from "./utils/operationStack"
@@ -75,6 +76,8 @@ const TabsBoxPage = () => {
                 <main className="flex h-screen w-full flex-col overflow-hidden">
                   <Header></Header>
                   <Content></Content>
+                  {/* // TODO: content layout style */}
+                  {/* <Tst></Tst> */}
                 </main>
               </div>
               <ToastContainer></ToastContainer>
