@@ -77,10 +77,12 @@ const List: React.FC<ListProps> = ({
     id: window.id
   })
 
-  if ((!pinnedTabs || !pinnedTabs.length) && (!tabs || !tabs.length)) return
+  if ((!pinnedTabs || !pinnedTabs.length) && (!tabs || !tabs.length))
+    return null
+
   return (
     <div
-      className="relative text-clip p-5"
+      className="relative text-clip p-5 pr-0"
       ref={setNodeRef}
       style={{
         background: "lightyellow",
@@ -90,7 +92,7 @@ const List: React.FC<ListProps> = ({
     >
       {/* list operation */}
       <div
-        className={`sticky top-0 mb-4 mt-4 flex h-5 items-center justify-start ${type === "window" ? "pl-5" : ""}`}
+        className={`sticky top-0 mb-4 mt-4 flex h-5 items-center justify-start ${type === "window" ? "pl-5" : ""} pr-3`}
       >
         {/* draggable */}
         {type === "collection" && (
@@ -115,7 +117,7 @@ const List: React.FC<ListProps> = ({
             />
           </label>
         ) : (
-          <WindowIcon className="h-full w-7 fill-slate-700"></WindowIcon>
+          <WindowIcon className="h-full w-7 flex-none fill-slate-700"></WindowIcon>
         )}
         <span className="ml-2 text-base font-bold">Window</span>
         {/* // todo: remove window.id */}

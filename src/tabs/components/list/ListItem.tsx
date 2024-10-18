@@ -97,6 +97,7 @@ const ListItem: FC<ListItemProps> = ({ tab, type, overlay, onSelect }) => {
       {isHovered && (
         <a
           className={`cursor-pointer items-center overflow-hidden text-ellipsis whitespace-nowrap text-sm text-slate-400`}
+          title={tab.url}
           onClick={() => handleClickUrl(tab)}
         >
           {tab.url}
