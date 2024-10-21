@@ -9,7 +9,7 @@ const TitleInput = ({ title, setTitle, disable }) => {
   const [inputValue, setInputValue] = useState(title)
   const defaultValueRef = useRef(title)
 
-  const openEdit = () => setIsEdit(true)
+  const openEdit = () => !disable && setIsEdit(true)
   const closeEdit = () => {
     console.log("closeedit", title)
     setInputValue(defaultValueRef.current)
@@ -36,23 +36,22 @@ const TitleInput = ({ title, setTitle, disable }) => {
     defaultValueRef.current = title
   }, [title])
 
-  if (disable)
-    return <h3 className="flex h-7 items-center text-2xl">{title}</h3>
-
   if (isEdit) {
     return (
-      <div className="input-wrapper flex h-7 items-center">
-        <input
-          type="text"
-          autoFocus
-          ref={inputRef}
-          className="input h-7 w-auto rounded-none border-0 border-none p-0 text-2xl leading-none text-slate-600 outline-none focus:rounded-none focus:border-b focus:border-solid focus:border-slate-600 focus:outline-none"
-          placeholder={inputValue}
-          value={inputValue}
-          onChange={onChange}
-          onBlur={closeEdit}
-          onKeyDown={onKeyDown}
-        />
+      <div className="input-wrapper flex items-center">
+        <div id="input-title" className="relative h-auto w-full">
+          <input
+            type="text"
+            autoFocus
+            ref={inputRef}
+            className="input relative h-auto w-full rounded-none border-0 border-none p-0 text-2xl text-slate-600 outline-none focus:rounded-none focus:outline-none"
+            placeholder={inputValue}
+            value={inputValue}
+            onChange={onChange}
+            onBlur={closeEdit}
+            onKeyDown={onKeyDown}
+          />
+        </div>
         <button
           className="btn btn-square btn-outline btn-primary btn-xs m-0.5 flex-none"
           onClick={onSubmit}
@@ -71,7 +70,11 @@ const TitleInput = ({ title, setTitle, disable }) => {
   }
 
   return (
-    <h3 className="flex h-7 items-center text-2xl" onClick={openEdit}>
+    <h3
+      className="overflow-hidden text-ellipsis whitespace-nowrap text-2xl"
+      title={title}
+      onClick={openEdit}
+    >
       {title}
     </h3>
   )
