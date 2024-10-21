@@ -1,22 +1,16 @@
-import { useState } from "react"
+import "./tst.css"
 
-const data = [
-  {
-    id: "window-1",
-    children: [{ id: "window-1-1" }, { id: "window-1-2" }, { id: "window-1-3" }]
-  },
-  {
-    id: "window-2",
-    children: [{ id: "window-2-1" }, { id: "window-2-2" }, { id: "window-2-3" }]
-  },
-  {
-    id: "window-3",
-    children: [{ id: "window-3-1" }, { id: "window-3-2" }, { id: "window-3-3" }]
-  }
-]
 export const Tst = ({}) => {
-  const [list, setList] = useState(data)
-  
-  
-  return <></>
+  const Item = <li className="list-item">content</li>
+  const list = new Array(50).fill(Item)
+
+  return (
+    <>
+      <div className="header">header</div>
+      <div className="content scrollbar">
+        <div className="list">{list.map((Item) => Item)}</div>
+        {/* {list.map((Item) => Item)} */}
+      </div>
+    </>
+  )
 }

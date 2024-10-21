@@ -84,23 +84,57 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
 
   const { RefreshBtn } = useRefresh()
   const saveToBtnRef = useRef(null)
-  
+
   // cancel selected outside
   const ContentLayoutRef = useRef(null)
-  const { setSelected } = useSelectContext()
+  const { setSelected, openSelected, deleteSelected, addSelectedToCollection } =
+    useSelectContext()
   const cancelAllSelected = (e) => {
     const contentNode = ContentLayoutRef.current
     const outsideNodes = [
       contentNode.children[0],
-      contentNode.children[1],
-      contentNode.children[1].children[0],
-      contentNode.children[1].children[1],
-      contentNode.children[1].children[1].children[0]
+      contentNode.children[1], // selected actions
+      contentNode.children[2], // windows
+      contentNode.children[2].children[0],
     ]
     if (outsideNodes.includes(e.target)) {
       setSelected({ checked: false })
     }
   }
+
+  // selected actions
+  const dropDownRef = useRef(null)
+  const handleMoveSelectedClick = (collectionId) => {
+    addSelectedToCollection(collectionId)
+    dropDownRef.current.close()
+  }
+  const SelectedOperations = (
+    <div
+      className={`btn-wrapper flex-none ${selectedList.length > 0 ? "flex" : "invisible"} h-8 pl-5`}
+    >
+      {type === "collection" && (
+        <button className="btn btn-xs m-1" onClick={openSelected}>
+          open selected
+        </button>
+      )}
+      {/* // TODO bug */}
+      <button className="btn btn-xs m-1" onClick={deleteSelected}>
+        {type === "collection" ? "remove selected" : "close selected"}
+      </button>
+      <DropDown buttonText="move selected" ref={dropDownRef}>
+        {collections
+          .filter((c) => c.id !== selectedItem.id)
+          .map((collection) => (
+            <li
+              onClick={() => handleMoveSelectedClick(collection.id)}
+              key={collection.id}
+            >
+              <a>{collection.title}</a>
+            </li>
+          ))}
+      </DropDown>
+    </div>
+  )
 
   return (
     <div
@@ -109,9 +143,9 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
       style={{ background: "#FFD700" }}
       onClick={cancelAllSelected}
     >
-      <div className="flex-none">
+      <div className="flex flex-none justify-between px-5 pb-0 pt-8">
         {/* title */}
-        <div className="title-container flex items-center">
+        <div className="flex min-w-1 flex-1 items-center">
           <div className="avatar placeholder flex-none shrink-0 grow-0">
             <div className="w-12 rounded-full bg-neutral text-neutral-content">
               <span className="text-xl">
@@ -120,7 +154,7 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
               </span>
             </div>
           </div>
-          <div className="title__detail m-2">
+          <div className="m-2 min-w-1 flex-initial">
             <TitleInput
               title={
                 selectedItem.title ??
@@ -138,63 +172,70 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
             </p>
           </div>
         </div>
-        {/* go to */}
-        {type === "window" && windows.length > 1 && !isCurrentWindow && (
-          <button
-            className="btn btn-outline btn-primary p-2"
-            onClick={(e) => jumptToWindow(selectedItem.id)}
-          >
-            go to
-          </button>
-        )}
-        {/* open */}
-        {type === "collection" ? (
-          <button
-            className="btn btn-outline btn-primary p-2"
-            onClick={openCollection}
-          >
-            open
-          </button>
-        ) : (
-          // save
-          <div className="join">
+        {/* collection/window actions */}
+        {/* <div className="grid grid-cols-3 items-center gap-2.5"> */}
+        <div className="flex items-center">
+          {/* go to */}
+          {type === "window" && windows.length > 1 && !isCurrentWindow && (
             <button
-              className="btn btn-outline btn-primary join-item p-2"
-              onClick={() => saveCollection()}
+              className="btn btn-outline btn-primary mr-2.5 p-2"
+              onClick={(e) => jumptToWindow(selectedItem.id)}
             >
-              save as new collection
+              go to
             </button>
-            <DropDown
-              buttonText="save to collection"
-              buttonClassName="btn btn-outline btn-primary join-item p-2"
-              buttonStyle={{
-                borderTopRightRadius: "var(--rounded-btn, .5rem)",
-                borderBottomRightRadius: "var(--rounded-btn, .5rem)"
-              }}
-              ref={saveToBtnRef}
+          )}
+          {/* open */}
+          {type === "collection" ? (
+            <button
+              className="btn btn-outline btn-primary mr-2.5 p-2"
+              onClick={openCollection}
             >
-              {collections.map((collection) => (
-                <li
-                  onClick={() => saveCollection(collection)}
-                  key={collection.id}
-                >
-                  <a>{collection.title}</a>
-                </li>
-              ))}
-            </DropDown>
-          </div>
-        )}
-        {/* delete */}
-        <button
-          className="btn btn-outline btn-primary p-2"
-          onClick={deleteWindowOrCollection}
-        >
-          {type === "window" ? "close" : "delete"}
-        </button>
-        {/* refresh */}
-        <RefreshBtn></RefreshBtn>
+              open
+            </button>
+          ) : (
+            // save
+            <div className="join mr-2.5">
+              <button
+                className="btn btn-outline btn-primary join-item p-2"
+                onClick={() => saveCollection()}
+              >
+                save as new collection
+              </button>
+              <DropDown
+                buttonText="save to collection"
+                buttonClassName="btn btn-outline btn-primary join-item p-2"
+                buttonStyle={{
+                  borderTopRightRadius: "var(--rounded-btn, .5rem)",
+                  borderBottomRightRadius: "var(--rounded-btn, .5rem)"
+                }}
+                ref={saveToBtnRef}
+              >
+                {collections.map((collection) => (
+                  <li
+                    onClick={() => saveCollection(collection)}
+                    key={collection.id}
+                  >
+                    <a>{collection.title}</a>
+                  </li>
+                ))}
+              </DropDown>
+            </div>
+          )}
+          {/* delete */}
+          <button
+            className="btn btn-outline btn-primary mr-2.5 p-2"
+            onClick={deleteWindowOrCollection}
+          >
+            {type === "window" ? "close" : "delete"}
+          </button>
+          {/* refresh */}
+          <RefreshBtn></RefreshBtn>
+        </div>
       </div>
-      <div className="flex-auto overflow-y-scroll">{children}</div>
+      {SelectedOperations}
+      <div className="scrollbar relative flex-auto overflow-y-scroll">
+        <div className="right-mask relative overflow-hidden">{children}</div>
+      </div>
     </div>
   )
 }
@@ -207,16 +248,9 @@ const Content = ({}) => {
     dispatch
   } = useGlobalCtx()
 
-  const {
-    selectedList,
-    tabsByWindowMap,
-    onSelect,
-    setTabsByWindow,
-    openSelected,
-    deleteSelected,
-    addSelectedToCollection
-  } = useSelectContext()
-  const dropDownRef = useRef(null)
+  const { selectedList, tabsByWindowMap, onSelect, setTabsByWindow } =
+    useSelectContext()
+
   // set list for sortable
   const [windowList, setWindowList] = useState(current?.windows ?? [])
   useEffect(() => {
@@ -228,38 +262,6 @@ const Content = ({}) => {
   const dispatchEdit = (isEdited) => {
     dispatch(updateEditedList({ id: currentId, type, isEdited }))
   }
-  const handleMoveSelectedClick = (collectionId) => {
-    addSelectedToCollection(collectionId)
-    dropDownRef.current.close()
-  }
-
-  const SelectedOperations = (
-    <div
-      className={`btn-wrapper ml-auto ${selectedList.length > 0 ? "flex" : "invisible"} h-8`}
-    >
-      {type === "collection" && (
-        <button className="btn btn-xs m-1" onClick={openSelected}>
-          open selected
-        </button>
-      )}
-      {/* // TODO bug */}
-      <button className="btn btn-xs m-1" onClick={deleteSelected}>
-        {type === "collection" ? "remove selected" : "close selected"}
-      </button>
-      <DropDown buttonText="move selected" ref={dropDownRef}>
-        {collections
-          .filter((c) => c.id !== currentId)
-          .map((collection) => (
-            <li
-              onClick={() => handleMoveSelectedClick(collection.id)}
-              key={collection.id}
-            >
-              <a>{collection.title}</a>
-            </li>
-          ))}
-      </DropDown>
-    </div>
-  )
 
   // window
   if (current.tabs) {
@@ -270,7 +272,6 @@ const Content = ({}) => {
           selectedList={selectedList}
           type={type}
         >
-          {SelectedOperations}
           <List
             window={current}
             type={type}
@@ -292,7 +293,6 @@ const Content = ({}) => {
         selectedList={selectedList}
         type={type}
       >
-        {SelectedOperations}
         <Sortable list={windowList} listId={current.id}>
           {windowList.map((window) => (
             <List

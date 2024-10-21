@@ -1,0 +1,46 @@
+.header {
+  width: 100%;
+  height: 100px;
+  background: lightyellow;
+  flex-shrink: 0;
+}
+
+.content {
+  background: lightgreen;
+  flex-grow: 1;
+  flex-basis: 0;
+  overflow: hidden auto;
+  position: relative;
+}
+/* ?? why add overflow-hidden list can make padding-right-mask */
+.list {
+  position: relative;
+  overflow: hidden;
+}
+
+.list::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 32px;
+  background-image: linear-gradient(90deg, hsla(0, 0%, 0%, 0%), #fff);
+  pointer-events: none;
+}
+
+.list-item {
+  height: 40px;
+  margin: 10px;
+}
+
+/* gradient padding right */
+.gradient-padding-right {
+  top: 0;
+  right: 0;
+  width: 32px;
+  bottom: 0;
+  position: absolute;
+  pointer-events: none;
+  background-image: linear-gradient(90deg, hsla(0, 0%, 0%, 0%), #fff);
+}
