@@ -14,7 +14,7 @@ import { formatedWindow } from "~tabs/utils/window"
 import { useGlobalCtx } from "./context"
 import { useDialog } from "./Dialog/DialogContext"
 import { Sortable } from "./Dnd"
-import DropDown from "./DropDown"
+import Dropdown from "./DropDown"
 import { List } from "./list"
 import {
   removeCollection,
@@ -83,7 +83,6 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
   }
 
   const { RefreshBtn } = useRefresh()
-  const saveToBtnRef = useRef(null)
 
   // cancel selected outside
   const ContentLayoutRef = useRef(null)
@@ -95,7 +94,7 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
       contentNode.children[0],
       contentNode.children[1], // selected actions
       contentNode.children[2], // windows
-      contentNode.children[2].children[0],
+      contentNode.children[2].children[0]
     ]
     if (outsideNodes.includes(e.target)) {
       setSelected({ checked: false })
@@ -103,36 +102,34 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
   }
 
   // selected actions
-  const dropDownRef = useRef(null)
-  const handleMoveSelectedClick = (collectionId) => {
-    addSelectedToCollection(collectionId)
-    dropDownRef.current.close()
-  }
   const SelectedOperations = (
     <div
       className={`btn-wrapper flex-none ${selectedList.length > 0 ? "flex" : "invisible"} h-8 pl-5`}
     >
+      {/* open */}
       {type === "collection" && (
         <button className="btn btn-xs m-1" onClick={openSelected}>
           open selected
         </button>
       )}
+      {/* remove */}
       {/* // TODO bug */}
       <button className="btn btn-xs m-1" onClick={deleteSelected}>
         {type === "collection" ? "remove selected" : "close selected"}
       </button>
-      <DropDown buttonText="move selected" ref={dropDownRef}>
+      {/* move */}
+      <Dropdown buttonText="move selected" buttonClassName="btn btn-xs m-1">
         {collections
           .filter((c) => c.id !== selectedItem.id)
           .map((collection) => (
             <li
-              onClick={() => handleMoveSelectedClick(collection.id)}
+              onClick={() => addSelectedToCollection(collection.id)}
               key={collection.id}
             >
               <a>{collection.title}</a>
             </li>
           ))}
-      </DropDown>
+      </Dropdown>
     </div>
   )
 
@@ -173,12 +170,11 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
           </div>
         </div>
         {/* collection/window actions */}
-        {/* <div className="grid grid-cols-3 items-center gap-2.5"> */}
-        <div className="flex items-center">
+        <div className="flex items-center space-x-2">
           {/* go to */}
           {type === "window" && windows.length > 1 && !isCurrentWindow && (
             <button
-              className="btn btn-outline btn-primary mr-2.5 p-2"
+              className="btn btn-outline btn-primary p-2"
               onClick={(e) => jumptToWindow(selectedItem.id)}
             >
               go to
@@ -187,28 +183,23 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
           {/* open */}
           {type === "collection" ? (
             <button
-              className="btn btn-outline btn-primary mr-2.5 p-2"
+              className="btn btn-outline btn-primary p-2"
               onClick={openCollection}
             >
               open
             </button>
           ) : (
             // save
-            <div className="join mr-2.5">
+            <div className="join join-vertical lg:join-horizontal">
               <button
                 className="btn btn-outline btn-primary join-item p-2"
                 onClick={() => saveCollection()}
               >
                 save as new collection
               </button>
-              <DropDown
+              <Dropdown
                 buttonText="save to collection"
                 buttonClassName="btn btn-outline btn-primary join-item p-2"
-                buttonStyle={{
-                  borderTopRightRadius: "var(--rounded-btn, .5rem)",
-                  borderBottomRightRadius: "var(--rounded-btn, .5rem)"
-                }}
-                ref={saveToBtnRef}
               >
                 {collections.map((collection) => (
                   <li
@@ -218,12 +209,12 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
                     <a>{collection.title}</a>
                   </li>
                 ))}
-              </DropDown>
+              </Dropdown>
             </div>
           )}
           {/* delete */}
           <button
-            className="btn btn-outline btn-primary mr-2.5 p-2"
+            className="btn btn-outline btn-primary p-2"
             onClick={deleteWindowOrCollection}
           >
             {type === "window" ? "close" : "delete"}
