@@ -8,30 +8,33 @@ import {
 } from "react"
 import { createPortal } from "react-dom"
 
-const initStyle = {
-  left: "-99999px",
-  top: "-99999px",
-  opacity: 0,
-  transform: "scale(0.95)",
-  transitionTimingFunction: "cubic-bezier(0, 0, 0.2, 1)",
-  transitionDuration: "200ms",
-  transitionProperty: "opacity, transform"
-}
-
 type DropdownProps = {
   children: ReactNode
   listClassName?: string
   button?: ReactNode
+  buttonSvg?: ReactNode
   buttonText?: string
   buttonClassName?: string
   buttonStyle?: CSSProperties
+  menuPosition?: "left" | "right"
 }
 
 const Dropdown: FC<DropdownProps> = ({
+  buttonSvg,
   buttonText,
   buttonClassName,
+  menuPosition = "left",
   children
 }) => {
+  const initStyle = {
+    [menuPosition]: "-99999px",
+    top: "-99999px",
+    opacity: 0,
+    transform: "scale(0.95)",
+    transitionTimingFunction: "cubic-bezier(0, 0, 0.2, 1)",
+    transitionDuration: "200ms",
+    transitionProperty: "opacity, transform"
+  }
   const [isOpen, setIsOpen] = useState(false)
   const [menuStyle, setMenuStyle] = useState<any>(initStyle)
   const buttonRef = useRef(null)
@@ -61,10 +64,11 @@ const Dropdown: FC<DropdownProps> = ({
   useEffect(() => {
     if (isOpen && buttonRef.current) {
       const buttonRect = buttonRef.current.getBoundingClientRect()
+
       setMenuStyle({
         ...menuStyle,
         top: `${buttonRect.bottom + 5}px`,
-        left: `${buttonRect.left}px`,
+        [menuPosition]: `${menuPosition === "right" ? window.innerWidth - buttonRect[menuPosition] : buttonRect[menuPosition]}px`,
         transform: "scale(1)",
         opacity: 1
       })
@@ -72,6 +76,13 @@ const Dropdown: FC<DropdownProps> = ({
       setMenuStyle(initStyle)
     }
   }, [isOpen])
+
+  const Button = (
+    <button ref={buttonRef} className={buttonClassName} onClick={handleToggle}>
+      {buttonSvg ?? null}
+      {buttonText ?? null}
+    </button>
+  )
 
   const DropDownMenu = createPortal(
     <div
@@ -87,13 +98,7 @@ const Dropdown: FC<DropdownProps> = ({
 
   return (
     <>
-      <button
-        ref={buttonRef}
-        className={buttonClassName}
-        onClick={handleToggle}
-      >
-        {buttonText ?? "dropdown"}
-      </button>
+      {Button}
       {isOpen && DropDownMenu}
     </>
   )
