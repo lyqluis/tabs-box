@@ -25,7 +25,7 @@ const dialogReducer = (state, action) => {
     case OPEN_DIALOG:
       return { ...state, isOpen: true, ...action.payload }
     case CLOSE_DIALOG:
-      return { ...state, ...dialogState }
+      return { ...state, isOpen: false /* , ...dialogState */ }
     case SET_DIALOG:
       return { ...state, ...action.payload }
     default:
@@ -49,9 +49,8 @@ export const DialogProvider = ({ children }) => {
       type: OPEN_DIALOG,
       payload: { message, title, content, onConfirm, confirmText, cancelText }
     })
-    dialogRef.current.showModal()
   }
-  const closeDialog = () => dispatch({ type: OPEN_DIALOG })
+  const closeDialog = () => dispatch({ type: CLOSE_DIALOG })
   const setDialog = (dialogState) =>
     dispatch({ type: SET_DIALOG, payload: dialogState })
 
