@@ -85,6 +85,7 @@ const reducer = (state, action) => {
       return { ...state, windows: newWindows }
     }
     case SET_COLLECTION: {
+      // console.log("🧠 reducer SET_COLLECTION", action.payload)
       const collection = action.payload
       const newCollections = state.collections.slice()
       const index = newCollections.findIndex((c) => c.id === collection.id)

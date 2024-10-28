@@ -2,15 +2,16 @@
 - [x] sortable feature
   - add react-sortablejs
   - sortable only with handle icon
-- [-] App
+- [x] App
   - [x] use global data through context
-- [-] SideBar
+- [x] SideBar
   - [x] show pinned item
   - [x] scroll y
   - [x] show updated time
-  - [?] sortable
+  - [ ] sortable
 - [-] List
   - [ ] how to distinguish whether the current window is from a collection or a new one unsaved
+  - [ ] style: URL that exceeds fades out with a gradient
   - [x] edit window title
     - [x] input feature
       - use mousedown event to prevent blur event from being fired before the click of buttons
@@ -22,7 +23,6 @@
   - [x] icon
     - [x] show pinned
   - [x] detect tabs witch are loading
-  - [ ] URL that exceeds fades out with a gradient
   - [x] open collection feature
   - [x] selected feature
     - [x] select all
@@ -33,6 +33,7 @@
   - [x] quick actions to open window / delete window
   - [x] list's draggable handler, dnd style
   - [x] list's dnd overlay
+  - [ ] style: collection/window actions button and title in one line
 - [x] feature: open url/window/collection
   - [x] open colleciton in new window
   - [x] open one tab / tabs selected

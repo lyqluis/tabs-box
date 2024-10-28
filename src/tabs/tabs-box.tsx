@@ -76,8 +76,6 @@ const TabsBoxPage = () => {
                 <main className="flex h-screen w-full flex-col overflow-hidden">
                   <Header></Header>
                   <Content></Content>
-                  {/* // TODO: content layout style */}
-                  {/* <Tst></Tst> */}
                 </main>
               </div>
               <ToastContainer></ToastContainer>
