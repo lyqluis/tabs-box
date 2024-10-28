@@ -40,15 +40,20 @@ const Dropdown: FC<DropdownProps> = ({
   const buttonRef = useRef(null)
   const menuRef = useRef(null)
 
-  const handleToggle = () => setIsOpen(!isOpen)
+  const handleToggle = () => {
+    // console.log("toggle dropdown")
+    setIsOpen(!isOpen)
+  }
 
   const handleClickOutside = (event) => {
+    // console.log("handle click outside")
     // 如果点击事件的目标不是 button/menu 单本身，则关闭下拉菜单
     if (
       menuRef.current &&
       !menuRef.current.contains(event.target) &&
       !buttonRef.current.contains(event.target)
     ) {
+      // console.log("handle click outside inner")
       setIsOpen(false)
     }
   }
