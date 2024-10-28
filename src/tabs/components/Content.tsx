@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
+import useActions from "~tabs/hooks/useActions"
 import { useRefresh } from "~tabs/hooks/useRefresh"
 import { useSelectContext } from "~tabs/hooks/useSelect"
 import { fromNow } from "~tabs/utils"
@@ -11,6 +12,7 @@ import {
 } from "~tabs/utils/platform"
 import { formatedWindow } from "~tabs/utils/window"
 
+import DropDownActionButton from "./CollectionButtons"
 import { useGlobalCtx } from "./context"
 import { useDialog } from "./Dialog/DialogContext"
 import { Sortable } from "./Dnd"
@@ -35,45 +37,19 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
       ? selectedItem.windows.reduce((n, window) => (n += window.tabs.length), 0)
       : selectedItem.tabs.length
   const isCurrentWindow = selectedItem.id === CURRENT_WINDOW.id
-  const saveCollection = (collection?) => {
-    if (collection) {
-      // save window to existed collection
-      const existedWindows = collection.windows
-      collection.windows = [...existedWindows, formatedWindow(selectedItem)]
-    }
-    // save window as new collection
-    collection = collection ?? formatedWindow(selectedItem)
-    dispatch(setCollectionWithLocalStorage(collection))
-  }
-  const openCollection = async () => {
-    const { windows } = selectedItem
-    let newWindowId
-    windows &&
-      (await windows.map(
-        async (window) => (newWindowId = await openWindow(window))
-      ))
-    // TODO can't get new window id right now
-    dispatch(setCurrentId(newWindowId))
-  }
-  const deleteCollection = () => {
-    openDialog({
-      title: "Warn",
-      message: `collection ${selectedItem.title} will be permanently deleted`,
-      onConfirm: () => dispatch(removeCollection(selectedItem))
-    })
-  }
-  const setCollectionTitle = (title) => {
-    console.log("set collection title", title)
-    selectedItem.title = title
-    dispatch(setCollectionWithLocalStorage(selectedItem))
-  }
-  const deleteWindow = () => {
-    openDialog({
-      title: "Warn",
-      message: `Target window will be permanently closed`,
-      onConfirm: () => closeWindow(selectedItem.id)
-    })
-  }
+  const {
+    goToWindow,
+    deleteWindow,
+    openCollection,
+    pinnedCollection,
+    saveCollection,
+    deleteCollection,
+    // activeTitleInput,
+    // CollectionTitle
+    setCollectionTitle,
+    openChooseCollectionDialog
+  } = useActions()
+
   const deleteWindowOrCollection = () => {
     if (type === "collection") {
       deleteCollection()
@@ -81,7 +57,7 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
       deleteWindow()
     }
   }
-
+  const inputRef = useRef(null)
   const { RefreshBtn } = useRefresh()
 
   // cancel selected outside
@@ -113,7 +89,6 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
         </button>
       )}
       {/* remove */}
-      {/* // TODO bug */}
       <button className="btn btn-xs m-1" onClick={deleteSelected}>
         {type === "collection" ? "remove selected" : "close selected"}
       </button>
@@ -153,6 +128,7 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
           </div>
           <div className="m-2 min-w-1 flex-initial">
             <TitleInput
+              ref={inputRef}
               title={
                 selectedItem.title ??
                 (isCurrentWindow ? "This Window" : "Window")
@@ -160,6 +136,7 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
               disable={type === "window"}
               setTitle={setCollectionTitle}
             ></TitleInput>
+            {/* {CollectionTitle} */}
             <p className="my-2">
               {selectedList.length > 0 && (
                 <span>{selectedList.length} selected / </span>
@@ -169,13 +146,14 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
             </p>
           </div>
         </div>
+        {/* // TODO: reponsiable in small window, buttons shrink to be one */}
         {/* collection/window actions */}
         <div className="flex items-center space-x-2">
           {/* go to */}
           {type === "window" && windows.length > 1 && !isCurrentWindow && (
             <button
-              className="btn btn-outline btn-primary p-2"
-              onClick={(e) => jumptToWindow(selectedItem.id)}
+              className="btn btn-outline btn-primary hidden p-2 sm:block"
+              onClick={goToWindow}
             >
               go to
             </button>
@@ -183,14 +161,14 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
           {/* open */}
           {type === "collection" ? (
             <button
-              className="btn btn-outline btn-primary p-2"
+              className="btn btn-outline btn-primary hidden p-2 sm:block"
               onClick={openCollection}
             >
               open
             </button>
           ) : (
             // save
-            <div className="join join-vertical lg:join-horizontal">
+            <div className="join join-vertical hidden lg:join-horizontal lg:block">
               <button
                 className="btn btn-outline btn-primary join-item p-2"
                 onClick={() => saveCollection()}
@@ -214,11 +192,17 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
           )}
           {/* delete */}
           <button
-            className="btn btn-outline btn-primary p-2"
+            className="btn btn-outline btn-primary hidden p-2 sm:block"
             onClick={deleteWindowOrCollection}
           >
             {type === "window" ? "close" : "delete"}
           </button>
+          {/* // TODO: reponsiable in small window, buttons shrink to be one */}
+          {/* actions in small screen */}
+          <DropDownActionButton
+            inputRef={inputRef}
+            className="btn block p-2 lg:hidden"
+          ></DropDownActionButton>
           {/* refresh */}
           <RefreshBtn></RefreshBtn>
         </div>
