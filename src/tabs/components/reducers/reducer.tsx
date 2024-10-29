@@ -25,7 +25,9 @@ import {
   ADD_TAB,
   ADD_TABS,
   ADD_WINDOW,
+  COPY,
   EXPORT_DATA,
+  PASTE,
   REMOVE_COLLECTION,
   REMOVE_TAB,
   REMOVE_TABS,
@@ -51,6 +53,7 @@ interface State {
   currentId: number | string
   selectedList: chrome.tabs.Tab[]
   editedMap: object
+  clipboard: clipItem[] // todo: clip item type
 }
 
 const initialJSON: State = {
@@ -59,7 +62,8 @@ const initialJSON: State = {
   windows: [],
   collections: [],
   currentId: null,
-  selectedList: []
+  selectedList: [],
+  clipboard: []
 }
 
 const window = {
@@ -327,6 +331,23 @@ const reducer = (state, action) => {
       // set tabs from window
       const windows = setTabsInWindow(tabs, windowId, state.windows, index)
       return { ...state, windows }
+    }
+    // TODO: use utils/clipboard
+    case COPY: {
+      const item = action.payload
+      // const copiedClipboard = state.clipboard.slice()
+      // ? cause clipboard no need to be reactive
+      state.clipboard.push(item)
+      return { ...state, clipboard: state.clipboard }
+    }
+    case PASTE: {
+      const target = action.payload
+      const item = state.clipboard.pop()
+      // todo: add item to target
+      // item is window, target is colletion, add new window to the target
+      
+
+      return { ...state, clipboard: state.clipboard }
     }
     // other case...
   }

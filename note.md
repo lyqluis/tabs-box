@@ -33,7 +33,10 @@
   - [x] quick actions to open window / delete window
   - [x] list's draggable handler, dnd style
   - [x] list's dnd overlay
-  - [ ] style: collection/window actions button and title in one line
+  - [x] style: collection/window actions button and title in one line
+- [ ] feature: integrate collections' operational functions into `useActions` hook
+  - [x] move old functions into hook file
+- [ ] feature: copy/paste
 - [x] feature: open url/window/collection
   - [x] open colleciton in new window
   - [x] open one tab / tabs selected

@@ -4,6 +4,7 @@ import { toast } from "."
 
 const ToastMessage = ({
   id,
+  title,
   message = "You have 1 unread message",
   duration = 3000,
   children = null,
@@ -26,7 +27,7 @@ const ToastMessage = ({
   return (
     <div
       role="alert"
-      className={`alert m-1.5 shadow-lg transition-all ${duration-transitionDuration} ease-linear ${isShow ? "translate-x-0" : "translate-x-full opacity-0"}`}
+      className={`alert m-1.5 shadow-lg transition-all ${duration - transitionDuration} ease-linear ${isShow ? "translate-x-0" : "translate-x-full opacity-0"}`}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -42,7 +43,10 @@ const ToastMessage = ({
         ></path>
       </svg>
       <div>
-        <h3 className="font-bold">New message!{id}</h3>
+        <h3 className="font-bold">
+          {title}
+          {/* <i>{id}</i> */}
+        </h3>
         <div className="text-xs">{message}</div>
       </div>
       <div>
