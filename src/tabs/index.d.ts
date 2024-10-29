@@ -24,3 +24,9 @@ interface Collection {
 }
 
 type CollectionId = Collection["id"]
+
+type clipItem = {
+  type: 'window' | 'tab' | 'collection'
+  data: Window | Collection | Tab | Window[] | Tab[]
+  copiedTime: number
+}

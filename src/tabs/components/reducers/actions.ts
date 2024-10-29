@@ -30,6 +30,9 @@ export const UPDATE_WINDOWS = "UPDATE_WINDOWS"
 export const ADD_TABS = "ADD_TABS"
 export const REMOVE_TABS = "REMOVE_TABS"
 export const UPDATE_TABS = "UPDATE_TABS"
+// clipboard
+export const COPY = "COPY"
+export const PASTE = "PASTE"
 
 export const setWindows = (windows: Window[]) => ({
   type: SET_WINDOWS,
@@ -142,4 +145,14 @@ export const updateTabs = ({
   }
 }
 
+export const addCopyItems = (
+  items: Collection | Window | Tab | Window[] | Tab[]
+) => ({
+  type: COPY,
+  payload: { data: items, copiedTime: Date.now() }
+})
+export const removeCopyItems = (target: Collection | Window) => ({
+  type: PASTE,
+  payload: target
+})
 export const exportData = () => ({ type: EXPORT_DATA })
