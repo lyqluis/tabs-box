@@ -15,7 +15,6 @@ import useActions from "~tabs/hooks/useActions"
 import { CURRENT_WINDOW } from "~tabs/utils/platform"
 
 import { useGlobalCtx } from "./context"
-import { useDialog } from "./Dialog/DialogContext"
 import Dropdown from "./DropDown"
 
 const DropDownActionButton = ({ className, inputRef }) => {
@@ -32,17 +31,11 @@ const DropDownActionButton = ({ className, inputRef }) => {
     copy,
     paste
   } = useActions()
-  const { openDialog } = useDialog()
 
   const iconClassName = "h-full w-full fill-slate-700"
   const warnClassName = "text-red-500 fill-red-500"
 
   const svg = <More className={iconClassName}></More>
-  // const isCurrentWindow = useMemo(() => {
-  //   const res = current.id === CURRENT_WINDOW.id
-  //   console.log("is current window", res)
-  //   return res
-  // }, [current])
   const isCurrentWindow = current.id === CURRENT_WINDOW.id
 
   const menu = [
@@ -117,13 +110,13 @@ const DropDownActionButton = ({ className, inputRef }) => {
       },
       {
         text: "save as new collection",
-        icon: <Folder className={iconClassName} />,
+        icon: <FolderPlus className={iconClassName} />,
         callback: () => saveCollection(),
         includes: ["window"]
       },
       {
         text: "save to collection",
-        icon: <FolderPlus className={iconClassName} />,
+        icon: <Folder className={iconClassName} />,
         callback: openChooseCollectionDialog,
         includes: ["window"]
       },

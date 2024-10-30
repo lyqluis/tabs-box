@@ -3,9 +3,7 @@ import relativeTime from "dayjs/plugin/relativeTime"
 import { useEffect, useRef } from "react"
 import { v4 as uuid } from "uuid"
 
-export const generateId = () => {
-  return uuid()
-}
+export const generateId = () => uuid()
 
 export const useRenderCount = () => {
   const renderCount = useRef(0)

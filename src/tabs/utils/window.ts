@@ -21,7 +21,7 @@ export const createWindow = (
       collectionId
     }
   }
-
+  // copy a new window
   const id = generateId()
   tabs = tabs.map((tab) => {
     tab.windowId = id
@@ -30,8 +30,9 @@ export const createWindow = (
     return tab
   })
   window.id = id
+  window.collectionId = collectionId
   window.tabs = tabs
-  return window
+  return { ...window }
 }
 
 export const formatedWindow = (window) => {
