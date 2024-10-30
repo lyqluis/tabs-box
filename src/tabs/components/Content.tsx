@@ -19,9 +19,6 @@ import { Sortable } from "./Dnd"
 import Dropdown from "./DropDown"
 import { List } from "./list"
 import {
-  removeCollection,
-  setCollectionWithLocalStorage,
-  setCurrentId,
   updateEditedList
 } from "./reducers/actions"
 import TitleInput from "./TitleInput"

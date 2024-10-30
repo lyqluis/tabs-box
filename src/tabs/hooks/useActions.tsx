@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from "react"
+import { useCallback, useEffect, useMemo, useRef } from "react"
 
 import { useGlobalCtx } from "~tabs/components/context"
 import { useDialog } from "~tabs/components/Dialog/DialogContext"
@@ -26,6 +26,7 @@ import {
 } from "~tabs/utils/platform"
 import { createWindow, formatedWindow } from "~tabs/utils/window"
 
+import useLatest from "./useLatest"
 import { useSelectContext } from "./useSelect"
 
 const useActions = () => {
@@ -135,21 +136,29 @@ const useActions = () => {
     return () => ref.current.active()
   }
 
-  // TODO: copy & paste
+  // can not get latest selectedList value, so use a ref to get lastest value
+  const selectedRef = useRef(null)
+  useEffect(() => {
+    // console.log("useActions @selectedList", selectedList, tabsByWindowMap)
+    selectedRef.current = { selectedList, tabsByWindowMap }
+  }, [selectedList])
+
   const copy = () => {
-    let res
-    // if selected length > 0, copy selected
+    let res, title
+    const { selectedList } = selectedRef.current
+
     if (selectedList.length) {
-      // todo: copy selected to clipboard
-      // maybe tabs / window / windows
-      console.log("do something with selectedList")
+      // copy selected to clipboard
+      res = pushToClipboard(createClippedItem(selectedList, "tab"))
+      title = "selected"
     } else {
       // else copy current window/collection
-      res = pushToClipboard(createClippedItem(current))
+      res = pushToClipboard(createClippedItem(current, type))
+      title = type
     }
 
     // finally show copied message
-    res && toast.current.show({ title: "Copied!", message: "" })
+    res && toast.current.show({ title: `Copied ${title}!`, message: "" })
   }
 
   const paste = (target: Collection | Window) => {
@@ -157,14 +166,33 @@ const useActions = () => {
     if (item) {
       console.log("get item from clipboard", item)
 
-      // todo: paste to current window/collection
-      // item is sidebar's window, target is colletion, add new window to the target
-      let window = item.data
-      window = createWindow(window.tabs, target.id, window)
-      dispatch(addWindow({ window, collectionId: target.id }))
-      // notify to save
-      dispatch(updateEditedList({type: 'collection', id: target.id, isEdited: true}))
-      // todo: need to be saved
+      // target is colletion, add new window to the target
+      const { data, type } = item
+      if (type === "window") {
+        // console.log("paste window")
+        let window = data
+        window = createWindow(window.tabs, target.id, window)
+        dispatch(addWindow({ window, collectionId: target.id }))
+      } else if (type === "collection") {
+        // console.log("paste collection")
+        const collection = data
+        const windows = collection.windows
+        windows.map((window) => {
+          window = createWindow(window.tabs, target.id, window)
+          dispatch(addWindow({ window, collectionId: target.id }))
+        })
+      } else if (type === "tab") {
+        // console.log("paste selected tabs")
+        const tabs = data
+        const window = createWindow(tabs, target.id)
+        dispatch(addWindow({ window, collectionId: target.id }))
+      }
+
+      // notify to save or save directly
+      dispatch(
+        updateEditedList({ type: "collection", id: target.id, isEdited: true })
+      )
+      // dispatch(setCollectionWithLocalStorage(target))
     } else {
       toast.current.show({
         title: "Clipboard is empty!",

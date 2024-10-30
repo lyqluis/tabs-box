@@ -160,6 +160,7 @@ export const oldSelectProvider = ({ children }) => {
 
 export const useSelectContext = () => useContext(ctx)
 
+// TODO: [refactor] change to state, do not use tab.checked
 export const SelectProvider = ({ children }) => {
   const {
     state: { currentId, windows, collections },

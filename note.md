@@ -1,6 +1,5 @@
 # TODO
 - [x] sortable feature
-  - add react-sortablejs
   - sortable only with handle icon
 - [x] App
   - [x] use global data through context
@@ -30,13 +29,14 @@
     - [x] delete selected from collection
     - [x] click outside list, cancel all selected
     - [x] collection with multi windows works wrong, select tabs in one window, another window of collections' shows select box as well
+    - [ ] !! refactor from data mode to state
   - [x] quick actions to open window / delete window
   - [x] list's draggable handler, dnd style
   - [x] list's dnd overlay
   - [x] style: collection/window actions button and title in one line
-- [ ] feature: integrate collections' operational functions into `useActions` hook
+- [x] feature: integrate collections' operational functions into `useActions` hook
   - [x] move old functions into hook file
-- [ ] feature: copy/paste
+- [x] feature: copy/paste
 - [x] feature: open url/window/collection
   - [x] open colleciton in new window
   - [x] open one tab / tabs selected
@@ -157,7 +157,7 @@
 - [ ] save in cloud feature
   - [ ] google drive
 - [ ] setting feature
-- [-] restore feature
+- [ ] restore feature
   - [ ] save last save (only useful to collections)
   - [?] any operations of the list should be push into history stack
 - [ ] bugs
@@ -166,6 +166,7 @@
   - [x] delete tab can not detecte
   - [x] List: new tab can not be detected in reducer when deleted
   - [x] move selected to other collection, moved tabs should be detected by useSelected or unchecked
+  - [ ] multi drag end, the collapsed tabs cannot be restored to their expanded state
 - [x] feature: drag tabs between windows
   - Sortable / App
   - dnd context
