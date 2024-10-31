@@ -13,13 +13,15 @@ const ctx = createContext(null)
 const { Provider } = ctx
 
 // TODO check all tabs box
-export const oldSelectProvider = ({ children }) => {
+export const SelectProvider = ({ children }) => {
   const {
-    state: { current, currentId, collections },
+    state: { currentId, collections },
+    current,
     type,
     dispatch
   } = useGlobalCtx()
 
+  // always store current selected
   const [selectedList, setSelectedList] = useState([])
 
   const tabsByWindowMap = useMemo<Map<WindowId, Tab[]>>(() => {
@@ -50,6 +52,7 @@ export const oldSelectProvider = ({ children }) => {
     console.log("on select", tab, type, selectedList)
   }
 
+  // select window's all tabs
   const setTabsByWindow = (windowId, tabs: Tab[]) => {
     setSelectedList((list) => {
       const restList = list.filter((tab) => tab.windowId !== windowId)
@@ -61,7 +64,7 @@ export const oldSelectProvider = ({ children }) => {
     openTabs(selectedList)
     setSelectedList([])
   }
-  // delect from reducer
+  // delete from reducer
   const deleteSelected = () => {
     const collectionId = type === "collection" ? current.id : ""
     tabsByWindowMap.forEach((tabs, windowId) => {
@@ -84,6 +87,7 @@ export const oldSelectProvider = ({ children }) => {
     windowId?: WindowId,
     filter?: () => boolean
   ) => {
+    // console.log("useSelect - setSelected@current", current, windowId)
     const collectionId = type === "collection" ? current.id : ""
 
     if (windowId) {
@@ -92,6 +96,7 @@ export const oldSelectProvider = ({ children }) => {
       if (filter) {
         tabs = tabs.filter(filter)
       }
+      // console.log("useSelect - setSelected@filter", tabs, filter)
       const newTabs = tabs.map((tab) => ({ ...tab, ...props }))
       dispatch(updateTabs({ tabs: newTabs, windowId, collectionId }))
     } else {
@@ -135,10 +140,6 @@ export const oldSelectProvider = ({ children }) => {
     setSelectedList([])
   }, [currentId])
 
-  // useEffect(() => {
-  //   console.log("🪝 selected list update", selectedList)
-  // }, [selectedList])
-
   return (
     <Provider
       value={{
@@ -160,8 +161,7 @@ export const oldSelectProvider = ({ children }) => {
 
 export const useSelectContext = () => useContext(ctx)
 
-// TODO: [refactor] change to state, do not use tab.checked
-export const SelectProvider = ({ children }) => {
+export const SelectProviderWithProp = ({ children }) => {
   const {
     state: { currentId, windows, collections },
     current,

@@ -8,23 +8,27 @@ import { useDndContext, useSortableItem } from "../Dnd"
 
 interface ListItemProps {
   tab: Tab
-  // checked: boolean
+  checked: boolean
   type: "window" | "collection"
   overlay?: boolean
   onSelect?: (props) => void
 }
 
-const ListItem: FC<ListItemProps> = ({ tab, type, overlay, onSelect }) => {
+const ListItem: FC<ListItemProps> = ({
+  tab,
+  type,
+  onSelect,
+  checked
+}) => {
   // console.log("list item refreshed", tab.title, checked)
   const { attributes, listeners, setNodeRef, style } = useSortableItem({
     id: tab.id
   })
-  const { draggingItem } = useDndContext()
+  // const { draggingItem } = useDndContext()
   const [isHovered, setIsHovered] = useState(false)
 
   const onChange = (e) => {
-    const newSelected = !tab.checked
-    onSelect({ tab, isSelected: newSelected })
+    onSelect({ tab, isSelected: !checked })
   }
   const onMouseOver = (e) => setIsHovered(true)
   const onMouseLeave = (e) => setIsHovered(false)
@@ -46,10 +50,11 @@ const ListItem: FC<ListItemProps> = ({ tab, type, overlay, onSelect }) => {
       ref={setNodeRef}
       style={{
         ...style,
-        opacity: !overlay && draggingItem?.id === tab.id ? 0.5 : 1
+        // todo: restore opacity prop
+        // opacity: !overlay && draggingItem?.id === tab.id ? 0.5 : 1
       }}
       className={`flex flex-nowrap items-center overflow-hidden text-ellipsis whitespace-nowrap align-baseline text-base font-light hover:bg-slate-100
-       ${tab.checked ? "bg-slate-100" : ""}`}
+       ${checked ? "bg-slate-100" : ""}`}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
     >
@@ -64,7 +69,7 @@ const ListItem: FC<ListItemProps> = ({ tab, type, overlay, onSelect }) => {
           ></Pinned>
         ) : (
           <DragableIcon
-            className={`h-full w-full fill-slate-300 hover:cursor-grab focus:cursor-grabbing focus:outline-none ${isHovered || tab.checked ? "flex" : "hidden"}`}
+            className={`h-full w-full fill-slate-300 hover:cursor-grab focus:cursor-grabbing focus:outline-none ${isHovered || checked ? "flex" : "hidden"}`}
             {...attributes}
             {...listeners}
           ></DragableIcon>
@@ -75,7 +80,7 @@ const ListItem: FC<ListItemProps> = ({ tab, type, overlay, onSelect }) => {
           <input
             type="checkbox"
             className="checkbox-primary checkbox checkbox-sm"
-            checked={tab.checked ?? false}
+            checked={checked ?? false}
             onChange={onChange}
           />
         </label>
