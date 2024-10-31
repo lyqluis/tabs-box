@@ -4,12 +4,14 @@ import WindowIcon from "react:~assets/svg/window.svg"
 
 import { ListItem } from "../list"
 import { useDndContext } from "./Dnd"
+import { useSelectContext } from "~tabs/hooks/useSelect"
 
 interface OverlayListProps {
   count?: number // number of selected list item
 }
 export const OverlayList: FC<OverlayListProps> = ({ count }) => {
   const { draggingItem } = useDndContext()
+  const {selectedList} = useSelectContext()
 
   if (!draggingItem) return null
 
@@ -46,7 +48,7 @@ export const OverlayList: FC<OverlayListProps> = ({ count }) => {
         <span className="badge indicator-item badge-secondary">{count}</span>
         <ListItem
           tab={draggingItem}
-          // checked={selectedList.some((t) => t.id === draggingItem.id)}
+          checked={selectedList.some((t) => t.id === draggingItem.id)}
           overlay
         ></ListItem>
       </div>
@@ -55,7 +57,7 @@ export const OverlayList: FC<OverlayListProps> = ({ count }) => {
     return (
       <ListItem
         tab={draggingItem}
-        // checked={selectedList.some((t) => t.id === draggingItem.id)}
+        checked={selectedList.some((t) => t.id === draggingItem.id)}
         overlay
       ></ListItem>
     )

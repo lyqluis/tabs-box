@@ -22,6 +22,7 @@ import {
   addWindow,
   removeTabs,
   removeWindow,
+  setWindow,
   updateEditedList,
   updateTabs,
   updateWindow
@@ -169,10 +170,14 @@ export const DndGlobalContext = ({ children }) => {
     )
 
     if (
-      selectedWindowTabsCount &&
+      selectedWindowTabsCount > 1 &&
       selectedWindowTabs.some((t) => t.id === activeId)
     ) {
-      setSelected({ hidden: true }, windowId, (tab) => tab.id !== activeId)
+      setSelected(
+        { hidden: true },
+        activeItem.windowId,
+        (tab) => tab.id !== activeId
+      )
       setDraggingCount(selectedWindowTabsCount)
     } else {
       setDraggingCount(1)

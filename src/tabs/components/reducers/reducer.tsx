@@ -234,7 +234,6 @@ const reducer = (state, action) => {
       const windows = state.windows.filter((w) => w.id !== windowId)
       return { ...state, windows }
     }
-    // TODO: UPDATE_WINDOW
     case UPDATE_WINDOW: {
       console.log("🧠 reducer UPDATE_WINDOW", action.payload)
       const { window, collectionId, index } = action.payload
@@ -322,6 +321,7 @@ const reducer = (state, action) => {
               collection.windows,
               index
             )
+            console.log("🧠 reducer UPDATE_TABS @windows", windows)
             return { ...collection, windows }
           }
           return collection

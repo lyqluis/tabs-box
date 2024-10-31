@@ -17,7 +17,10 @@ interface ListProps {
   // selectedList?: chrome.tabs.Tab[]
   dispatchEdit?: (isEdited?: boolean) => void
   onSelect?: (any: any) => void
-  setWindowTabs?: (id: WindowId, isSelected: boolean) => void
+  // new:
+  // setWindowTabs?: (id: WindowId, isSelected: boolean) => void
+  // old:
+  setWindowTabs?: (id: WindowId, tabs: Tab[]) => void
 }
 
 // TODO any operation on the list should be push into history stack
@@ -37,7 +40,7 @@ const List: React.FC<ListProps> = ({
   )
   const { current, dispatch } = useGlobalCtx()
   // console.log('List - @useDndContext', useDndContext())
-  const { draggingItem } = useDndContext()
+  // const { draggingItem } = useDndContext()
   const { openDialog } = useDialog()
 
   // console.log("List Component refreshed, props-window", window, tabs)
@@ -49,10 +52,10 @@ const List: React.FC<ListProps> = ({
     const selectedCount = selectedList.length
     if (selectedCount === window.tabs.length) {
       // remove all
-      setWindowTabs(window.id, false)
+      setWindowTabs(window.id, [])
     } else {
       // select all
-      setWindowTabs(window.id, true)
+      setWindowTabs(window.id, window.tabs)
     }
   }
 
@@ -87,7 +90,8 @@ const List: React.FC<ListProps> = ({
       style={{
         background: "lightyellow",
         ...style,
-        opacity: draggingItem?.id === window.id ? 0.5 : 1
+        // todo: restore opacity prop
+        // opacity: draggingItem?.id === window.id ? 0.5 : 1
       }}
     >
       {/* list operation */}

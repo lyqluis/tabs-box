@@ -29,7 +29,7 @@
     - [x] delete selected from collection
     - [x] click outside list, cancel all selected
     - [x] collection with multi windows works wrong, select tabs in one window, another window of collections' shows select box as well
-    - [ ] !! refactor from data mode to state
+    - [x] refactor from data mode to state
   - [x] quick actions to open window / delete window
   - [x] list's draggable handler, dnd style
   - [x] list's dnd overlay
