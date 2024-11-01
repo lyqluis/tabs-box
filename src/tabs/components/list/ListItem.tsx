@@ -18,13 +18,14 @@ const ListItem: FC<ListItemProps> = ({
   tab,
   type,
   onSelect,
+  overlay,
   checked
 }) => {
   // console.log("list item refreshed", tab.title, checked)
   const { attributes, listeners, setNodeRef, style } = useSortableItem({
     id: tab.id
   })
-  // const { draggingItem } = useDndContext()
+  const { draggingItem } = useDndContext()
   const [isHovered, setIsHovered] = useState(false)
 
   const onChange = (e) => {
@@ -50,8 +51,7 @@ const ListItem: FC<ListItemProps> = ({
       ref={setNodeRef}
       style={{
         ...style,
-        // todo: restore opacity prop
-        // opacity: !overlay && draggingItem?.id === tab.id ? 0.5 : 1
+        opacity: !overlay && draggingItem?.id === tab.id ? 0.5 : 1
       }}
       className={`flex flex-nowrap items-center overflow-hidden text-ellipsis whitespace-nowrap align-baseline text-base font-light hover:bg-slate-100
        ${checked ? "bg-slate-100" : ""}`}
