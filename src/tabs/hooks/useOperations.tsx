@@ -29,7 +29,7 @@ import { createWindow, formatedWindow } from "~tabs/utils/window"
 
 import useLatest from "./useLatest"
 
-const useActions = () => {
+const useOperations = () => {
   // window
   // - save as new collection
   // - save to collection
@@ -139,25 +139,15 @@ const useActions = () => {
   // can not get latest selectedList value, so use a ref to get lastest value
   const selectedRef = useRef(null)
   useEffect(() => {
-    // console.log("useActions @selectedList", selectedList, tabsByWindowMap)
+    // console.log("useOperations @selectedList", selectedList, tabsByWindowMap)
     selectedRef.current = { selectedList, tabsByWindowMap }
   }, [selectedList])
 
-  const copy = () => {
-    let res, title
-    const { selectedList } = selectedRef.current
-    if (selectedList.length) {
-      // copy selected to clipboard
-      res = pushToClipboard(createClippedItem(selectedList, "tab"))
-      title = "selected"
-    } else {
-      // else copy current window/collection
-      res = pushToClipboard(createClippedItem(current, type))
-      title = type
-    }
-
-    // finally show copied message
-    res && toast.current.show({ title: `Copied ${title}!`, message: "" })
+  const copy = ({ value, type }) => {
+    const res = pushToClipboard(createClippedItem(value, type))
+    const msg = type === "collection" ? "" : "selected"
+    // todo: [enhance] if copy item is single tab, copy tab's url to system's clipboard
+    res && toast.current.show({ title: `Copied ${msg}!`, message: "" })
   }
 
   const paste = (target: Collection | Window) => {
@@ -216,4 +206,4 @@ const useActions = () => {
   }
 }
 
-export default useActions
+export default useOperations
