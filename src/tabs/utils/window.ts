@@ -5,7 +5,7 @@ import { generateId } from "."
 export const createWindow = (
   tabs: Tab[],
   collectionId?: string,
-  window?: Window
+  window?: Window // copy a window
 ) => {
   if (!window) {
     const id = generateId()
@@ -22,17 +22,19 @@ export const createWindow = (
     }
   }
   // copy a new window
+  const newWindow = { ...window }
   const id = generateId()
-  tabs = tabs.map((tab) => {
-    tab.windowId = id
-    tab.hidden = false
-    tab.checked = false
-    return tab
-  })
-  window.id = id
-  window.collectionId = collectionId
-  window.tabs = tabs
-  return { ...window }
+  // copy tabs with new prop
+  tabs = tabs.map((tab) => ({
+    ...tab,
+    windowId: id,
+    hidden: false,
+    checked: false
+  }))
+  newWindow.id = id
+  newWindow.collectionId = collectionId
+  newWindow.tabs = tabs
+  return newWindow
 }
 
 export const formatedWindow = (window) => {

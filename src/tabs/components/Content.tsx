@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 
 import { useSelectContext } from "~tabs/contexts/selectContext"
-import useActions from "~tabs/hooks/useActions"
+import useOperations from "~tabs/hooks/useOperations"
 import { useRefresh } from "~tabs/hooks/useRefresh"
 import { fromNow } from "~tabs/utils"
 import {
@@ -18,9 +18,7 @@ import { useDialog } from "./Dialog/DialogContext"
 import { Sortable } from "./Dnd"
 import Dropdown from "./DropDown"
 import { List } from "./list"
-import {
-  updateEditedList
-} from "./reducers/actions"
+import { updateEditedList } from "./reducers/actions"
 import TitleInput from "./TitleInput"
 
 const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
@@ -45,7 +43,7 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
     // CollectionTitle
     setCollectionTitle,
     openChooseCollectionDialog
-  } = useActions()
+  } = useOperations()
 
   const deleteWindowOrCollection = () => {
     if (type === "collection") {

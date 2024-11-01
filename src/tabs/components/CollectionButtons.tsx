@@ -11,7 +11,8 @@ import More from "react:~assets/svg/more.svg"
 import Paste from "react:~assets/svg/paste.svg"
 import PinOutline from "react:~assets/svg/pin-outline.svg"
 
-import useActions from "~tabs/hooks/useActions"
+import { useSelectContext } from "~tabs/contexts/selectContext"
+import useOperations from "~tabs/hooks/useOperations"
 import { CURRENT_WINDOW } from "~tabs/utils/platform"
 
 import { useGlobalCtx } from "./context"
@@ -19,6 +20,7 @@ import Dropdown from "./DropDown"
 
 const DropDownActionButton = ({ className, inputRef }) => {
   const { current, type } = useGlobalCtx()
+  const { selectedList, tabsByWindowMap } = useSelectContext()
   const {
     goToWindow,
     deleteWindow,
@@ -30,80 +32,23 @@ const DropDownActionButton = ({ className, inputRef }) => {
     openChooseCollectionDialog,
     copy,
     paste
-  } = useActions()
+  } = useOperations()
 
   const iconClassName = "h-full w-full fill-slate-700"
+  const disabledIcon = "h-full w-full fill-slate-300"
+  const warnIcon = "h-full w-full fill-red-500"
   const warnClassName = "text-red-500 fill-red-500"
 
   const svg = <More className={iconClassName}></More>
   const isCurrentWindow = current.id === CURRENT_WINDOW.id
 
-  const menu = [
-    // window
-    {
-      text: "go to window",
-      icon: <Logout className={iconClassName} />,
-      callback: goToWindow,
-      disabled: isCurrentWindow,
-      includes: ["window"]
-    },
-    {
-      text: "save as new collection",
-      icon: <Folder className={iconClassName} />,
-      callback: () => saveCollection(),
-      includes: ["window"]
-    },
-    {
-      text: "save to collection",
-      icon: <FolderPlus className={iconClassName} />,
-      callback: openChooseCollectionDialog,
-      includes: ["window"]
-    },
-    {
-      text: "close window",
-      icon: <Cross className={iconClassName + " " + warnClassName} />,
-      callback: deleteWindow,
-      includes: ["window"],
-      warn: true
-    },
-    // collectioin
-    {
-      text: current.pinned ? "unpin" : "pin",
-      icon: <PinOutline className={iconClassName} />,
-      callback: pinnedCollection,
-      includes: ["collection"]
-    },
-    {
-      text: "edit title",
-      icon: <Edit className={iconClassName} />,
-      callback: activeTitleInput(inputRef),
-      includes: ["collection"]
-    },
-    {
-      text: "open collection",
-      icon: <Computer className={iconClassName} />,
-      callback: openCollection,
-      includes: ["collection"]
-    },
-    {
-      text: "delete collection",
-      icon: <Delete className={iconClassName + " " + warnClassName} />,
-      callback: deleteCollection,
-      includes: ["collection"],
-      warn: true
-    },
-    // TODO selected tabs actions
-    { separator: true, key: "selected-tabs" },
-    // other
-    { text: "copy", icon: <Copy className={iconClassName} /> },
-    { text: "paste", icon: <Paste className={iconClassName} /> }
-  ]
-  const menuList = useMemo(() => {
-    // window
-    const windowMenu = [
+  const windowMenu = useMemo(() => {
+    return [
       {
         text: "go to window",
-        icon: <Logout className={iconClassName} />,
+        icon: (
+          <Logout className={isCurrentWindow ? disabledIcon : iconClassName} />
+        ),
         callback: goToWindow,
         disabled: isCurrentWindow,
         includes: ["window"]
@@ -122,12 +67,49 @@ const DropDownActionButton = ({ className, inputRef }) => {
       },
       {
         text: "close window",
-        icon: <Cross className={iconClassName + " " + warnClassName} />,
+        icon: <Cross className={warnIcon} />,
         callback: deleteWindow,
         includes: ["window"],
         warn: true
       }
     ]
+  }, [isCurrentWindow])
+
+  const selectedMenu = useMemo(() => {
+    let copyText = "copy"
+    let copyItem = { value: current, type: type }
+    if (selectedList?.length) {
+      copyText = "copy selected"
+      copyItem = { value: selectedList, type: "tab" }
+      if (tabsByWindowMap.size === 1) {
+        const [[windowId, tabs]] = tabsByWindowMap.entries()
+        const window =
+          type === "window"
+            ? current
+            : current.windows.find((w) => w.id === windowId)
+        if (window && tabs?.length === window.tabs.length) {
+          copyText = "copy window"
+          copyItem = { value: window, type: "window" }
+        }
+      }
+    }
+
+    return [
+      {
+        text: copyText,
+        icon: <Copy className={iconClassName} />,
+        callback: () => copy(copyItem)
+      },
+      // enhance: if clipboard is empty, disabled
+      {
+        text: "paste",
+        icon: <Paste className={iconClassName} />,
+        callback: () => paste(current)
+      }
+    ]
+  }, [selectedList])
+
+  const menuList: any[] = useMemo(() => {
     // collection
     const collectionMenu = [
       {
@@ -150,58 +132,46 @@ const DropDownActionButton = ({ className, inputRef }) => {
       },
       {
         text: "delete collection",
-        icon: <Delete className={iconClassName + " " + warnClassName} />,
+        icon: <Delete className={warnIcon} />,
         callback: deleteCollection,
         includes: ["collection"],
         warn: true
       }
     ]
-    const selectedMenu = [
-      {
-        text: "copy",
-        icon: <Copy className={iconClassName} />,
-        callback: copy
-      },
-      {
-        text: "paste",
-        icon: <Paste className={iconClassName} />,
-        callback: () => paste(current)
-      }
-    ]
+
     const separator = { separator: true, key: "selected-tabs" }
     const menu =
       type === "window"
         ? [...windowMenu, separator, ...selectedMenu]
         : [...collectionMenu, separator, ...selectedMenu]
     return menu
-  }, [current])
+  }, [current, windowMenu, selectedMenu])
 
   return (
     <Dropdown buttonSvg={svg} buttonClassName={className} menuPosition="right">
-      <li className="menu-title">Window</li>
-      {menuList
-        // TODO add disabled class
-        .map((item) => {
-          if (item.separator) {
-            return (
-              <li
-                className="h-0.5 border-b-[1px] border-gray-300"
-                key={item.key}
-              ></li>
-            )
-          }
+      {/* // todo: delete */}
+      {/* <li className="menu-title">Window</li> */}
+      {menuList.map((item) => {
+        if (item.separator) {
           return (
             <li
-              key={item.text}
-              className={`${item.disabled ? "disabled" : ""} ${item.warn ? warnClassName : ""}`}
-            >
-              <a onClick={item.callback}>
-                <i className="h-5">{item.icon}</i>
-                {item.text}
-              </a>
-            </li>
+              className="h-0.5 border-b-[1px] border-gray-300"
+              key={item.key}
+            ></li>
           )
-        })}
+        }
+        return (
+          <li
+            key={item.text}
+            className={`${item.disabled ? "disabled" : ""} ${item.warn ? warnClassName : ""}`}
+          >
+            <a onClick={item.callback}>
+              <i className="h-5">{item.icon}</i>
+              {item.text}
+            </a>
+          </li>
+        )
+      })}
     </Dropdown>
   )
 }

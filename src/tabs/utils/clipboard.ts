@@ -13,7 +13,6 @@ type ClipItem = {
 // collection, copy collection as a new collection
 
 export const createClippedItem = (data, type): ClipItem => {
-  const copiedData = Array.isArray(data) ? [...data] : { ...data }
   return {
     type,
     data,
@@ -22,7 +21,7 @@ export const createClippedItem = (data, type): ClipItem => {
 }
 
 export const pushToClipboard = (item) => {
-  // most store 5 copied data
+  // most store 3 copied data
   if (clipboard.length >= 3) clipboard.shift()
   clipboard.push(item)
   console.log("clipboard updated", item)
@@ -30,6 +29,5 @@ export const pushToClipboard = (item) => {
 }
 
 export const popFromClipboard = () => {
-  const copiedBoard = clipboard.slice()
-  return copiedBoard.pop()
+  return clipboard[clipboard.length - 1]
 }
