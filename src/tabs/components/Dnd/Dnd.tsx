@@ -13,7 +13,7 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 import { createContext, useCallback, useContext, useState } from "react"
 
-import { useSelectContext } from "~tabs/hooks/useSelect"
+import { useSelectContext } from "~tabs/contexts/selectContext"
 import { createWindow } from "~tabs/utils/window"
 
 import { useGlobalCtx } from "../context"

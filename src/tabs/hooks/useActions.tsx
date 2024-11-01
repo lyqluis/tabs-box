@@ -13,6 +13,7 @@ import {
 } from "~tabs/components/reducers/actions"
 import TitleInput from "~tabs/components/TitleInput"
 import { toast } from "~tabs/components/Toast"
+import { useSelectContext } from "~tabs/contexts/selectContext"
 import {
   createClippedItem,
   popFromClipboard,
@@ -27,7 +28,6 @@ import {
 import { createWindow, formatedWindow } from "~tabs/utils/window"
 
 import useLatest from "./useLatest"
-import { useSelectContext } from "./useSelect"
 
 const useActions = () => {
   // window
@@ -146,7 +146,6 @@ const useActions = () => {
   const copy = () => {
     let res, title
     const { selectedList } = selectedRef.current
-
     if (selectedList.length) {
       // copy selected to clipboard
       res = pushToClipboard(createClippedItem(selectedList, "tab"))
