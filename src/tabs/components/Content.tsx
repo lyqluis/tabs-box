@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react"
 
+import { useSelectContext } from "~tabs/contexts/selectContext"
 import useActions from "~tabs/hooks/useActions"
 import { useRefresh } from "~tabs/hooks/useRefresh"
-import { useSelectContext } from "~tabs/hooks/useSelect"
 import { fromNow } from "~tabs/utils"
 import {
   closeWindow,

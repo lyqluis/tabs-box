@@ -2,16 +2,17 @@ import type { FC } from "react"
 import DragableIcon from "react:~assets/svg/dragable.svg"
 import WindowIcon from "react:~assets/svg/window.svg"
 
+import { useSelectContext } from "~tabs/contexts/selectContext"
+
 import { ListItem } from "../list"
 import { useDndContext } from "./Dnd"
-import { useSelectContext } from "~tabs/hooks/useSelect"
 
 interface OverlayListProps {
   count?: number // number of selected list item
 }
 export const OverlayList: FC<OverlayListProps> = ({ count }) => {
   const { draggingItem } = useDndContext()
-  const {selectedList} = useSelectContext()
+  const { selectedList } = useSelectContext()
 
   if (!draggingItem) return null
 
