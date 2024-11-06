@@ -95,7 +95,7 @@ const reducer = (state, action) => {
       const index = newCollections.findIndex((c) => c.id === collection.id)
       if (index > -1) {
         newCollections.splice(index, 1, collection)
-        return { ...state, collections: newCollections }
+        return { ...state, collections: sortCollections(newCollections) }
       }
     }
     case SET_COLLECTION_WITH_LOCAL_STORAGE: {

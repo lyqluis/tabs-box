@@ -1,6 +1,6 @@
 import { generateId } from "~tabs/utils"
 
-export const createCollection = (window: chrome.windows.Window) => {
+export const createCollection = (window: Window) => {
   // add new collection
   const id = generateId()
   const created = Date.now()
@@ -54,6 +54,21 @@ export const compareCollections = (
   }, {})
 
   return Object.values(res)
+}
+
+export const formatCollections = (collections) => {
+  return collections.map((collection) => {
+    collection.windows = collection.windows.map((window) => {
+      window.collectionId = collection.id
+      // ?? no need 
+      // window.tabs = window.links
+      // window.tabs = window.tabs.map((tab) => {
+      //   tab.windowId = window.id
+      // })
+      return window
+    })
+    return collection
+  })
 }
 
 // generate export data

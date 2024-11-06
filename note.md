@@ -7,7 +7,6 @@
   - [x] show pinned item
   - [x] scroll y
   - [x] show updated time
-  - [ ] sortable
 - [-] List
   - [ ] how to distinguish whether the current window is from a collection or a new one unsaved
   - [ ] style: URL that exceeds fades out with a gradient
@@ -166,7 +165,8 @@
   - [x] delete tab can not detecte
   - [x] List: new tab can not be detected in reducer when deleted
   - [x] move selected to other collection, moved tabs should be detected by useSelected or unchecked
-  - [ ] multi drag end, the collapsed tabs cannot be restored to their expanded state
+  - [x] multi drag end, the collapsed tabs cannot be restored to their expanded state
+  - [x] new pinned item should be auto sort to the top
 - [x] feature: drag tabs between windows
   - Sortable / App
   - dnd context
