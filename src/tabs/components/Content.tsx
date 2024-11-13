@@ -196,7 +196,9 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
           {/* actions in small screen */}
           <DropDownActionButton
             inputRef={inputRef}
-            className="btn block p-2 lg:hidden"
+            // ? hidden in large screen
+            // className="btn block p-2 lg:hidden"
+            className="btn block p-2"
           ></DropDownActionButton>
           {/* refresh */}
           <RefreshBtn></RefreshBtn>
