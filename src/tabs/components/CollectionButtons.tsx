@@ -19,7 +19,11 @@ import { useGlobalCtx } from "./context"
 import Dropdown from "./DropDown"
 
 const DropDownActionButton = ({ className, inputRef }) => {
-  const { current, type } = useGlobalCtx()
+  const {
+    current,
+    type,
+    state: { collections }
+  } = useGlobalCtx()
   const { selectedList, tabsByWindowMap } = useSelectContext()
   const {
     goToWindow,
@@ -75,6 +79,36 @@ const DropDownActionButton = ({ className, inputRef }) => {
     ]
   }, [isCurrentWindow])
 
+  const collectionMenu = useMemo(() => {
+    return [
+      {
+        text: current.pinned ? "unpin" : "pin",
+        icon: <PinOutline className={iconClassName} />,
+        callback: pinnedCollection,
+        includes: ["collection"]
+      },
+      {
+        text: "edit title",
+        icon: <Edit className={iconClassName} />,
+        callback: activeTitleInput(inputRef),
+        includes: ["collection"]
+      },
+      {
+        text: "open collection",
+        icon: <Computer className={iconClassName} />,
+        callback: openCollection,
+        includes: ["collection"]
+      },
+      {
+        text: "delete collection",
+        icon: <Delete className={warnIcon} />,
+        callback: deleteCollection,
+        includes: ["collection"],
+        warn: true
+      }
+    ]
+  }, [current, collections])
+
   const selectedMenu = useMemo(() => {
     let copyText = "copy"
     let copyItem = { value: current, type: type }
@@ -110,42 +144,13 @@ const DropDownActionButton = ({ className, inputRef }) => {
   }, [selectedList])
 
   const menuList: any[] = useMemo(() => {
-    // collection
-    const collectionMenu = [
-      {
-        text: current.pinned ? "unpin" : "pin",
-        icon: <PinOutline className={iconClassName} />,
-        callback: pinnedCollection,
-        includes: ["collection"]
-      },
-      {
-        text: "edit title",
-        icon: <Edit className={iconClassName} />,
-        callback: activeTitleInput(inputRef),
-        includes: ["collection"]
-      },
-      {
-        text: "open collection",
-        icon: <Computer className={iconClassName} />,
-        callback: openCollection,
-        includes: ["collection"]
-      },
-      {
-        text: "delete collection",
-        icon: <Delete className={warnIcon} />,
-        callback: deleteCollection,
-        includes: ["collection"],
-        warn: true
-      }
-    ]
-
     const separator = { separator: true, key: "selected-tabs" }
     const menu =
       type === "window"
         ? [...windowMenu, separator, ...selectedMenu]
         : [...collectionMenu, separator, ...selectedMenu]
     return menu
-  }, [current, windowMenu, selectedMenu])
+  }, [collectionMenu, windowMenu, selectedMenu])
 
   return (
     <Dropdown buttonSvg={svg} buttonClassName={className} menuPosition="right">
