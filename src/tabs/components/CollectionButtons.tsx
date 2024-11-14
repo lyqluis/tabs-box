@@ -8,6 +8,7 @@ import FolderPlus from "react:~assets/svg/folder-plus.svg"
 import Folder from "react:~assets/svg/folder.svg"
 import Logout from "react:~assets/svg/logout.svg"
 import More from "react:~assets/svg/more.svg"
+import Package from "react:~assets/svg/package-add.svg"
 import Paste from "react:~assets/svg/paste.svg"
 import PinOutline from "react:~assets/svg/pin-outline.svg"
 
@@ -85,6 +86,13 @@ const DropDownActionButton = ({ className, inputRef }) => {
         text: current.pinned ? "unpin" : "pin",
         icon: <PinOutline className={iconClassName} />,
         callback: pinnedCollection,
+        includes: ["collection"]
+      },
+      // TODO clone collection
+      {
+        text: "clone",
+        icon: <Package className={iconClassName} />,
+        // callback: activeTitleInput(inputRef),
         includes: ["collection"]
       },
       {
