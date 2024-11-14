@@ -22,6 +22,7 @@ import {
   updateCollection
 } from "../data"
 import {
+  ADD_COLLECTION,
   ADD_TAB,
   ADD_TABS,
   ADD_WINDOW,
@@ -40,6 +41,7 @@ import {
   SET_WINDOWS,
   setCollections,
   setWindows,
+  UPDATE_COLLECTION,
   UPDATE_EDITED_LIST,
   UPDATE_TAB,
   UPDATE_TABS,
@@ -130,6 +132,17 @@ const reducer = (state, action) => {
         currentId: collection.id
       }
     }
+    case ADD_COLLECTION: {
+      const collection = action.payload
+      const newCollections = state.collections.slice()
+      newCollections.push(collection)
+      // ?? set to local store
+      // localSaveCollection(collection)
+      return {
+        ...state,
+        collections: sortCollections(newCollections)
+      }
+    }
     case REMOVE_COLLECTION: {
       const target = action.payload
       const newCollections = state.collections.filter((c) => c.id !== target.id)
@@ -138,6 +151,15 @@ const reducer = (state, action) => {
       return {
         ...state,
         collections: newCollections
+      }
+    }
+    case UPDATE_COLLECTION: {
+      const collection = action.payload
+      const newCollections = state.collections.slice()
+      const index = newCollections.findIndex((c) => c.id === collection.id)
+      if (index > -1) {
+        newCollections.splice(index, 1, collection)
+        return { ...state, collections: sortCollections(newCollections) }
       }
     }
     case EXPORT_DATA: {
@@ -345,7 +367,6 @@ const reducer = (state, action) => {
       const item = state.clipboard.pop()
       // todo: add item to target
       // item is window, target is colletion, add new window to the target
-      
 
       return { ...state, clipboard: state.clipboard }
     }

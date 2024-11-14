@@ -5,7 +5,6 @@ export const SET_WINDOW = "SET_WINDOW"
 export const SET_COLLECTION = "SET_COLLECTION" // update one collections
 export const SET_COLLECTION_WITH_LOCAL_STORAGE =
   "SET_COLLECTION_WITH_LOCAL_STORAGE"
-export const REMOVE_COLLECTION = "REMOVE_COLLECTION"
 export const SET_CURRENT_ID = "SET_CURRENT_ID"
 export const EXPORT_DATA = "EXPORT_DATA"
 export const ADD_TAB = "ADD_TAB"
@@ -14,10 +13,11 @@ export const UPDATE_TAB = "UPDATE_TAB"
 export const UPDATE_EDITED_LIST = "UPDATE_EDITED_LIST"
 
 // CRUD opertaions
-// collections
-export const ADD_COLLECTIONS = "ADD_COLLECTIONS"
+// collection
+export const ADD_COLLECTION = "ADD_COLLECTION"
+export const REMOVE_COLLECTION = "REMOVE_COLLECTION"
 export const REMOVE_COLLECTIONS = "REMOVE_COLLECTIONS"
-export const UPDATE_COLLECTIONS = "UPDATE_COLLECTIONS"
+export const UPDATE_COLLECTION = "UPDATE_COLLECTION"
 // windows
 export const ADD_WINDOW = "ADD_WINDOW"
 export const REMOVE_WINDOW = "REMOVE_WINDOW"
@@ -54,10 +54,20 @@ export const setCollectionWithLocalStorage = (collection: Collection) => ({
   type: SET_COLLECTION_WITH_LOCAL_STORAGE,
   payload: collection
 })
+
+export const addCollection = (collection: Collection) => ({
+  type: ADD_COLLECTION,
+  payload: collection
+})
 export const removeCollection = (collection: Collection) => ({
   type: REMOVE_COLLECTION,
   payload: collection
 })
+export const updateCollection = (collection: Collection) => ({
+  type: UPDATE_COLLECTION,
+  payload: collection
+})
+
 export const setCurrentId = (id: number | string) => ({
   type: SET_CURRENT_ID,
   payload: id

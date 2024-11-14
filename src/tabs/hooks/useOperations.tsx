@@ -4,6 +4,7 @@ import { useGlobalCtx } from "~tabs/components/context"
 import { cloneCollection, createCollection } from "~tabs/components/data"
 import { useDialog } from "~tabs/components/Dialog/DialogContext"
 import {
+  addCollection,
   addCopyItems,
   addWindow,
   removeCollection,
@@ -99,6 +100,7 @@ const useOperations = () => {
   const clone = () => {
     const collection = cloneCollection(current)
     // todo add new collection to reducer state's collections
+    dispatch(addCollection(collection))
   }
 
   const openCollection = async () => {
@@ -210,7 +212,8 @@ const useOperations = () => {
     activeTitleInput,
     setCollectionTitle,
     copy,
-    paste
+    paste,
+    clone,
   }
 }
 

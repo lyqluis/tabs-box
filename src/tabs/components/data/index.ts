@@ -1,4 +1,5 @@
 import { generateId } from "~tabs/utils"
+import { createWindow } from "~tabs/utils/window"
 
 export const createCollection = (window: Window) => {
   // add new collection
@@ -14,6 +15,26 @@ export const createCollection = (window: Window) => {
     windows: [window]
   }
   return collection
+}
+
+// TODO: BUG: dragging in cloned collection doesn't work well
+// TODO: add collection should be auto saved locally
+export const cloneCollection = (collection: Collection): Collection => {
+  const id = generateId()
+  const created = Date.now()
+  const windows = collection.windows.map((window) => {
+    return createWindow(window.tabs, id, window)
+  })
+  const clonedCollection: Collection = {
+    ...collection,
+    id,
+    created,
+    updated: created,
+    sourceType: "local-client",
+    title: collection.title + "_cloned",
+    windows
+  }
+  return clonedCollection
 }
 
 export const updateCollection = (collection) => {
@@ -60,7 +81,7 @@ export const formatCollections = (collections) => {
   return collections.map((collection) => {
     collection.windows = collection.windows.map((window) => {
       window.collectionId = collection.id
-      // ?? no need 
+      // ?? no need
       // window.tabs = window.links
       // window.tabs = window.tabs.map((tab) => {
       //   tab.windowId = window.id
