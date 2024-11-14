@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from "react"
 
 import { useGlobalCtx } from "~tabs/components/context"
+import { cloneCollection, createCollection } from "~tabs/components/data"
 import { useDialog } from "~tabs/components/Dialog/DialogContext"
 import {
   addCopyItems,
@@ -38,6 +39,7 @@ const useOperations = () => {
   // collectioin
   // - pinned
   // - edit title
+  // - clone collection
   // - open collection
   // - delete collection
   // selected tabs
@@ -92,6 +94,12 @@ const useOperations = () => {
       cancelText: "Cancel"
     })
   }, [currentId, collections])
+
+  // TODO clone collection
+  const clone = () => {
+    const collection = cloneCollection(current)
+    // todo add new collection to reducer state's collections
+  }
 
   const openCollection = async () => {
     const { windows } = current
