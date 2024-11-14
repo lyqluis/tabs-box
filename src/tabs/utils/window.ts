@@ -9,6 +9,7 @@ export const createWindow = (
 ) => {
   if (!window) {
     const id = generateId()
+    // tabs not copied
     tabs = tabs.map((tab) => {
       tab.windowId = id
       tab.hidden = false

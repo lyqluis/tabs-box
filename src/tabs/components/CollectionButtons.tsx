@@ -36,7 +36,8 @@ const DropDownActionButton = ({ className, inputRef }) => {
     activeTitleInput,
     openChooseCollectionDialog,
     copy,
-    paste
+    paste,
+    clone
   } = useOperations()
 
   const iconClassName = "h-full w-full fill-slate-700"
@@ -92,7 +93,7 @@ const DropDownActionButton = ({ className, inputRef }) => {
       {
         text: "clone",
         icon: <Package className={iconClassName} />,
-        // callback: activeTitleInput(inputRef),
+        callback: clone,
         includes: ["collection"]
       },
       {
