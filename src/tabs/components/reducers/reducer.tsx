@@ -126,8 +126,7 @@ const reducer = (state, action) => {
       const collection = action.payload
       const newCollections = state.collections.slice()
       newCollections.push(collection)
-      // ?? set to local store
-      // localSaveCollection(collection)
+      localSaveCollection(collection)
       return {
         ...state,
         collections: sortCollections(newCollections)
@@ -136,7 +135,6 @@ const reducer = (state, action) => {
     case REMOVE_COLLECTION: {
       const target = action.payload
       const newCollections = state.collections.filter((c) => c.id !== target.id)
-      // set to local store
       localRemoveCollection(target)
       return {
         ...state,
@@ -150,6 +148,7 @@ const reducer = (state, action) => {
       const index = newCollections.findIndex((c) => c.id === collection.id)
       if (index > -1) {
         newCollections.splice(index, 1, collection)
+        localSaveCollection(collection)
         return { ...state, collections: sortCollections(newCollections) }
       }
     }
