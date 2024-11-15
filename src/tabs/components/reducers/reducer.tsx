@@ -90,16 +90,6 @@ const reducer = (state, action) => {
       newWindows.splice(index, 1, window)
       return { ...state, windows: newWindows }
     }
-    case SET_COLLECTION: {
-      // console.log("🧠 reducer SET_COLLECTION", action.payload)
-      const collection = action.payload
-      const newCollections = state.collections.slice()
-      const index = newCollections.findIndex((c) => c.id === collection.id)
-      if (index > -1) {
-        newCollections.splice(index, 1, collection)
-        return { ...state, collections: sortCollections(newCollections) }
-      }
-    }
     case SET_COLLECTION_WITH_LOCAL_STORAGE: {
       // set single collection
       let collection = action.payload
@@ -154,6 +144,7 @@ const reducer = (state, action) => {
       }
     }
     case UPDATE_COLLECTION: {
+      // console.log("🧠 reducer UPDATE_COLLECTION", action.payload)
       const collection = action.payload
       const newCollections = state.collections.slice()
       const index = newCollections.findIndex((c) => c.id === collection.id)
