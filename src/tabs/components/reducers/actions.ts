@@ -46,10 +46,7 @@ export const setWindow = (window: Window) => ({
   type: SET_WINDOW,
   payload: window
 })
-export const setCollection = (collection: Collection) => ({
-  type: SET_COLLECTION,
-  payload: collection
-})
+
 export const setCollectionWithLocalStorage = (collection: Collection) => ({
   type: SET_COLLECTION_WITH_LOCAL_STORAGE,
   payload: collection
