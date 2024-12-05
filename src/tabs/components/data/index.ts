@@ -62,13 +62,14 @@ export const compareCollections = (
     } else if (collection.updated > existed.updated) {
       map[collection.id] = collection
     }
-    // handle collection's windows' tabs' windowId
+    // handle collection's windows' collectionId & window.tabs' windowId
     const resCollection = map[collection.id]
     resCollection.windows = resCollection.windows.map((window) => {
       window.tabs = window.tabs.map((tab) => {
         tab.windowId = window.id
         return tab
       })
+      window.collectionId = collection.id
       return window
     })
     return map

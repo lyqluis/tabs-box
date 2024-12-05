@@ -1,10 +1,16 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 
 import { useGlobalCtx } from "~tabs/components/context"
-import { compareCollections, importFile } from "~tabs/components/data"
+import {
+  compareCollections,
+  formatCollections,
+  importFile
+} from "~tabs/components/data"
 import { useDialog } from "~tabs/components/Dialog/DialogContext"
 import { setCollections } from "~tabs/components/reducers/actions"
 import { localSaveCollection } from "~tabs/store"
+
+import useAsyncAction from "./useAsyncAction"
 
 // import hook
 const useImport = () => {
@@ -15,9 +21,11 @@ const useImport = () => {
     dispatch
   } = useGlobalCtx()
   const { openDialog, setDialog } = useDialog()
+  const [oldLength, setOldLength] = useState(collections.length)
 
   const importData = async () => {
     setIsImporting(true)
+    setOldLength(collections.length)
     // 1. import file
     const importCollections = await importFile({
       onFileConfirmed: () =>
@@ -28,25 +36,31 @@ const useImport = () => {
     })
 
     // 1.1 compare data with old one
-    const newCollections = compareCollections(importCollections, collections)
+    let newCollections = compareCollections(importCollections, collections)
+    // 1.2 format collections
+    newCollections = formatCollections(newCollections)
     // 2. set to reducer
     dispatch(setCollections(newCollections))
     // 3. set to localStorage
     newCollections.map((collection) => localSaveCollection(collection))
   }
 
+  const { isExecuting, error, execute } = useAsyncAction(importData)
+
   useEffect(() => {
-    console.log("🪝📁 effect", isImporting, collections)
-    if (isImporting) {
+    console.log("🪝📁 useImport @isExecuting", isExecuting)
+    if (!isExecuting) {
       setIsImporting(false)
+      // import data setted
       setDialog({
-        message: `Import ${collections.length} collections`,
-        content: null
+        message: `Import ${collections.length - oldLength} collections`,
+        content: null,
+        cancelText: "Ok"
       })
     }
-  }, [collections])
+  }, [isExecuting])
 
-  return { importData, isImporting }
+  return { isImporting, execute, error }
 }
 
 export default useImport

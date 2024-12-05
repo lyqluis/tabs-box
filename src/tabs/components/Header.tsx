@@ -14,13 +14,13 @@ import { toast } from "./Toast"
 
 const Header = () => {
   const {
-    state: { windows, collections, editedMap },
+    state: { editedMap },
     current,
     type,
     dispatch
   } = useGlobalCtx()
   const { openDialog } = useDialog()
-  const { importData, isImporting } = useImport()
+  const { isImporting, execute } = useImport()
 
   if (!current) return null
 
@@ -60,7 +60,7 @@ const Header = () => {
         <button className="btn btn-outline btn-primary p-2">search</button>
       </div>
       <LoadingBtn onClick={exportJSON}>export</LoadingBtn>
-      <LoadingBtn onClick={importData} loadingFlag={isImporting}>
+      <LoadingBtn onClick={execute} loadingFlag={isImporting}>
         import
       </LoadingBtn>
       {type === "window" ? (
