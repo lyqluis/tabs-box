@@ -1,3 +1,4 @@
+// deprecated
 import { createContext, useContext, useEffect, useMemo, useState } from "react"
 
 import { useGlobalCtx } from "~tabs/components/context"
@@ -42,7 +43,7 @@ export const SelectProvider = ({ children }) => {
   const onSelect = ({ tab, isSelected }) => {
     if (isSelected) {
       // add
-      const existed = selectedList.find((t) => t.url === tab.url)
+      const existed = selectedList.find((t) => t.id === tab.id)
       if (existed) return
       setSelectedList([...selectedList, tab])
     } else {
