@@ -115,9 +115,9 @@ type AddTabs = {
   collectionId?: string | number // target collection's id
   index?: number // specified index
 }
-export const addTabs = ({ tabs, windowId, collectionId }: AddTabs) => ({
+export const addTabs = ({ tabs, windowId, collectionId, index }: AddTabs) => ({
   type: ADD_TABS,
-  payload: { tabs, windowId, collectionId }
+  payload: { tabs, windowId, collectionId, index }
 })
 
 type RemoveTabs = {

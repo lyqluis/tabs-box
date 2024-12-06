@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import DragableIcon from "react:~assets/svg/dragable.svg"
 import WindowIcon from "react:~assets/svg/window.svg"
 
+import useOperations from "~tabs/hooks/useOperations"
 import { openWindow } from "~tabs/utils/platform"
 
 import { ListItem } from "."
@@ -38,6 +39,7 @@ const List: React.FC<ListProps> = ({
   // console.log('List - @useDndContext', useDndContext())
   const { draggingItem } = useDndContext()
   const { openDialog } = useDialog()
+  const { copy, paste } = useOperations()
 
   // console.log("List Component refreshed, props-window", window, tabs)
 
@@ -124,6 +126,12 @@ const List: React.FC<ListProps> = ({
         {/* quick action */}
         {type === "collection" && (
           <>
+            <button className="btn btn-xs m-1" onClick={() => void 0}>
+              copy
+            </button>
+            <button className="btn btn-xs m-1" onClick={() => paste(window)}>
+              paste
+            </button>
             <button
               className="btn btn-xs m-1"
               onClick={() => openWindow(window)}
