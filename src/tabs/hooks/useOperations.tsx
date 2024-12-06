@@ -6,11 +6,13 @@ import { useDialog } from "~tabs/components/Dialog/DialogContext"
 import {
   addCollection,
   addCopyItems,
+  addTabs,
   addWindow,
   removeCollection,
   setCollection,
   setCollectionWithLocalStorage,
   setCurrentId,
+  updateCollection,
   updateEditedList
 } from "~tabs/components/reducers/actions"
 import TitleInput from "~tabs/components/TitleInput"
@@ -27,6 +29,7 @@ import {
   jumptToWindow,
   openWindow
 } from "~tabs/utils/platform"
+import { cloneTab } from "~tabs/utils/tab"
 import { createWindow, formatedWindow } from "~tabs/utils/window"
 
 import useLatest from "./useLatest"
@@ -130,7 +133,7 @@ const useOperations = () => {
 
   const pinnedCollection = () => {
     current.pinned = !current.pinned
-    dispatch(setCollection(current))
+    dispatch(updateCollection(current))
   }
 
   const goToWindow = () => {
@@ -163,34 +166,72 @@ const useOperations = () => {
   const paste = (target: Collection | Window) => {
     const item = popFromClipboard()
     if (item) {
-      console.log("get item from clipboard", item)
+      console.log("get item from clipboard", item, "to", target)
 
-      // target is colletion, add new window to the target
       const { data, type } = item
-      if (type === "window") {
-        // console.log("paste window")
-        let window = data
-        window = createWindow(window.tabs, target.id, window)
-        dispatch(addWindow({ window, collectionId: target.id }))
-      } else if (type === "collection") {
-        // console.log("paste collection")
-        const collection = data
-        const windows = collection.windows
-        windows.map((window) => {
+      // target is colletion, add new window to the target
+      if ("created" in target) {
+        // target.created existed, target is collection
+        if (type === "window") {
+          // console.log("paste window")
+          let window = data
           window = createWindow(window.tabs, target.id, window)
           dispatch(addWindow({ window, collectionId: target.id }))
-        })
-      } else if (type === "tab") {
-        // console.log("paste selected tabs")
-        const tabs = data
-        const window = createWindow(tabs, target.id)
-        dispatch(addWindow({ window, collectionId: target.id }))
-      }
+        } else if (type === "collection") {
+          // console.log("paste collection")
+          const collection = data
+          const windows = collection.windows
+          windows.map((window) => {
+            window = createWindow(window.tabs, target.id, window)
+            dispatch(addWindow({ window, collectionId: target.id }))
+          })
+        } else if (type === "tab") {
+          // console.log("paste selected tabs")
+          const tabs = data
+          const window = createWindow(tabs, target.id)
+          dispatch(addWindow({ window, collectionId: target.id }))
+        }
 
-      // notify to save or save directly
-      dispatch(
-        updateEditedList({ type: "collection", id: target.id, isEdited: true })
-      )
+        // notify to save or save directly
+        dispatch(
+          updateEditedList({
+            type: "collection",
+            id: target.id,
+            isEdited: true
+          })
+        )
+      } else {
+        // target is window
+        // get all tabs in data, add tabs to the window
+        let allTabs = data // data is tabs
+        if (type === "collection") {
+          allTabs = data.windows.reduce((tabs, window) => {
+            tabs.push(...window.tabs)
+            return tabs
+          }, [])
+        } else if (type === "window") {
+          allTabs = data.tabs
+        }
+
+        // clone all tabs to target window
+        allTabs = allTabs.map((tab) => cloneTab(tab))
+        dispatch(
+          addTabs({
+            tabs: allTabs,
+            windowId: target.id,
+            collectionId: currentId
+          })
+        )
+
+        // notify to save or save directly
+        dispatch(
+          updateEditedList({
+            type: "collection",
+            id: current.id,
+            isEdited: true
+          })
+        )
+      }
       // dispatch(setCollectionWithLocalStorage(target))
     } else {
       toast.current.show({
@@ -213,7 +254,7 @@ const useOperations = () => {
     setCollectionTitle,
     copy,
     paste,
-    clone,
+    clone
   }
 }
 
