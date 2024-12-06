@@ -41,7 +41,7 @@ export const SelectProvider = ({ children }) => {
   const onSelect = ({ tab, isSelected }) => {
     if (isSelected) {
       // add
-      const existed = selectedList.find((t) => t.url === tab.url)
+      const existed = selectedList.find((t) => t.id === tab.id)
       if (existed) return
       setSelectedList([...selectedList, tab])
     } else {
@@ -160,6 +160,7 @@ export const SelectProvider = ({ children }) => {
 
 export const useSelectContext = () => useContext(ctx)
 
+// todo deprecated
 export const SelectProviderWithProp = ({ children }) => {
   const {
     state: { currentId, windows, collections },
