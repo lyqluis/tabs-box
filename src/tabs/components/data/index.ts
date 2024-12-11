@@ -99,7 +99,10 @@ export const generateData = (collections: Collection[]) => {
   const ua = navigator.userAgent
   const language = navigator.language
   const created = Date.now()
-  const exportCollections = collections.map((c) => (c.sourceType = "transfer"))
+  const exportCollections = collections.map((c) => {
+    c.sourceType = "transfer"
+    return c
+  })
   const json = {
     exportId: generateId(),
     created,
