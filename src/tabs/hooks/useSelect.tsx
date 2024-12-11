@@ -48,7 +48,7 @@ export const SelectProvider = ({ children }) => {
       setSelectedList([...selectedList, tab])
     } else {
       // remove
-      setSelectedList(selectedList.filter((t) => t.url !== tab.url))
+      setSelectedList(selectedList.filter((t) => t.id !== tab.id))
     }
     console.log("on select", tab, type, selectedList)
   }
@@ -162,6 +162,7 @@ export const SelectProvider = ({ children }) => {
 
 export const useSelectContext = () => useContext(ctx)
 
+// todo deprecated
 export const SelectProviderWithProp = ({ children }) => {
   const {
     state: { currentId, windows, collections },

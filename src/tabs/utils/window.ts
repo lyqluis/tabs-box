@@ -3,47 +3,22 @@ import { arrayMove } from "@dnd-kit/sortable"
 import { generateId } from "."
 import { cloneTabs } from "./tab"
 
-export const createWindow = (
-  tabs: Tab[],
-  collectionId?: string,
-  window?: Window // copy a window
-) => {
-  if (!window) {
-    const id = generateId()
-    // tabs not copied
-    tabs = tabs.map((tab) => {
-      tab.windowId = id
-      tab.hidden = false
-      tab.checked = false
-      return tab
-    })
-    return {
-      id,
-      tabs,
-      collectionId
-    }
-  }
-  // copy a new window
-  const newWindow = { ...window }
+export const createWindow = (rawTabs: Tab[], collectionId?: string) => {
   const id = generateId()
-  // copy tabs with new prop
-  tabs = tabs.map((tab) => ({
-    ...tab,
-    windowId: id,
-    hidden: false, // ? deprecated
-    checked: false // todo deprecated
-  }))
-  newWindow.id = id
-  newWindow.collectionId = collectionId
-  newWindow.tabs = tabs
-  return newWindow
+  const tabs = cloneTabs(rawTabs, id)
+  return {
+    id,
+    tabs,
+    collectionId
+  }
 }
 
 export const cloneWindow = (window, collectionId?): Window => {
+  const id = generateId()
   return {
     ...window,
-    id: generateId(),
-    tabs: cloneTabs(window.tabs),
+    id,
+    tabs: cloneTabs(window.tabs, id),
     collectionId
   }
 }
