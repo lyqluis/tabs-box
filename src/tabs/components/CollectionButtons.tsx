@@ -89,13 +89,6 @@ const DropDownActionButton = ({ className, inputRef }) => {
         callback: pinnedCollection,
         includes: ["collection"]
       },
-      // TODO clone collection
-      {
-        text: "clone",
-        icon: <Package className={iconClassName} />,
-        callback: clone,
-        includes: ["collection"]
-      },
       {
         text: "edit title",
         icon: <Edit className={iconClassName} />,
@@ -148,6 +141,12 @@ const DropDownActionButton = ({ className, inputRef }) => {
         text: "paste",
         icon: <Paste className={iconClassName} />,
         callback: () => paste(current)
+      },
+      {
+        text: "clone",
+        icon: <Package className={iconClassName} />,
+        callback: clone,
+        includes: ["collection"]
       }
     ]
   }, [selectedList])
