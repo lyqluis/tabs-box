@@ -173,7 +173,7 @@
     - [x] copy window to new collection / as new window
     - [x] copy window to target window (same to the 2nd)
     - [x] copy collection as new collection (clone)
-  - [ ] **drag window to new collection, grag in new collection, the new window does not shrink**
+  - [x] **drag/add/copy window to other collection, while window dragging in the new collection, the new window does not shrink**
   - [ ] **drag window to new collection does not work**
 - [ ] **abstract save locally function**
 - [x] feature: drag tabs between windows
