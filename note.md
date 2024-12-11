@@ -175,7 +175,10 @@
     - [x] copy collection as new collection (clone)
   - [x] drag/add/copy window to other collection, while window dragging in the new collection, the new window does not shrink
   - [x] tabs in new added window can not be selected
+  - [x] export
+  - [ ] dragging in cloned collection doesn't work well
 - [ ] **abstract save locally function**
+- [ ] **enhance: export async function & dialog**
 - [x] feature: drag tabs between windows
   - Sortable / App
   - dnd context

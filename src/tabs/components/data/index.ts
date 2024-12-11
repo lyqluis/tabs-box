@@ -152,11 +152,10 @@ export const exportFile = (data, ext = "json") => {
   link.click()
 }
 
-type importFileProps = {
-  // add some callback
-  onFileConfirmed?: () => void
-}
-export const importFile = ({ onFileConfirmed }): Promise<Collection[]> => {
+export const importFile = ({
+  onFileConfirmed,
+  onFileCanceled
+}): Promise<Collection[]> => {
   return new Promise((resolve, reject) => {
     // create a file input
     let input = document.createElement("input")
@@ -189,6 +188,11 @@ export const importFile = ({ onFileConfirmed }): Promise<Collection[]> => {
         input = null
       }
       reader.readAsText(files[0])
+    })
+
+    input.addEventListener("cancel", (event) => {
+      console.log("📁 on file canceled")
+      onFileCanceled && onFileCanceled()
     })
 
     // upload file
