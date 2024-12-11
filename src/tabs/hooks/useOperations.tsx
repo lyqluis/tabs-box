@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from "react"
 
 import { useGlobalCtx } from "~tabs/components/context"
-import { cloneCollection, createCollection } from "~tabs/components/data"
+import { cloneCollection } from "~tabs/components/data"
 import { useDialog } from "~tabs/components/Dialog/DialogContext"
 import {
   addCollection,
@@ -30,9 +30,7 @@ import {
   openWindow
 } from "~tabs/utils/platform"
 import { cloneTab } from "~tabs/utils/tab"
-import { createWindow, formatedWindow } from "~tabs/utils/window"
-
-import useLatest from "./useLatest"
+import { cloneWindow, createWindow, formatedWindow } from "~tabs/utils/window"
 
 const useOperations = () => {
   // window
@@ -175,15 +173,17 @@ const useOperations = () => {
         if (type === "window") {
           // console.log("paste window")
           let window = data
-          window = createWindow(window.tabs, target.id, window)
+          window = cloneWindow(window)
           dispatch(addWindow({ window, collectionId: target.id }))
         } else if (type === "collection") {
           // console.log("paste collection")
           const collection = data
           const windows = collection.windows
           windows.map((window) => {
-            window = createWindow(window.tabs, target.id, window)
-            dispatch(addWindow({ window, collectionId: target.id }))
+            const clonedwindow = cloneWindow(window)
+            dispatch(
+              addWindow({ window: clonedwindow, collectionId: target.id })
+            )
           })
         } else if (type === "tab") {
           // console.log("paste selected tabs")

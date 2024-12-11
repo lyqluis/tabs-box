@@ -1,5 +1,5 @@
 import { generateId } from "~tabs/utils"
-import { createWindow } from "~tabs/utils/window"
+import { cloneWindow } from "~tabs/utils/window"
 
 export const createCollection = (window: Window) => {
   // add new collection
@@ -23,7 +23,7 @@ export const cloneCollection = (collection: Collection): Collection => {
   const id = generateId()
   const created = Date.now()
   const windows = collection.windows.map((window) => {
-    return createWindow(window.tabs, id, window)
+    return cloneWindow(window, id)
   })
   const clonedCollection: Collection = {
     ...collection,

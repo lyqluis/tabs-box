@@ -1,6 +1,7 @@
 import { arrayMove } from "@dnd-kit/sortable"
 
 import { generateId } from "."
+import { cloneTabs } from "./tab"
 
 export const createWindow = (
   tabs: Tab[],
@@ -29,13 +30,22 @@ export const createWindow = (
   tabs = tabs.map((tab) => ({
     ...tab,
     windowId: id,
-    hidden: false,
-    checked: false
+    hidden: false, // ? deprecated
+    checked: false // todo deprecated
   }))
   newWindow.id = id
   newWindow.collectionId = collectionId
   newWindow.tabs = tabs
   return newWindow
+}
+
+export const cloneWindow = (window, collectionId?): Window => {
+  return {
+    ...window,
+    id: generateId(),
+    tabs: cloneTabs(window.tabs),
+    collectionId
+  }
 }
 
 export const formatedWindow = (window) => {
