@@ -1,15 +1,13 @@
-import { useCallback, useEffect, useMemo, useRef } from "react"
+import { useCallback, useEffect, useRef } from "react"
 
 import { useGlobalCtx } from "~tabs/components/context"
 import { cloneCollection } from "~tabs/components/data"
 import { useDialog } from "~tabs/components/Dialog/DialogContext"
 import {
   addCollection,
-  addCopyItems,
   addTabs,
   addWindow,
   removeCollection,
-  setCollection,
   setCollectionWithLocalStorage,
   setCurrentId,
   updateCollection,
@@ -23,12 +21,7 @@ import {
   popFromClipboard,
   pushToClipboard
 } from "~tabs/utils/clipboard"
-import {
-  closeWindow,
-  CURRENT_WINDOW,
-  jumptToWindow,
-  openWindow
-} from "~tabs/utils/platform"
+import { closeWindow, jumptToWindow, openWindow } from "~tabs/utils/platform"
 import { cloneTab } from "~tabs/utils/tab"
 import { cloneWindow, createWindow, formatedWindow } from "~tabs/utils/window"
 
@@ -97,10 +90,9 @@ const useOperations = () => {
     })
   }, [currentId, collections])
 
-  // TODO clone collection
+  // clone collection
   const clone = () => {
     const collection = cloneCollection(current)
-    // todo add new collection to reducer state's collections
     dispatch(addCollection(collection))
   }
 
