@@ -165,7 +165,7 @@ const useOperations = () => {
         if (type === "window") {
           // console.log("paste window")
           let window = data
-          window = cloneWindow(window)
+          window = cloneWindow(window, target.id)
           dispatch(addWindow({ window, collectionId: target.id }))
         } else if (type === "collection") {
           // console.log("paste collection")
@@ -206,7 +206,7 @@ const useOperations = () => {
         }
 
         // clone all tabs to target window
-        allTabs = allTabs.map((tab) => cloneTab(tab))
+        allTabs = allTabs.map((tab) => cloneTab(tab, target.id))
         dispatch(
           addTabs({
             tabs: allTabs,

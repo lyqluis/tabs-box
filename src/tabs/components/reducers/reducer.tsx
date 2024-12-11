@@ -56,7 +56,7 @@ interface State {
   selectedList: chrome.tabs.Tab[]
   editedMap: object
   clipboard: clipItem[] // todo: clip item type
-  history: Collection[],
+  history: Collection[]
 }
 
 const initialJSON: State = {
@@ -274,7 +274,7 @@ const reducer = (state, action) => {
         if (!collectionId) {
           // add tabs to sidebar window
           tab.hidden = false
-          tab.checked = false
+          tab.checked = false // todo deprecated
         }
         return tab
       })

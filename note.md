@@ -167,14 +167,14 @@
   - [x] move selected to other collection, moved tabs should be detected by useSelected or unchecked
   - [x] multi drag end, the collapsed tabs cannot be restored to their expanded state
   - [x] new pinned item should be auto sort to the top
-  - [x] **copy / paste logic**
+  - [x] copy / paste logic
     - [x] copy tabs as new window
     - [x] copy tabs to target window
     - [x] copy window to new collection / as new window
     - [x] copy window to target window (same to the 2nd)
     - [x] copy collection as new collection (clone)
-  - [x] **drag/add/copy window to other collection, while window dragging in the new collection, the new window does not shrink**
-  - [ ] **drag window to new collection does not work**
+  - [x] drag/add/copy window to other collection, while window dragging in the new collection, the new window does not shrink
+  - [x] tabs in new added window can not be selected
 - [ ] **abstract save locally function**
 - [x] feature: drag tabs between windows
   - Sortable / App
