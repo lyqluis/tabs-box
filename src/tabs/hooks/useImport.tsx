@@ -28,11 +28,15 @@ const useImport = () => {
     setOldLength(collections.length)
     // 1. import file
     const importCollections = await importFile({
-      onFileConfirmed: () =>
+      onFileConfirmed: () => {
         openDialog({
           message: "Processing",
           content: <span className="loading loading-spinner loading-lg"></span>
         })
+      },
+      onFileCanceled: () => {
+        setIsImporting(false)
+      }
     })
 
     // 1.1 compare data with old one
