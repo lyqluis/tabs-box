@@ -90,12 +90,14 @@ const ListItem: FC<ListItemProps> = ({
       flex-none items-center justify-center"
       >
         {type === "window" && tab.status === "loading" ? (
-          <span className="loading loading-spinner loading-sm"></span>
+          <span className="loading loading-spinner loading-sm text-gray-500"></span>
         ) : (
           <img src={tab.favIconUrl} alt="" className="w-4" />
         )}
       </span>
-      <span className="mr-2 flex-none">
+      <span
+        className={`mr-2 flex-none ${tab.status === "loading" ? "text-gray-500" : ""}`}
+      >
         {tab?.hidden}
         {tab.title}
       </span>
