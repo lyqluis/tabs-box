@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from "react"
+import Check from "react:~assets/svg/check.svg"
 
 import { useGlobalCtx } from "~tabs/components/context"
 import { exportFile, generateData } from "~tabs/components/data"
 import { useDialog } from "~tabs/components/Dialog/DialogContext"
 
-// TODO:
+const EXPORT_TIME = 1500
+
 const useCounter = (len = -1, duration = 10000) => {
   const [count, setCount] = useState(0)
   const [start, setStart] = useState(false)
@@ -58,24 +60,37 @@ const useExport = () => {
   const [collectionLength, setCollectionLength] = useState(collections.length)
   const { count, startCounter, resetCounter } = useCounter(
     collectionLength,
-    1500
+    EXPORT_TIME
   )
 
   console.log("useexport count", count) // NOTE: count changes
 
+  const LengthContent = ({ count, finished = false }) => (
+    <div className="flex w-full items-center">
+      {finished ? (
+        <>
+          <Check className="mr-2 h-10 w-10" />
+          Ready {count} collections
+        </>
+      ) : (
+        <>
+          <span className="loading loading-spinner loading-lg mr-2"></span>
+          Found {count} collections
+        </>
+      )}
+    </div>
+  )
+
   useEffect(() => {
-    setDialog({
-      content: (
-        <div className="flex flex-col items-center justify-center">
-          <span className="loading loading-spinner loading-lg"></span>
-          {count}
-        </div>
-      )
-    })
+    let content
+    if (count < collections.length) {
+      content = <LengthContent count={count} />
+    } else if (count === collections.length) {
+      content = <LengthContent count={count} finished />
+    }
+    setDialog({ content })
   }, [count])
 
-  // TODO: count should be reactively updated when dialog opened
-  // --useCallback no use
   const exportData = useCallback(async () => {
     setIsExporting(true)
     setCollectionLength(collections.length)
@@ -86,12 +101,7 @@ const useExport = () => {
     // 1. import file
     openDialog({
       title: "Export",
-      content: (
-        <div className="flex flex-col items-center justify-center">
-          <span className="loading loading-spinner loading-lg"></span>
-          {count}
-        </div>
-      ),
+      content: <LengthContent count={count} />,
       cancelText: "Cancel",
       onCancel: () => resetCounter(),
       confirmText: "Select destination",
@@ -101,9 +111,9 @@ const useExport = () => {
         resetCounter()
       }
     })
-    
+
     startCounter()
-  }, [count])
+  }, [count, collections])
 
   return { isExporting, exportData }
 }
