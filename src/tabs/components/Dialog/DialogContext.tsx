@@ -42,12 +42,21 @@ export const DialogProvider = ({ children }) => {
     title,
     content,
     onConfirm,
+    onCancel,
     confirmText = "Confirm",
     cancelText = "Cancel"
   }) => {
     dispatch({
       type: OPEN_DIALOG,
-      payload: { message, title, content, onConfirm, confirmText, cancelText }
+      payload: {
+        message,
+        title,
+        content,
+        onConfirm,
+        confirmText,
+        cancelText,
+        onCancel
+      }
     })
   }
   const closeDialog = () => dispatch({ type: CLOSE_DIALOG })
