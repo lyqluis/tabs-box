@@ -177,7 +177,7 @@
   - [x] tabs in new added window can not be selected
   - [x] export
   - [?] **dragging in cloned collection doesn't work well**
-- [ ] **enhance: export async function & dialog**
+- [x] **enhance: export async function & dialog**
   - add a dialog to show the export status
 - [ ] **abstract save locally function**
 - [x] feature: drag tabs between windows

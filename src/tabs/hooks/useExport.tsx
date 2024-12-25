@@ -103,12 +103,16 @@ const useExport = () => {
       title: "Export",
       content: <LengthContent count={count} />,
       cancelText: "Cancel",
-      onCancel: () => resetCounter(),
+      onCancel: () => {
+        resetCounter()
+        setIsExporting(false)
+      },
       confirmText: "Select destination",
       onConfirm: () => {
         // TODO: export
         exportFile(data)
         resetCounter()
+        setIsExporting(false)
       }
     })
 

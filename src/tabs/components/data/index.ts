@@ -94,7 +94,7 @@ export const formatCollections = (collections) => {
 }
 
 // generate export data
-export const generateData = (collections: Collection[]) => {
+export const generateData = (collections: Collection[]): Object => {
   // get browser client info
   const ua = navigator.userAgent
   const language = navigator.language
@@ -142,7 +142,8 @@ const formatJSON = (data): Collection[] => {
   return newCollections
 }
 
-export const exportFile = (data, ext = "json") => {
+// TODO: enhance download file via fetch & Response.body/Range
+export const exportFile = (data, ext = "json"): void => {
   let link = document.createElement("a")
   const now = Date.now()
   link.download = `tab-box-config-${now}.${ext}`
@@ -150,6 +151,9 @@ export const exportFile = (data, ext = "json") => {
   const blob = new Blob([JSON.stringify(data)], { type: "application/json" })
   link.href = window.URL.createObjectURL(blob)
   link.click()
+
+  // Clean up the object URL
+  window.URL.revokeObjectURL(link.href)
 }
 
 export const importFile = ({
