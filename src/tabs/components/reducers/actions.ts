@@ -162,4 +162,3 @@ export const removeCopyItems = (target: Collection | Window) => ({
   type: PASTE,
   payload: target
 })
-export const exportData = () => ({ type: EXPORT_DATA })

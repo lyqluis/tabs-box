@@ -1,3 +1,4 @@
+import useExport from "~tabs/hooks/useExport"
 import useImport from "~tabs/hooks/useImport"
 import { applyWindow } from "~tabs/utils/platform"
 
@@ -5,7 +6,7 @@ import { useGlobalCtx } from "./context"
 import { useDialog } from "./Dialog/DialogContext"
 import LoadingBtn from "./LoadingBtn"
 import {
-  exportData,
+  // exportData,
   removeCollection,
   setCollectionWithLocalStorage,
   updateEditedList
@@ -21,10 +22,11 @@ const Header = () => {
   } = useGlobalCtx()
   const { openDialog } = useDialog()
   const { isImporting, execute } = useImport()
+  const { isExporting, exportData } = useExport()
 
   if (!current) return null
 
-  const exportJSON = () => dispatch(exportData())
+  // const exportJSON = () => dispatch(exportData())
 
   const apply = () => {
     applyWindow(current)
@@ -59,7 +61,9 @@ const Header = () => {
         />
         <button className="btn btn-outline btn-primary p-2">search</button>
       </div>
-      <LoadingBtn onClick={exportJSON}>export</LoadingBtn>
+      <LoadingBtn onClick={exportData} loadingFlag={isExporting}>
+        export
+      </LoadingBtn>
       <LoadingBtn onClick={execute} loadingFlag={isImporting}>
         import
       </LoadingBtn>
