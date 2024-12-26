@@ -16,7 +16,7 @@ import DropDownActionButton from "./CollectionButtons"
 import { useGlobalCtx } from "./context"
 import { useDialog } from "./Dialog/DialogContext"
 import { Sortable } from "./Dnd"
-import Dropdown from "./DropDown"
+import useDropdown from "../hooks/useDropdown"
 import { List } from "./list"
 import { updateEditedList } from "./reducers/actions"
 import TitleInput from "./TitleInput"
@@ -44,7 +44,16 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
     setCollectionTitle,
     openChooseCollectionDialog
   } = useOperations()
-
+  const {
+    Dropdown: MoveSelectedDropdown,
+    toggleRef: moveSelectedToggleRef,
+    handleToggle: handleMoveSelectedToggle
+  } = useDropdown()
+  const {
+    Dropdown: SaveDropdown,
+    toggleRef: SaveToggleRef,
+    handleToggle: handleSaveToggle
+  } = useDropdown()
   const deleteWindowOrCollection = () => {
     if (type === "collection") {
       deleteCollection()
@@ -88,7 +97,14 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
         {type === "collection" ? "remove selected" : "close selected"}
       </button>
       {/* move */}
-      <Dropdown buttonText="move selected" buttonClassName="btn btn-xs m-1">
+      <button
+        ref={moveSelectedToggleRef}
+        className="btn btn-xs m-1"
+        onClick={() => handleMoveSelectedToggle()}
+      >
+        move selected
+      </button>
+      <MoveSelectedDropdown>
         {collections
           .filter((c) => c.id !== selectedItem.id)
           .map((collection) => (
@@ -99,7 +115,7 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
               <a>{collection.title}</a>
             </li>
           ))}
-      </Dropdown>
+      </MoveSelectedDropdown>
     </div>
   )
 
@@ -170,10 +186,14 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
               >
                 save as new collection
               </button>
-              <Dropdown
-                buttonText="save to collection"
-                buttonClassName="btn btn-outline btn-primary join-item p-2"
+              <button
+                ref={SaveToggleRef}
+                className="btn btn-outline btn-primary join-item p-2"
+                onClick={() => handleSaveToggle()}
               >
+                save to collection
+              </button>
+              <SaveDropdown>
                 {collections.map((collection) => (
                   <li
                     onClick={() => saveCollection(collection)}
@@ -182,7 +202,7 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
                     <a>{collection.title}</a>
                   </li>
                 ))}
-              </Dropdown>
+              </SaveDropdown>
             </div>
           )}
           {/* delete */}
