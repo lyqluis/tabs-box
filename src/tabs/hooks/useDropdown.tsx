@@ -1,31 +1,18 @@
-import {
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-  type FC,
-  type ReactNode
-} from "react"
+import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 
-type DropdownProps = {
-  children: ReactNode
+// type DropdownProps = {
+//   listClassName?: string
+//   menuPosition?: "left" | "right"
+// }
+interface DropdownProps {
   listClassName?: string
-  button?: ReactNode
-  buttonSvg?: ReactNode
-  buttonText?: string
-  buttonClassName?: string
-  buttonStyle?: CSSProperties
   menuPosition?: "left" | "right"
 }
 
-const Dropdown: FC<DropdownProps> = ({
-  buttonSvg,
-  buttonText,
-  buttonClassName,
-  menuPosition = "left",
-  children
-}) => {
+const useDropdown = (
+  { menuPosition = "left" }: DropdownProps = { menuPosition: "left" }
+) => {
   const initStyle = {
     [menuPosition]: "-99999px",
     top: "-99999px",
@@ -37,12 +24,11 @@ const Dropdown: FC<DropdownProps> = ({
   }
   const [isOpen, setIsOpen] = useState(false)
   const [menuStyle, setMenuStyle] = useState<any>(initStyle)
-  const buttonRef = useRef(null)
+  const toggleRef = useRef(null)
   const menuRef = useRef(null)
 
-  const handleToggle = () => {
-    // console.log("toggle dropdown")
-    setIsOpen(!isOpen)
+  const handleToggle = (open?: boolean) => {
+    setIsOpen(open ?? !isOpen)
   }
 
   const handleClickOutside = (event) => {
@@ -51,7 +37,7 @@ const Dropdown: FC<DropdownProps> = ({
     if (
       menuRef.current &&
       !menuRef.current.contains(event.target) &&
-      !buttonRef.current.contains(event.target)
+      !toggleRef.current.contains(event.target)
     ) {
       // console.log("handle click outside inner")
       setIsOpen(false)
@@ -67,8 +53,8 @@ const Dropdown: FC<DropdownProps> = ({
   }, [])
 
   useEffect(() => {
-    if (isOpen && buttonRef.current) {
-      const buttonRect = buttonRef.current.getBoundingClientRect()
+    if (isOpen && toggleRef.current) {
+      const buttonRect = toggleRef.current.getBoundingClientRect()
 
       setMenuStyle({
         ...menuStyle,
@@ -82,31 +68,27 @@ const Dropdown: FC<DropdownProps> = ({
     }
   }, [isOpen])
 
-  const Button = (
-    <button ref={buttonRef} className={buttonClassName} onClick={handleToggle}>
-      {buttonSvg ?? null}
-      {buttonText ?? null}
-    </button>
-  )
+  const Dropdown = ({ children }) => {
+    return isOpen
+      ? createPortal(
+          <div
+            style={menuStyle}
+            ref={menuRef}
+            className="menu dropdown-content absolute z-[1] max-h-[50vh] flex-col flex-nowrap overflow-y-scroll rounded-box bg-base-100 p-2 shadow"
+            onClick={() => handleToggle()}
+          >
+            {children}
+          </div>,
+          document.body
+        )
+      : null
+  }
 
-  const DropDownMenu = createPortal(
-    <div
-      style={menuStyle}
-      ref={menuRef}
-      className="menu dropdown-content absolute z-[1] max-h-[50vh] flex-col flex-nowrap overflow-y-scroll rounded-box bg-base-100 p-2 shadow"
-      onClick={handleToggle}
-    >
-      {children}
-    </div>,
-    document.body
-  )
-
-  return (
-    <>
-      {Button}
-      {isOpen && DropDownMenu}
-    </>
-  )
+  return {
+    Dropdown,
+    toggleRef, // use in toggle node outside
+    handleToggle
+  }
 }
 
-export default Dropdown
+export default useDropdown

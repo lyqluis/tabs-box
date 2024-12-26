@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import Computer from "react:~assets/svg/computer.svg"
 import Copy from "react:~assets/svg/copy.svg"
 import Cross from "react:~assets/svg/cross.svg"
@@ -17,7 +17,7 @@ import useOperations from "~tabs/hooks/useOperations"
 import { CURRENT_WINDOW } from "~tabs/utils/platform"
 
 import { useGlobalCtx } from "./context"
-import Dropdown from "./DropDown"
+import useDropdown from "../hooks/useDropdown"
 
 const DropDownActionButton = ({ className, inputRef }) => {
   const {
@@ -160,32 +160,45 @@ const DropDownActionButton = ({ className, inputRef }) => {
     return menu
   }, [collectionMenu, windowMenu, selectedMenu])
 
+  const { Dropdown, toggleRef, handleToggle } = useDropdown({
+    menuPosition: "right"
+  })
+
   return (
-    <Dropdown buttonSvg={svg} buttonClassName={className} menuPosition="right">
-      {/* // todo: delete */}
-      {/* <li className="menu-title">Window</li> */}
-      {menuList.map((item) => {
-        if (item.separator) {
+    <>
+      <button
+        ref={toggleRef}
+        className={className}
+        onClick={() => handleToggle()}
+      >
+        {svg}
+      </button>
+      <Dropdown>
+        {/* // todo: delete */}
+        {/* <li className="menu-title">Window</li> */}
+        {menuList.map((item) => {
+          if (item.separator) {
+            return (
+              <li
+                className="h-0.5 border-b-[1px] border-gray-300"
+                key={item.key}
+              ></li>
+            )
+          }
           return (
             <li
-              className="h-0.5 border-b-[1px] border-gray-300"
-              key={item.key}
-            ></li>
+              key={item.text}
+              className={`${item.disabled ? "disabled" : ""} ${item.warn ? warnClassName : ""}`}
+            >
+              <a onClick={item.callback}>
+                <i className="h-5">{item.icon}</i>
+                {item.text}
+              </a>
+            </li>
           )
-        }
-        return (
-          <li
-            key={item.text}
-            className={`${item.disabled ? "disabled" : ""} ${item.warn ? warnClassName : ""}`}
-          >
-            <a onClick={item.callback}>
-              <i className="h-5">{item.icon}</i>
-              {item.text}
-            </a>
-          </li>
-        )
-      })}
-    </Dropdown>
+        })}
+      </Dropdown>
+    </>
   )
 }
 
