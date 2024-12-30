@@ -56,6 +56,7 @@ interface State {
   selectedList: chrome.tabs.Tab[]
   editedMap: object
   clipboard: clipItem[] // todo: clip item type
+  searchResult: Collection[]
   history: Collection[]
 }
 
@@ -67,6 +68,7 @@ const initialJSON: State = {
   currentId: null,
   selectedList: [],
   clipboard: [],
+  searchResult: [],
   history: []
 }
 

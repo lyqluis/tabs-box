@@ -11,6 +11,7 @@ import {
   setCollectionWithLocalStorage,
   updateEditedList
 } from "./reducers/actions"
+import { Search, useSearchCtx } from "./searchContext"
 import { toast } from "./Toast"
 
 const Header = () => {
@@ -23,10 +24,9 @@ const Header = () => {
   const { openDialog } = useDialog()
   const { isImporting, execute } = useImport()
   const { isExporting, exportData } = useExport()
+  const { query, handleSearch } = useSearchCtx()
 
   if (!current) return null
-
-  // const exportJSON = () => dispatch(exportData())
 
   const apply = () => {
     applyWindow(current)
@@ -51,16 +51,8 @@ const Header = () => {
   const isCurrentEdited = editedMap[current.id] ?? false
 
   return (
-    <header className="flex h-16 w-auto flex-none bg-danube-100">
-      <h2>Tabs Box</h2>
-      <div className="search flex">
-        <input
-          type="text"
-          placeholder="Type here"
-          className="input input-bordered max-w-xs"
-        />
-        <button className="btn btn-outline btn-primary p-2">search</button>
-      </div>
+    <header className="flex h-16 w-auto flex-none items-center bg-danube-100 p-4">
+      <Search />
       <LoadingBtn onClick={exportData} loadingFlag={isExporting}>
         export
       </LoadingBtn>

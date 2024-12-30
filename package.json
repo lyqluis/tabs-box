@@ -15,6 +15,7 @@
     "@dnd-kit/sortable": "^8.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "dayjs": "^1.11.11",
+    "fuse.js": "^7.0.0",
     "localforage": "^1.10.0",
     "plasmo": "0.86.2",
     "react": "18.2.0",
