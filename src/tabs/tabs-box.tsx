@@ -13,6 +13,7 @@ import { SelectProvider } from "./contexts/selectContext"
 import { getAllCollections } from "./store"
 import { HistoryProvider } from "./utils/operationStack"
 import { getAllWindows } from "./utils/platform"
+import { SearchProvider } from "./components/searchContext"
 
 const TabsBoxPage = () => {
   const [loading, setLoading] = useState(true)
@@ -63,22 +64,24 @@ const TabsBoxPage = () => {
   if (loading) {
     return <h2>loading</h2>
   }
-
+  
   return (
     <ProviderWithReducer data={{ windows, collections }}>
       <HistoryProvider>
         <DialogProvider>
           <SelectProvider>
-            <DndGlobalContext>
-              <div className="flex">
-                <SideBar></SideBar>
-                <main className="flex h-screen w-full flex-col overflow-hidden">
-                  <Header></Header>
-                  <Content></Content>
-                </main>
-              </div>
-              <ToastContainer></ToastContainer>
-            </DndGlobalContext>
+            <SearchProvider>
+              <DndGlobalContext>
+                <div className="flex">
+                  <SideBar />
+                  <main className="flex h-screen w-full flex-col overflow-hidden">
+                    <Header />
+                    <Content />
+                  </main>
+                </div>
+                <ToastContainer />
+              </DndGlobalContext>
+            </SearchProvider>
           </SelectProvider>
         </DialogProvider>
       </HistoryProvider>

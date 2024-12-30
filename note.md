@@ -138,7 +138,6 @@
   - 2. use `useSyncExternalStore` to subscribe to an external store and message list (https://juejin.cn/post/7223705034412802107#heading-10)
   - [-] bugs
     - [x] transition animations for conditional rendering
-- [ ] search feature
 - [x] export & import feature
   - [x] data foramt
   - [x] import
@@ -153,8 +152,6 @@
     - after drag sorted, update the new list data update in the reducer without local storage
   - [x] delete collection
   - [x] collection with multi windows
-- [ ] save in cloud feature
-  - [ ] google drive
 - [ ] setting feature
 - [ ] restore feature
   - [ ] save last save (only useful to collections)
@@ -177,9 +174,15 @@
   - [x] tabs in new added window can not be selected
   - [x] export
   - [?] **dragging in cloned collection doesn't work well**
-- [x] **enhance: export async function & dialog**
+- [x] enhance: export async function & dialog
   - add a dialog to show the export status
 - [ ] **abstract save locally function**
+- [-] **search feature**
+  - fuse.js
+  - [ ] **hightlight in search result**
+- [ ] incognito mode
+  - [ ] filter search result with incognito
+- [ ] **feature: save file in cloud**
 - [x] feature: drag tabs between windows
   - Sortable / App
   - dnd context
