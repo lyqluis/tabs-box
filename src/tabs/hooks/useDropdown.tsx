@@ -1,17 +1,21 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, type FC } from "react"
 import { createPortal } from "react-dom"
 
-// type DropdownProps = {
-//   listClassName?: string
-//   menuPosition?: "left" | "right"
-// }
-interface DropdownProps {
+type UseDropdownProps = {
   listClassName?: string
   menuPosition?: "left" | "right"
 }
+// interface useDropdownProps {
+//   listClassName?: string
+//   menuPosition?: "left" | "right"
+// }
+type DropdownProps = {
+  children: React.ReactNode
+  className?: string
+}
 
 const useDropdown = (
-  { menuPosition = "left" }: DropdownProps = { menuPosition: "left" }
+  { menuPosition = "left" }: UseDropdownProps = { menuPosition: "left" }
 ) => {
   const initStyle = {
     [menuPosition]: "-99999px",
@@ -68,13 +72,16 @@ const useDropdown = (
     }
   }, [isOpen])
 
-  const Dropdown = ({ children }) => {
+  const Dropdown: FC<DropdownProps> = ({ children, className }) => {
     return isOpen
       ? createPortal(
           <div
             style={menuStyle}
             ref={menuRef}
-            className="menu dropdown-content absolute z-[1] max-h-[50vh] flex-col flex-nowrap overflow-y-scroll rounded-box bg-base-100 p-2 shadow"
+            className={
+              "menu dropdown-content absolute z-[1] max-h-[50vh] flex-col flex-nowrap overflow-y-scroll rounded-box bg-base-100 p-2 shadow" +
+              (className ? ` ${className}` : "")
+            }
             onClick={() => handleToggle()}
           >
             {children}
