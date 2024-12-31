@@ -13,14 +13,14 @@ const { Provider } = searchContext
 
 export const useSearchCtx = () => useContext(searchContext)
 
-// TODO: set up search options, improve search result
 // fuse options
+// https://www.fusejs.io/api/options.html#location
 const options = {
   keys: [
     "title",
     "url"
-    // "windows.tabs.title", "windows.tabs.url"
-  ]
+  ],
+  threshold: 0.0, // default: 0.6
 }
 
 const flatCollections = (collections: Collection[]): any[] => {
