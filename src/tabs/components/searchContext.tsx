@@ -34,6 +34,21 @@ const flatCollections = (collections: Collection[]): any[] => {
   }, [])
 }
 
+const highlight = (text: string, query?: string) => {
+  if (!query) return text
+
+  const regex = new RegExp(`(${query})`, "gi")
+  const parts = text.split(regex) // split to array with regex, capture group will be included in the array
+
+  return parts.map((part, index) => {
+    return part.toLowerCase() === query.toLowerCase() ? (
+      <mark key={index}>{part}</mark>
+    ) : (
+      part
+    )
+  })
+}
+
 export const SearchProvider = ({ children }) => {
   const {
     state: { collections }
@@ -175,10 +190,12 @@ export const Search = () => {
                 )}
               </div>
               <div className="overflow-hidden">
-                <p className="line-clamp-2 text-base">{item.title}</p>
+                <p className="line-clamp-2 text-base">
+                  {highlight(item.title, query)}
+                </p>
                 {item.url && (
                   <p className="overflow-hidden text-ellipsis whitespace-nowrap text-sm text-slate-400">
-                    {item.url}
+                    {highlight(item.url, query)}
                   </p>
                 )}
                 {/* //TODO: clone/copy window/collection, tab.window, window.collection */}
@@ -189,11 +206,14 @@ export const Search = () => {
                     <>
                       From Collection{" "}
                       <span className="font-medium">
-                        {item?.collectionId
-                          ? item?.collection?.title
-                          : item.windowId
-                            ? item?.window?.collection?.title
-                            : ""}
+                        {highlight(
+                          item?.collectionId
+                            ? item?.collection?.title
+                            : item.windowId
+                              ? item?.window?.collection?.title
+                              : "",
+                          query
+                        )}
                       </span>
                     </>
                   )}

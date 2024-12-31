@@ -179,7 +179,9 @@
 - [ ] **abstract save locally function**
 - [-] **search feature**
   - fuse.js
-  - [ ] **hightlight in search result**
+  - [x] hightlight in search result
+  - [ ] **hightlight in listitem when search query exists**
+- [ ] **clone/copy window/collection, add tab.window, window.collection**
 - [ ] incognito mode
   - [ ] filter search result with incognito
 - [ ] **feature: save file in cloud**
