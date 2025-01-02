@@ -5,6 +5,7 @@ import Pinned from "react:~assets/svg/pin.svg"
 import { jumptToTab, openTabs } from "~tabs/utils/platform"
 
 import { useDndContext, useSortableItem } from "../Dnd"
+import { useSearchCtx } from "../searchContext"
 
 interface ListItemProps {
   tab: Tab
@@ -22,10 +23,16 @@ const ListItem: FC<ListItemProps> = ({
   checked
 }) => {
   // console.log("list item refreshed", tab.title, checked)
-  const { attributes, listeners, setNodeRef, style } = useSortableItem({
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    style: sortableStyle
+  } = useSortableItem({
     id: tab.id
   })
   const { draggingItem } = useDndContext()
+  const { jumped } = useSearchCtx()
   const [isHovered, setIsHovered] = useState(false)
 
   const onChange = (e) => {
@@ -46,15 +53,21 @@ const ListItem: FC<ListItemProps> = ({
     }
   }
 
+  const className =
+    "flex flex-nowrap items-center overflow-hidden text-ellipsis whitespace-nowrap align-baseline text-base font-light hover:bg-slate-100" +
+    (checked ? " bg-slate-100" : "") +
+    (jumped?.id === tab.id
+      ? " animate-once animate-duration-[2000ms] animate-ease-in-out animate-pulse bg-slate-100"
+      : "")
+
   return (
     <li
       ref={setNodeRef}
       style={{
-        ...style,
+        ...sortableStyle,
         opacity: !overlay && draggingItem?.id === tab.id ? 0.5 : 1
       }}
-      className={`flex flex-nowrap items-center overflow-hidden text-ellipsis whitespace-nowrap align-baseline text-base font-light hover:bg-slate-100
-       ${checked ? "bg-slate-100" : ""}`}
+      className={className}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
     >
@@ -85,10 +98,7 @@ const ListItem: FC<ListItemProps> = ({
           />
         </label>
       </div>
-      <span
-        className="m-0.5 flex w-6 
-      flex-none items-center justify-center"
-      >
+      <span className="m-0.5 flex w-6 flex-none items-center justify-center">
         {type === "window" && tab.status === "loading" ? (
           <span className="loading loading-spinner loading-sm text-gray-500"></span>
         ) : (
