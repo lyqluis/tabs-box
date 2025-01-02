@@ -16,11 +16,8 @@ export const useSearchCtx = () => useContext(searchContext)
 // fuse options
 // https://www.fusejs.io/api/options.html#location
 const options = {
-  keys: [
-    "title",
-    "url"
-  ],
-  threshold: 0.0, // default: 0.6
+  keys: ["title", "url"],
+  threshold: 0.0 // default: 0.6
 }
 
 const flatCollections = (collections: Collection[]): any[] => {
@@ -55,6 +52,7 @@ export const SearchProvider = ({ children }) => {
   } = useGlobalCtx()
   const [query, setQuery] = useState("")
   const [searchResult, setSearchResult] = useState([])
+  const [jumped, setJumped] = useState(null)
 
   const fuse = new Fuse(flatCollections(collections), options)
 
@@ -71,8 +69,15 @@ export const SearchProvider = ({ children }) => {
     }
   }
 
+  useEffect(() => {
+    jumped &&
+      setTimeout(() => {
+        setJumped(null)
+      }, 3000)
+  }, [jumped])
+
   return (
-    <Provider value={{ query, searchResult, handleSearch }}>
+    <Provider value={{ query, searchResult, jumped, setJumped, handleSearch }}>
       {children}
     </Provider>
   )
@@ -83,7 +88,7 @@ export const SearchProvider = ({ children }) => {
 // 2. highlight search result in both sidebar and content
 export const Search = () => {
   const { dispatch } = useGlobalCtx()
-  const { query, searchResult, handleSearch } = useSearchCtx()
+  const { query, searchResult, setJumped, handleSearch } = useSearchCtx()
   const inputRef = useRef(null)
   // dropdown
   const { Dropdown, toggleRef, handleToggle } = useDropdown()
@@ -112,6 +117,7 @@ export const Search = () => {
       collectionId = item.collectionId ?? item?.window?.collectionId
     }
     dispatch(setCurrentId(collectionId))
+    setJumped(item)
   }
   const handleClear = (e) => {
     e.preventDefault()

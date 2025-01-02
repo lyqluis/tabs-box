@@ -177,10 +177,14 @@
 - [x] enhance: export async function & dialog
   - add a dialog to show the export status
 - [ ] **abstract save locally function**
-- [-] **search feature**
+- [-] **sear
   - fuse.js
   - [x] hightlight in search result
+  - [x] hightlight in listitem when click search result
   - [ ] **hightlight in listitem when search query exists**
+  - [ ] **no search reuslt, do not show search result list**
+  - [ ] **when input, `/` key event should be default**
+  - [ ] **when input, `esc` key display**
 - [ ] **clone/copy window/collection, add tab.window, window.collection**
 - [ ] incognito mode
   - [ ] filter search result with incognito
