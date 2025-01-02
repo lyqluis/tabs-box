@@ -5,7 +5,7 @@ import Pinned from "react:~assets/svg/pin.svg"
 import { jumptToTab, openTabs } from "~tabs/utils/platform"
 
 import { useDndContext, useSortableItem } from "../Dnd"
-import { useSearchCtx } from "../searchContext"
+import { highlight, useSearchCtx } from "../searchContext"
 
 interface ListItemProps {
   tab: Tab
@@ -32,7 +32,7 @@ const ListItem: FC<ListItemProps> = ({
     id: tab.id
   })
   const { draggingItem } = useDndContext()
-  const { jumped } = useSearchCtx()
+  const { query, jumped } = useSearchCtx()
   const [isHovered, setIsHovered] = useState(false)
 
   const onChange = (e) => {
@@ -108,8 +108,7 @@ const ListItem: FC<ListItemProps> = ({
       <span
         className={`mr-2 flex-none ${tab.status === "loading" ? "text-gray-500" : ""}`}
       >
-        {tab?.hidden}
-        {tab.title}
+        {highlight(tab.title, query)}
       </span>
       {isHovered && (
         <a
@@ -117,7 +116,7 @@ const ListItem: FC<ListItemProps> = ({
           title={tab.url}
           onClick={() => handleClickUrl(tab)}
         >
-          {tab.url}
+          {highlight(tab.url, query)}
         </a>
       )}
     </li>

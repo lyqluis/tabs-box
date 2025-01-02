@@ -31,7 +31,7 @@ const flatCollections = (collections: Collection[]): any[] => {
   }, [])
 }
 
-const highlight = (text: string, query?: string) => {
+export const highlight = (text: string, query?: string) => {
   if (!query) return text
 
   const regex = new RegExp(`(${query})`, "gi")
