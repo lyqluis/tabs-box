@@ -201,8 +201,9 @@ export const Search = () => {
           {isFocus ? "esc" : "/"}
         </kbd>
       </label>
-      <Dropdown className="max-w-[60vw] overflow-x-hidden">
-        {searchResult.map((item) => (
+      <Dropdown className="max-w-[60vw] min-w-[50vw] overflow-x-hidden">
+        {searchResult.length > 0
+          ? searchResult.map((item) => (
           <li key={item.id}>
             <a
               className="flex w-full font-light"
@@ -251,7 +252,8 @@ export const Search = () => {
               </div>
             </a>
           </li>
-        ))}
+            ))
+          : "No result"}
       </Dropdown>
     </>
   )
