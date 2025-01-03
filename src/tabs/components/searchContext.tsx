@@ -30,7 +30,7 @@ export const useSearchCtx = () => useContext(searchContext)
 // https://www.fusejs.io/api/options.html#location
 const options = {
   keys: ["title", "url"],
-  threshold: 0.0 // default: 0.6
+  threshold: 0.4 // default: 0.6
 }
 
 const flatCollections = (collections: Collection[]): any[] => {
@@ -44,10 +44,13 @@ const flatCollections = (collections: Collection[]): any[] => {
   }, [])
 }
 
+// 转义特殊字符
+const escapeRegExp = (string) => string.replace(/[.*+?^${}()\/|[\]\\]/g, "\\$&")
+
 export const highlight = (text: string, query?: string) => {
   if (!query) return text
 
-  const regex = new RegExp(`(${query})`, "gi")
+  const regex = new RegExp(`(${escapeRegExp(query)})`, "gi")
   const parts = text.split(regex) // split to array with regex, capture group will be included in the array
 
   return parts.map((part, index) => {
@@ -201,57 +204,57 @@ export const Search = () => {
           {isFocus ? "esc" : "/"}
         </kbd>
       </label>
-      <Dropdown className="max-w-[60vw] min-w-[50vw] overflow-x-hidden">
+      <Dropdown className="min-w-[50vw] max-w-[60vw] overflow-x-hidden">
         {searchResult.length > 0
           ? searchResult.map((item) => (
-          <li key={item.id}>
-            <a
-              className="flex w-full font-light"
-              onClick={() => handleClick(item)}
-            >
-              <div className="m-0.5 w-6 flex-none">
-                {item.url ? (
-                  <i className="flex w-full flex-none items-center justify-center">
-                    <img src={item.favIconUrl} alt="" className="w-4" />
-                  </i>
-                ) : (
-                  <i className="flex h-6 w-6 flex-none items-center justify-center rounded-full bg-gray-300">
-                    <Folder className="h-auto w-4 fill-slate-700" />
-                  </i>
-                )}
-              </div>
-              <div className="overflow-hidden">
-                <p className="line-clamp-2 text-base">
-                  {highlight(item.title, query)}
-                </p>
-                {item.url && (
-                  <p className="overflow-hidden text-ellipsis whitespace-nowrap text-sm text-slate-400">
-                    {highlight(item.url, query)}
-                  </p>
-                )}
-                {/* //TODO: clone/copy window/collection, tab.window, window.collection */}
-                <p className="text-xs text-slate-500">
-                  {item.created ? (
-                    "Collection"
-                  ) : (
-                    <>
-                      From Collection{" "}
-                      <span className="font-medium">
-                        {highlight(
-                          item?.collectionId
-                            ? item?.collection?.title
-                            : item.windowId
-                              ? item?.window?.collection?.title
-                              : "",
-                          query
-                        )}
-                      </span>
-                    </>
-                  )}
-                </p>
-              </div>
-            </a>
-          </li>
+              <li key={item.id}>
+                <a
+                  className="flex w-full font-light"
+                  onClick={() => handleClick(item)}
+                >
+                  <div className="m-0.5 w-6 flex-none">
+                    {item.url ? (
+                      <i className="flex w-full flex-none items-center justify-center">
+                        <img src={item.favIconUrl} alt="" className="w-4" />
+                      </i>
+                    ) : (
+                      <i className="flex h-6 w-6 flex-none items-center justify-center rounded-full bg-gray-300">
+                        <Folder className="h-auto w-4 fill-slate-700" />
+                      </i>
+                    )}
+                  </div>
+                  <div className="overflow-hidden">
+                    <p className="line-clamp-2 text-base">
+                      {highlight(item.title, query)}
+                    </p>
+                    {item.url && (
+                      <p className="overflow-hidden text-ellipsis whitespace-nowrap text-sm text-slate-400">
+                        {highlight(item.url, query)}
+                      </p>
+                    )}
+                    {/* //TODO: clone/copy window/collection, tab.window, window.collection */}
+                    <p className="text-xs text-slate-500">
+                      {item.created ? (
+                        "Collection"
+                      ) : (
+                        <>
+                          From Collection{" "}
+                          <span className="font-medium">
+                            {highlight(
+                              item?.collectionId
+                                ? item?.collection?.title
+                                : item.windowId
+                                  ? item?.window?.collection?.title
+                                  : "",
+                              query
+                            )}
+                          </span>
+                        </>
+                      )}
+                    </p>
+                  </div>
+                </a>
+              </li>
             ))
           : "No result"}
       </Dropdown>
