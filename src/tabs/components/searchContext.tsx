@@ -7,7 +7,20 @@ import useDropdown from "../hooks/useDropdown"
 import { useGlobalCtx } from "./context"
 import { setCurrentId } from "./reducers/actions"
 
-const searchContext = createContext(null)
+interface SearchContextType {
+  query: string
+  searchResult: any[]
+  jumped: any
+  setJumped: (item: any) => void
+  handleSearch: (event: any) => void
+}
+const searchContext = createContext<SearchContextType>({
+  query: "",
+  searchResult: [],
+  jumped: null,
+  setJumped: null,
+  handleSearch: null
+})
 
 const { Provider } = searchContext
 
@@ -90,6 +103,7 @@ export const Search = () => {
   const { dispatch } = useGlobalCtx()
   const { query, searchResult, setJumped, handleSearch } = useSearchCtx()
   const inputRef = useRef(null)
+  const [isFocus, setIsFocus] = useState(false)
   // dropdown
   const { Dropdown, toggleRef, handleToggle } = useDropdown()
 
@@ -99,6 +113,11 @@ export const Search = () => {
     if (e.target.value) {
       handleToggle(true)
     }
+    setIsFocus(true)
+  }
+  const handleBlur = (e) => {
+    setIsFocus(false)
+    handleToggle(false)
   }
   const handleChange = (e) => {
     e.preventDefault && e.preventDefault()
@@ -129,12 +148,14 @@ export const Search = () => {
   // listen global `/` keydown event
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if (event.key === "/") {
+      if (event.key === "/" && document.activeElement !== inputRef.current) {
         event.preventDefault()
         inputRef.current.focus()
         // focus in the end of the input
         const length = inputRef.current.value.length
         inputRef.current.setSelectionRange(length, length)
+      } else if (event.key === "Escape") {
+        inputRef.current.blur()
       }
     }
     document.addEventListener("keydown", handleKeyDown)
@@ -168,6 +189,7 @@ export const Search = () => {
           placeholder="Search"
           value={query}
           onFocus={handleFocus}
+          onBlur={handleBlur}
           onChange={handleChange}
           ref={inputRef}
         />
@@ -175,7 +197,9 @@ export const Search = () => {
           className={`${query ? "visible" : "invisible"} h-4 w-4 cursor-pointer`}
           onClick={handleClear}
         />
-        <kbd className="kbd kbd-sm pointer-events-none">/</kbd>
+        <kbd className="kbd kbd-sm pointer-events-none">
+          {isFocus ? "esc" : "/"}
+        </kbd>
       </label>
       <Dropdown className="max-w-[60vw] overflow-x-hidden">
         {searchResult.map((item) => (
