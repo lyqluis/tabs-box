@@ -182,10 +182,10 @@
   - [x] hightlight in search result
   - [x] hightlight in listitem when click search result
   - [x] hightlight in listitem when search query exists
+  - [x] when input, `/` key event should be default
+  - [x] when input, `esc` key display
   - [ ] **hightlight in list & sidebar when search query exists**
   - [ ] **when search without reuslt, do not show search result list**
-  - [ ] **when input, `/` key event should be default**
-  - [ ] **when input, `esc` key display**
 - [ ] **clone/copy window/collection, add tab.window, window.collection**
 - [ ] incognito mode
   - [ ] filter search result with incognito
