@@ -186,8 +186,9 @@
   - [x] when input, `esc` key display
   - [x] when search without reuslt, do not show search result list
   - [x] escape input '\' to create regexp
+  - [x] add windows in search data, add window as search result
   - [ ] **hightlight in list & sidebar when search query exists**
-- [ ] **clone/copy window/collection, add tab.window, window.collection**
+- [ ] **save/clone/copy window/collection, add tab.window, window.collection**
 - [ ] incognito mode
   - [ ] filter search result with incognito
 - [ ] **feature: save file in cloud**

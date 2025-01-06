@@ -1,7 +1,15 @@
 import Fuse from "fuse.js"
-import { createContext, useContext, useEffect, useRef, useState } from "react"
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react"
 import Cross from "react:~assets/svg/cross.svg"
 import Folder from "react:~assets/svg/folder.svg"
+import WindowSvg from "react:~assets/svg/window.svg"
 
 import useDropdown from "../hooks/useDropdown"
 import { useGlobalCtx } from "./context"
@@ -30,17 +38,18 @@ export const useSearchCtx = () => useContext(searchContext)
 // https://www.fusejs.io/api/options.html#location
 const options = {
   keys: ["title", "url"],
-  threshold: 0.4 // default: 0.6
+  threshold: 0.3 // default: 0.6
 }
 
 const flatCollections = (collections: Collection[]): any[] => {
-  console.log("flatCollections")
-
   return collections.reduce((acc, collection) => {
-    const windowsAndTabs = collection.windows.reduce((tabs, window) => {
-      return tabs.concat(window, window.tabs)
-    }, [])
+    const windowsAndTabs = flatWindows(collection.windows)
     return acc.concat(collection, windowsAndTabs)
+  }, [])
+}
+const flatWindows = (windows: Window[]): any[] => {
+  return windows.reduce((tabs, window) => {
+    return tabs.concat(window, window.tabs)
   }, [])
 }
 
@@ -48,7 +57,7 @@ const flatCollections = (collections: Collection[]): any[] => {
 const escapeRegExp = (string) => string.replace(/[.*+?^${}()\/|[\]\\]/g, "\\$&")
 
 export const highlight = (text: string, query?: string) => {
-  if (!query) return text
+  if (!query || !text) return text
 
   const regex = new RegExp(`(${escapeRegExp(query)})`, "gi")
   const parts = text.split(regex) // split to array with regex, capture group will be included in the array
@@ -64,13 +73,22 @@ export const highlight = (text: string, query?: string) => {
 
 export const SearchProvider = ({ children }) => {
   const {
-    state: { collections }
+    state: { collections, windows }
   } = useGlobalCtx()
   const [query, setQuery] = useState("")
   const [searchResult, setSearchResult] = useState([])
   const [jumped, setJumped] = useState(null)
 
-  const fuse = new Fuse(flatCollections(collections), options)
+  console.log("fuse data:", flatCollections(collections), flatWindows(windows))
+
+  const fuse = useMemo(
+    () =>
+      new Fuse(
+        [...flatWindows(windows), ...flatCollections(collections)],
+        options
+      ),
+    [collections, windows]
+  )
 
   const handleSearch = (event) => {
     const query = event.target.value
@@ -210,22 +228,29 @@ export const Search = () => {
               <li key={item.id}>
                 <a
                   className="flex w-full font-light"
-                  onClick={() => handleClick(item)}
+                  onPointerDown={() => handleClick(item)}
                 >
                   <div className="m-0.5 w-6 flex-none">
                     {item.url ? (
+                      // tab icon
                       <i className="flex w-full flex-none items-center justify-center">
                         <img src={item.favIconUrl} alt="" className="w-4" />
                       </i>
                     ) : (
                       <i className="flex h-6 w-6 flex-none items-center justify-center rounded-full bg-gray-300">
-                        <Folder className="h-auto w-4 fill-slate-700" />
+                        {item.type ? (
+                          // window icon
+                          <WindowSvg className="h-auto w-4 fill-slate-700" />
+                        ) : (
+                          // collection icon
+                          <Folder className="h-auto w-4 fill-slate-700" />
+                        )}
                       </i>
                     )}
                   </div>
                   <div className="overflow-hidden">
                     <p className="line-clamp-2 text-base">
-                      {highlight(item.title, query)}
+                      {highlight(item.title ?? "window", query)}
                     </p>
                     {item.url && (
                       <p className="overflow-hidden text-ellipsis whitespace-nowrap text-sm text-slate-400">
@@ -236,6 +261,8 @@ export const Search = () => {
                     <p className="text-xs text-slate-500">
                       {item.created ? (
                         "Collection"
+                      ) : typeof item.windowId === "number" ? (
+                        "From Window"
                       ) : (
                         <>
                           From Collection{" "}
