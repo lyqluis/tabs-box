@@ -6,9 +6,11 @@ import { useTabEvents, useWindowEvents } from "~tabs/utils/platform"
 import { useGlobalCtx } from "./context"
 import { Droppable } from "./Dnd"
 import { setCurrentId } from "./reducers/actions"
+import { highlight, useSearchCtx } from "./searchContext"
 
 const SideBarItem = ({ item, isEdited, isSelected, onSelect }) => {
   const type = item.created ? "collection" : "window"
+  const { query } = useSearchCtx()
 
   let itemContent
   if (type === "window") {
@@ -33,7 +35,7 @@ const SideBarItem = ({ item, isEdited, isSelected, onSelect }) => {
       <>
         <p className="flex items-center justify-between overflow-hidden leading-tight">
           <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-            {item.title}
+            {highlight(item.title, query)}
           </span>
           <i className={`flex h-5 w-5 flex-none items-center justify-start`}>
             {item.pinned ? (

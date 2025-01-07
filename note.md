@@ -188,7 +188,7 @@
   - [x] when search without reuslt, do not show search result list
   - [x] escape input '\' to create regexp
   - [x] add windows in search data, add window as search result
-  - [ ] **hightlight in list & sidebar when search query exists**
+  - [x] hightlight in list & sidebar when search query exists
 - [ ] incognito mode
   - [ ] filter search result with incognito
 - [ ] **feature: save file in cloud**
