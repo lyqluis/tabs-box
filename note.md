@@ -176,7 +176,8 @@
   - [?] **dragging in cloned collection doesn't work well**
 - [x] enhance: export async function & dialog
   - add a dialog to show the export status
-- [ ] **abstract save locally function**
+- [x] abstract save locally function
+- [x] **save/clone/copy window/collection, add tab.window, window.collection**
 - [-] **searh
   - fuse.js
   - [x] hightlight in search result
@@ -188,7 +189,6 @@
   - [x] escape input '\' to create regexp
   - [x] add windows in search data, add window as search result
   - [ ] **hightlight in list & sidebar when search query exists**
-- [ ] **save/clone/copy window/collection, add tab.window, window.collection**
 - [ ] incognito mode
   - [ ] filter search result with incognito
 - [ ] **feature: save file in cloud**

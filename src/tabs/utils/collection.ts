@@ -15,19 +15,27 @@ export const sortCollections = (collections: Collection[]): Collection[] => {
  * @param {Window} window
  * @param {CollectionId} collectionId target collection id
  * @param {Collection} collections reducer's collections
- * @return {Collection[]} new collections
+ * @return {{Collection[], Collection}} new collections
  */
 export const addWindowToCollection = (
   window: Window,
   collectionId: CollectionId,
   collections: Collection[]
-): Collection[] => {
-  return collections.map((collection) => {
+): { collections: Collection[]; targetCollection: Collection } => {
+  let targetCollection
+  const newCollections = collections.map((collection) => {
     if (collection.id === collectionId) {
-      return { ...collection, windows: [...collection.windows, window] }
+      window.collection = collection
+      window.collectionId = collectionId
+      targetCollection = {
+        ...collection,
+        windows: [...collection.windows, window]
+      }
+      return targetCollection
     }
     return collection
   })
+  return { collections: newCollections, targetCollection }
 }
 
 /**
@@ -35,22 +43,25 @@ export const addWindowToCollection = (
  * @param {number|string} windowId
  * @param {CollectionId} collectionId target collection id
  * @param {Collection} collections reducer's collections
- * @return {Collection[]} new collections
+ * @return {{Collection[], Collection}} new collections & target collection
  */
 export const removeWindowFromCollection = (
   windowId: number | string,
   collectionId: CollectionId,
   collections: Collection[]
-): Collection[] => {
-  return collections.map((collection) => {
+): { collections: Collection[]; targetCollection: Collection } => {
+  let targetCollection
+  const newCollections = collections.map((collection) => {
     if (collection.id === collectionId) {
       const windows = collection.windows.filter(
         (window) => window.id !== windowId
       )
-      return { ...collection, windows }
+      targetCollection = { ...collection, windows }
+      return targetCollection
     }
     return collection
   })
+  return { collections: newCollections, targetCollection }
 }
 
 /**
@@ -59,19 +70,25 @@ export const removeWindowFromCollection = (
  * @param {CollectionId} collectionId target collection id
  * @param {Collection} collections reducer's collections
  * @param {number} index new index of window
- * @return {Collection[]} new collections
+ * @return {{Collection[], Collection}} new collections & updated collection
  */
 export const updateWindowInCollections = (
   window: Window,
   collectionId: string,
   collections: Collection[],
   index?: number
-): (Window | Collection)[] => {
-  return collections.map((colletion) => {
+): { collections: Collection[]; updatedCollection: Collection } => {
+  let updatedCollection
+  const newCollections = collections.map((colletion) => {
     if (colletion.id === collectionId) {
       const windows = updateWindowInWindows(window, colletion.windows, index)
-      return { ...colletion, windows }
+      updatedCollection = { ...colletion, windows }
+      return updatedCollection
     }
     return colletion
   })
+  return {
+    collections: newCollections,
+    updatedCollection
+  }
 }

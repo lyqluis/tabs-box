@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from "react"
 
 import { useGlobalCtx } from "~tabs/components/context"
-import { cloneCollection } from "~tabs/components/data"
+import { cloneCollection, createCollection } from "~tabs/components/data"
 import { useDialog } from "~tabs/components/Dialog/DialogContext"
 import {
   addCollection,
@@ -13,7 +13,6 @@ import {
   updateCollection,
   updateEditedList
 } from "~tabs/components/reducers/actions"
-import TitleInput from "~tabs/components/TitleInput"
 import { toast } from "~tabs/components/Toast"
 import { useSelectContext } from "~tabs/contexts/selectContext"
 import {
@@ -23,7 +22,7 @@ import {
 } from "~tabs/utils/clipboard"
 import { closeWindow, jumptToWindow, openWindow } from "~tabs/utils/platform"
 import { cloneTab } from "~tabs/utils/tab"
-import { cloneWindow, createWindow, formatedWindow } from "~tabs/utils/window"
+import { cloneWindow, createWindow, formatWindow } from "~tabs/utils/window"
 
 const useOperations = () => {
   // window
@@ -52,15 +51,18 @@ const useOperations = () => {
   const { selectedList, tabsByWindowMap, addSelectedToCollection } =
     useSelectContext()
 
-  const saveCollection = (collection?) => {
+  const saveCurrentToCollection = (collection?) => {
+    const formatedWindow = cloneWindow(current)
+    // save window to existed collection
     if (collection) {
-      // save window to existed collection
-      const existedWindows = collection.windows
-      collection.windows = [...existedWindows, formatedWindow(current)]
+      dispatch(addWindow({ window: formatedWindow, collectionId: collection.id }))
+      dispatch(setCurrentId(collection.id))
+      return
     }
     // save window as new collection
-    collection = collection ?? formatedWindow(current)
-    dispatch(setCollectionWithLocalStorage(collection))
+    collection = createCollection(formatedWindow)
+    dispatch(addCollection(collection))
+    dispatch(setCurrentId(collection.id))
   }
 
   const openChooseCollectionDialog = useCallback(() => {
@@ -75,7 +77,7 @@ const useOperations = () => {
             {collections.map((collection) => (
               <li
                 onClick={() => {
-                  saveCollection(collection)
+                  saveCurrentToCollection(collection)
                   closeDialog()
                 }}
                 key={collection.id}
@@ -132,7 +134,7 @@ const useOperations = () => {
 
   const setCollectionTitle = (title) => {
     current.title = title
-    dispatch(setCollectionWithLocalStorage(current))
+    dispatch(updateCollection(current))
   }
 
   const activeTitleInput = (ref) => {
@@ -239,7 +241,7 @@ const useOperations = () => {
     deleteWindow,
     openCollection,
     pinnedCollection,
-    saveCollection,
+    saveCurrentToCollection,
     deleteCollection,
     openChooseCollectionDialog,
     activeTitleInput,

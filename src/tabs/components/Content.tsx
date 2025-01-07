@@ -10,7 +10,6 @@ import {
   jumptToWindow,
   openWindow
 } from "~tabs/utils/platform"
-import { formatedWindow } from "~tabs/utils/window"
 
 import DropDownActionButton from "./CollectionButtons"
 import { useGlobalCtx } from "./context"
@@ -37,7 +36,7 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
     deleteWindow,
     openCollection,
     pinnedCollection,
-    saveCollection,
+    saveCurrentToCollection,
     deleteCollection,
     // activeTitleInput,
     // CollectionTitle
@@ -182,7 +181,7 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
             <div className="join join-vertical hidden lg:join-horizontal lg:block">
               <button
                 className="btn btn-outline btn-primary join-item p-2"
-                onClick={() => saveCollection()}
+                onClick={() => saveCurrentToCollection()}
               >
                 save as new collection
               </button>
@@ -196,7 +195,7 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
               <SaveDropdown>
                 {collections.map((collection) => (
                   <li
-                    onClick={() => saveCollection(collection)}
+                    onClick={() => saveCurrentToCollection(collection)}
                     key={collection.id}
                   >
                     <a>{collection.title}</a>

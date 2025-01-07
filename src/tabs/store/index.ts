@@ -8,7 +8,7 @@ const COLLECTIONS = localforage.createInstance({
 export const localSaveCollection = (collection) => {
   // TODO
   // get local current same key collection by id
-  // compare id & updated time between the two
+  // compare id & updated time between the two collections
   COLLECTIONS.setItem(collection.id, collection)
 }
 

@@ -3,30 +3,48 @@ import { arrayMove } from "@dnd-kit/sortable"
 import { generateId } from "."
 import { cloneTabs } from "./tab"
 
-export const createWindow = (rawTabs: Tab[], collectionId?: string) => {
+export const createWindow = (
+  rawTabs: Tab[],
+  collectionId?: string,
+  collection?: Collection
+) => {
   const id = generateId()
   const tabs = cloneTabs(rawTabs, id)
-  return {
+  const window = {
     id,
     tabs,
-    collectionId
+    collectionId,
+    collection
   }
+  tabs.map((tab) => {
+    tab.window = window
+  })
+  return window
 }
 
-export const cloneWindow = (window, collectionId?): Window => {
+export const cloneWindow = (
+  window,
+  collectionId?: string,
+  collection?: Collection
+): Window => {
   const id = generateId()
-  return {
+  const clonedWindow = {
     ...window,
     id,
     tabs: cloneTabs(window.tabs, id),
-    collectionId
+    collectionId,
+    collection
   }
+  clonedWindow.tabs.map((tab) => {
+    tab.window = clonedWindow
+  })
+  return clonedWindow
 }
 
-export const formatedWindow = (window) => {
+export const formatWindow = (window) => {
   const innerWindowId = generateId()
-  const newTabs = window.tabs.map((tab) => {
-    return { ...tab, windowId: innerWindowId }
+  const newTabs: Tab[] = window.tabs.map((tab) => {
+    return { ...tab, windowId: innerWindowId, window: window }
   })
   return { ...window, tabs: newTabs, id: innerWindowId }
 }

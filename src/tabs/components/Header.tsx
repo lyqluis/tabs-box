@@ -6,7 +6,6 @@ import { useGlobalCtx } from "./context"
 import { useDialog } from "./Dialog/DialogContext"
 import LoadingBtn from "./LoadingBtn"
 import {
-  // exportData,
   removeCollection,
   setCollectionWithLocalStorage,
   updateEditedList

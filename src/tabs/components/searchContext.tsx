@@ -156,6 +156,7 @@ export const Search = () => {
     } else {
       collectionId = item.collectionId ?? item?.window?.collectionId
     }
+    console.log("jump to ", item)
     dispatch(setCurrentId(collectionId))
     setJumped(item)
   }

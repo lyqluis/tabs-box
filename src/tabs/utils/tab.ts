@@ -1,10 +1,11 @@
 import { generateId } from "."
 
-export const cloneTab = (tab: Tab, windowId?): Tab => ({
+export const cloneTab = (tab: Tab, windowId?, window?): Tab => ({
   ...tab,
   id: generateId(),
-  windowId
+  windowId,
+  window
 })
 
-export const cloneTabs = (tabs: Tab[], windowId?): Tab[] =>
-  tabs.map((tab) => cloneTab(tab, windowId))
+export const cloneTabs = (tabs: Tab[], windowId?, window?): Tab[] =>
+  tabs.map((tab) => cloneTab(tab, windowId, window))

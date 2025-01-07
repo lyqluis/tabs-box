@@ -222,12 +222,13 @@ const reducer = (state, action) => {
       const { window, collectionId } = action.payload
       // add window to collection.windows
       if (collectionId) {
-        const collections = addWindowToCollection(
+        const { collections, targetCollection } = addWindowToCollection(
           window,
           collectionId,
           state.collections
         )
-        console.log("@collections", collections)
+        const target = updateCollection(targetCollection)
+        localSaveCollection(target)
         return { ...state, collections }
       }
       // add window to windows
@@ -239,11 +240,13 @@ const reducer = (state, action) => {
       const { windowId, collectionId } = action.payload
       // remove window from collection.windows
       if (collectionId) {
-        const collections = removeWindowFromCollection(
+        const { collections, targetCollection } = removeWindowFromCollection(
           windowId,
           collectionId,
           state.collections
         )
+        const target = updateCollection(targetCollection)
+        localSaveCollection(target)
         return { ...state, collections }
       }
       // remove window from windows
@@ -255,12 +258,14 @@ const reducer = (state, action) => {
       const { window, collectionId, index } = action.payload
       // update window in collection.windows
       if (collectionId) {
-        const collections = updateWindowInCollections(
+        const { collections, updatedCollection } = updateWindowInCollections(
           window,
           collectionId,
           state.collections,
           index
         )
+        const target = updateCollection(updatedCollection)
+        localSaveCollection(target)
         return { ...state, collections }
       }
       // update window in windows
