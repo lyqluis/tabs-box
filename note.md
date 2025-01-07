@@ -177,7 +177,7 @@
 - [x] enhance: export async function & dialog
   - add a dialog to show the export status
 - [x] abstract save locally function
-- [x] **save/clone/copy window/collection, add tab.window, window.collection**
+- [x] save/clone/copy window/collection, add tab.window, window.collection
 - [-] searh
   - fuse.js
   - [x] hightlight in search result
