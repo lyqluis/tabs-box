@@ -94,38 +94,6 @@ const reducer = (state, action) => {
       newWindows.splice(index, 1, window)
       return { ...state, windows: newWindows }
     }
-    case SET_COLLECTION_WITH_LOCAL_STORAGE: {
-      // set single collection
-      let collection = action.payload
-      let insertIdx = 0
-      let removeCount = 1
-      const newCollections = state.collections.slice()
-      if (collection.created) {
-        // update existed collection
-        collection = updateCollection(collection)
-        insertIdx = state.collections.findIndex(
-          (c) => c.created === collection.created
-        )
-      } else {
-        // action.load is a window in collection
-        const window = collection
-        collection = createCollection(window)
-        // add to the first index after pinned
-        insertIdx = state.collections.findIndex((c) => !c.pinned)
-        removeCount = 0
-      }
-      newCollections.splice(insertIdx, removeCount, collection)
-      // sort new collections
-      const sortedCollections = sortCollections(newCollections)
-      // set to local store
-      localSaveCollection(collection)
-      // switch current to the new one
-      return {
-        ...state,
-        collections: sortedCollections,
-        currentId: collection.id
-      }
-    }
     case ADD_COLLECTION: {
       const collection = action.payload
       const newCollections = state.collections.slice()
