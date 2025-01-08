@@ -14,6 +14,7 @@
     "@dnd-kit/modifiers": "^7.0.0",
     "@dnd-kit/sortable": "^8.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@plasmohq/storage": "^1.13.0",
     "dayjs": "^1.11.11",
     "fuse.js": "^7.0.0",
     "localforage": "^1.10.0",
@@ -48,7 +49,15 @@
       "https://*/*"
     ],
     "permissions": [
-      "tabs"
-    ]
+      "tabs",
+      "identity",
+      "storage"
+    ],
+    "oauth2": {
+      "client_id": "$PLASMO_PUBLIC_CLIENT_ID",
+      "scopes": [
+        "https://www.googleapis.com/auth/drive.file"
+      ]
+    }
   }
 }
