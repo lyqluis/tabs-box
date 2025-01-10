@@ -8,6 +8,12 @@ import {
   updateWindowInCollections
 } from "~tabs/utils/collection"
 import {
+  createCollection,
+  exportFile,
+  generateData,
+  updateCollection
+} from "~tabs/utils/data"
+import {
   addTabsToWindow,
   removeTabsFromWindow,
   setTabsInWindow,
@@ -15,12 +21,6 @@ import {
 } from "~tabs/utils/window"
 
 import { Provider } from "../context"
-import {
-  createCollection,
-  exportFile,
-  generateData,
-  updateCollection
-} from "../data"
 import {
   ADD_COLLECTION,
   ADD_TAB,

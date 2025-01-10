@@ -2,8 +2,8 @@ import { useCallback, useEffect, useState } from "react"
 import Check from "react:~assets/svg/check.svg"
 
 import { useGlobalCtx } from "~tabs/components/context"
-import { exportFile, generateData } from "~tabs/components/data"
 import { useDialog } from "~tabs/components/Dialog/DialogContext"
+import { exportFile, generateData } from "~tabs/utils/data"
 
 const EXPORT_TIME = 1500
 

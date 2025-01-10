@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef } from "react"
 
 import { useGlobalCtx } from "~tabs/components/context"
-import { cloneCollection, createCollection } from "~tabs/components/data"
 import { useDialog } from "~tabs/components/Dialog/DialogContext"
 import {
   addCollection,
@@ -20,6 +19,7 @@ import {
   popFromClipboard,
   pushToClipboard
 } from "~tabs/utils/clipboard"
+import { cloneCollection, createCollection } from "~tabs/utils/data"
 import { closeWindow, jumptToWindow, openWindow } from "~tabs/utils/platform"
 import { cloneTab } from "~tabs/utils/tab"
 import { cloneWindow, createWindow, formatWindow } from "~tabs/utils/window"
@@ -55,7 +55,9 @@ const useOperations = () => {
     const formatedWindow = cloneWindow(current)
     // save window to existed collection
     if (collection) {
-      dispatch(addWindow({ window: formatedWindow, collectionId: collection.id }))
+      dispatch(
+        addWindow({ window: formatedWindow, collectionId: collection.id })
+      )
       dispatch(setCurrentId(collection.id))
       return
     }

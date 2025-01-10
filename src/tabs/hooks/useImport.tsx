@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react"
 
 import { useGlobalCtx } from "~tabs/components/context"
+import { useDialog } from "~tabs/components/Dialog/DialogContext"
+import { setCollections } from "~tabs/components/reducers/actions"
+import { localSaveCollection } from "~tabs/store"
 import {
   compareCollections,
   formatCollections,
   importFile
-} from "~tabs/components/data"
-import { useDialog } from "~tabs/components/Dialog/DialogContext"
-import { setCollections } from "~tabs/components/reducers/actions"
-import { localSaveCollection } from "~tabs/store"
+} from "~tabs/utils/data"
 
 import useAsyncAction from "./useAsyncAction"
 

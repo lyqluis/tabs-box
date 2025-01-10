@@ -1,9 +1,9 @@
+import { localSaveCollection } from "~tabs/store"
 import {
   compareCollections,
   formatCollections,
   importFile
-} from "~tabs/components/data"
-import { localSaveCollection } from "~tabs/store"
+} from "~tabs/utils/data"
 
 export const importData = async () => {
   // 1. import file
