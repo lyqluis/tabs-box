@@ -63,7 +63,7 @@ const useExport = () => {
     EXPORT_TIME
   )
 
-  console.log("useexport count", count) // NOTE: count changes
+  // console.log("useexport count", count) // NOTE: count changes
 
   const LengthContent = ({ count, finished = false }) => (
     <div className="flex w-full items-center">
