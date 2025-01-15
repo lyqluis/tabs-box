@@ -2,14 +2,17 @@ import { useState } from "react"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
+import useImport from "~tabs/hooks/useImport"
+import { generateData, getLastModifiedTime } from "~tabs/utils/data"
 import {
   findOrCreateFolder,
+  queryRemoteFile,
   syncFile,
   uploadFileToFolder
 } from "~tabs/utils/syncData"
 
 import { useGlobalCtx } from "./context"
-import { generateData } from "./data"
+import { useDialog } from "./Dialog/DialogContext"
 
 function AuthDrive() {
   const [authToken, setAuthToken] = useStorage<any>("authToken")
@@ -19,6 +22,8 @@ function AuthDrive() {
   const {
     state: { collections }
   } = useGlobalCtx()
+  const { openDialog } = useDialog()
+  const { isImporting, error, execute: importData } = useImport()
 
   const handleLogin = async () => {
     try {
@@ -30,6 +35,22 @@ function AuthDrive() {
       console.log("Token received:", authToken)
     } catch (error) {
       console.error("Login failed:", error)
+    }
+  }
+
+  const handleLogout = async () => {
+    try {
+      // 移除缓存的 Token
+      chrome.identity.removeCachedAuthToken({ token: authToken.token }, () => {
+        if (chrome.runtime.lastError) {
+          console.error("Failed to remove token:", chrome.runtime.lastError)
+          return
+        }
+        setAuthToken(null)
+        console.log("Token removed successfully")
+      })
+    } catch (error) {
+      console.error("Logout failed:", error)
     }
   }
 
@@ -60,57 +81,6 @@ function AuthDrive() {
     }
   }
 
-  // const syncDataToDrive = async () => {
-  //   if (!authToken) {
-  //     console.error("No auth token found")
-  //     return
-  //   }
-
-  //   setIsSyncing(true)
-  //   try {
-  //     const data = "Your data to sync"
-  //     const fileMetadata = {
-  //       name: "data.txt",
-  //       parents: ["YOUR_FOLDER_ID"]
-  //     }
-  //     const form = new FormData()
-  //     form.append(
-  //       "metadata",
-  //       new Blob([JSON.stringify(fileMetadata)], { type: "application/json" })
-  //     )
-  //     form.append("file", new Blob([data], { type: "text/plain" }))
-
-  //     // const response = await fetch(
-  //     //   "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
-  //     //   {
-  //     //     method: "POST",
-  //     //     headers: new Headers({ Authorization: "Bearer " + authToken.token }),
-  //     //     body: form
-  //     //   }
-  //     // )
-  //     const fileName = "tst.json"
-  //     const fileContent = "this is tst file content"
-  //     const response = await fetch(
-  //       "https://www.googleapis.com/upload/drive/v3/files?uploadType=media",
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           Authorization: "Bearer " + authToken.token,
-  //           "Content-Type": "text/plain",
-  //           "Content-Disposition": `attachment; filename="${fileName}"`
-  //         },
-  //         body: fileContent
-  //       }
-  //     )
-  //     const result = await response.json()
-  //     console.log("File uploaded:", result)
-  //   } catch (error) {
-  //     console.error("Error uploading file:", error)
-  //   } finally {
-  //     setIsSyncing(false)
-  //   }
-  // }
-
   const syncDataToDrive = async () => {
     if (!authToken) {
       console.error("No auth token found")
@@ -135,6 +105,39 @@ function AuthDrive() {
     setIsSyncing(false)
   }
 
+  const syncData = async () => {
+    if (!authToken) {
+      console.error("No auth token found")
+      return
+    }
+
+    setIsSyncing(true)
+
+    const folderName = "tst"
+    const fileName = "tabs-box.json"
+    const data = generateData(collections)
+    const lastModifiedTime = getLastModifiedTime(collections)
+
+    // find or create folder
+    let id // folder id
+    if (!folderId) {
+      id = await findOrCreateFolder(authToken.token, folderName)
+      setFolderId(id)
+    }
+
+    // sync file to the folder
+    await syncFile(
+      authToken.token,
+      folderId,
+      fileName,
+      importData,
+      data,
+      lastModifiedTime
+    )
+
+    setIsSyncing(false)
+  }
+
   return (
     <div className="p-2">
       <h1>Google Drive Sync</h1>
@@ -146,17 +149,26 @@ function AuthDrive() {
           </button>
           <button
             className="btn"
-            onClick={syncDataToDrive}
-            disabled={isSyncing}
+            onClick={() =>
+              queryRemoteFile(authToken.token, folderId, "tabs-box.json")
+            }
           >
+            query file
+          </button>
+          <button className="btn" onClick={syncData} disabled={isSyncing}>
             {isSyncing ? "Syncing..." : "Sync Data"}
           </button>
-          <button className="btn" onClick={() => setAuthToken(null)}>
+          <button className="btn" onClick={handleLogout}>
             logout
+          </button>
+          <button className="btn" onClick={handleLogin}>
+            quick login
           </button>
         </div>
       ) : (
-        <button onClick={handleLogin}>Login with Google</button>
+        <button className="btn" onClick={handleLogin}>
+          Login with Google
+        </button>
       )}
     </div>
   )

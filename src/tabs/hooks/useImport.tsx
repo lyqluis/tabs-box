@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react"
+import { flushSync } from "react-dom"
 
 import { useGlobalCtx } from "~tabs/components/context"
 import { useDialog } from "~tabs/components/Dialog/DialogContext"
 import { setCollections } from "~tabs/components/reducers/actions"
 import { localSaveCollection } from "~tabs/store"
+import { sortCollections } from "~tabs/utils/collection"
 import {
   compareCollections,
   formatCollections,
@@ -21,48 +23,69 @@ const useImport = () => {
     dispatch
   } = useGlobalCtx()
   const { openDialog, setDialog } = useDialog()
-  const [oldLength, setOldLength] = useState(collections.length)
+  const [importLength, setImportLength] = useState(collections.length)
 
-  const importData = async () => {
+  const importData = async (importCollections) => {
     setIsImporting(true)
-    setOldLength(collections.length)
-    // 1. import file
-    const importCollections = await importFile({
-      onFileConfirmed: () => {
-        openDialog({
-          message: "Processing",
-          content: <span className="loading loading-spinner loading-lg"></span>
-        })
-      },
-      onFileCanceled: () => {
-        setIsImporting(false)
-      }
+    flushSync(() => {
+      // incase the next import length will not update
+      setImportLength(collections.length)
     })
+    // 1. import file
+    // click IMPORT button
+    if (!importCollections) {
+      console.log("🪝📁 useImport click IMPORT button", importCollections)
+      importCollections = await importFile({
+        onFileConfirmed: () => {
+          openDialog({
+            message: "Processing",
+            content: (
+              <span className="loading loading-spinner loading-lg"></span>
+            )
+          })
+        },
+        onFileCanceled: () => {
+          setIsImporting(false)
+        }
+      })
+    }
+    // else {
+    //   console.log("🪝📁 useImport import from cloud", importCollections)
+    //   openDialog({
+    //     message: "Processing",
+    //     content: <span className="loading loading-spinner loading-lg"></span>
+    //   })
+    // }
 
     // 1.1 compare data with old one
     let newCollections = compareCollections(importCollections, collections)
     // 1.2 format collections
     newCollections = formatCollections(newCollections)
+    // 1.3 sort collections
+    newCollections = sortCollections(newCollections)
     // 2. set to reducer
     dispatch(setCollections(newCollections))
     // 3. set to localStorage
     newCollections.map((collection) => localSaveCollection(collection))
+    // 4. set imported collection length
+    setImportLength((preLength) =>
+      Math.max(newCollections.length - preLength, 0)
+    )
   }
 
   const { isExecuting, error, execute } = useAsyncAction(importData)
 
   useEffect(() => {
     console.log("🪝📁 useImport @isExecuting", isExecuting)
-    if (!isExecuting) {
+    if (!isExecuting && isImporting) {
       setIsImporting(false)
-      // import data setted
       setDialog({
-        message: `Import ${collections.length - oldLength} collections`,
+        message: `Done! Import ${importLength} collections`,
         content: null,
         cancelText: "Ok"
       })
     }
-  }, [isExecuting])
+  }, [importLength])
 
   return { isImporting, execute, error }
 }

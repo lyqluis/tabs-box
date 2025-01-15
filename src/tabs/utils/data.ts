@@ -73,7 +73,7 @@ export const removeCircularReferences = (
 
 export const generateExportBlob = (data, ext = "json") => {
   const now = Date.now()
-  const fileName = `tab-box-config-${now}.${ext}`
+  const fileName = `tabs-box-config-${now}.${ext}`
   // use Blob since data:text/plain is limited to 2kb
   const blob = new Blob([JSON.stringify(data)], { type: "application/json" })
   return { fileName, blob }
@@ -155,7 +155,7 @@ export const compareCollections = (
       window.tabs = window.tabs.map((tab) => {
         tab.windowId = window.id
         tab.window = window
-        console.log("🔗 compare - tab", tab)
+        // console.log("🔗 compare - tab", tab)
         return tab
       })
       window.collectionId = collection.id

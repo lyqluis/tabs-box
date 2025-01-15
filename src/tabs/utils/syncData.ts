@@ -1,4 +1,10 @@
-import { generateExportBlob } from "./data"
+import { setCollections } from "~tabs/components/reducers/actions"
+
+import {
+  compareCollections,
+  formatCollections,
+  generateExportBlob
+} from "./data"
 
 export const findOrCreateFolder = async (token, folderName) => {
   // 查询是否已存在该目录
@@ -123,4 +129,84 @@ export const deleteRemoteFile = async (token, fileId) => {
   }
 
   console.log("File deleted:", fileId)
+}
+
+export const queryRemoteFile = async (token, folderId, fileName) => {
+  const query = `name='${fileName}' and '${folderId}' in parents and trashed=false`
+  const fields = "fields=files(id,name)" // files(id,name,modifiedTime), if needed
+  const listResponse = await fetch(
+    `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&${fields}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    }
+  )
+
+  if (!listResponse.ok) {
+    throw new Error("Failed to list files")
+  }
+
+  const fileList = await listResponse.json()
+  console.log("query result: ", fileList)
+
+  return fileList.files[0]
+}
+
+const readRemoteFile = async (token, fileId, jsonParse = true) => {
+  const response = await fetch(
+    `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    }
+  )
+
+  if (!response.ok) {
+    throw new Error("Failed to read file")
+  }
+
+  // 返回文件内容（字符串格式）
+  const fileContent = await response.text()
+  return jsonParse ? JSON.parse(fileContent) : fileContent
+}
+
+export const syncFile = async (
+  token,
+  folderId,
+  fileName,
+  omImport: (importCollections) => void,
+  localContent?,
+  localModifiedTime?
+) => {
+  try {
+    // query remote file info
+    const remoteFileInfo = await queryRemoteFile(token, folderId, fileName)
+
+    if (remoteFileInfo) {
+      // read remote json's last modified time
+      console.log(`remote file [${fileName}] existsm info: `, remoteFileInfo)
+      const remoteFile = await readRemoteFile(token, remoteFileInfo.id)
+      console.log("remote file content:", remoteFile)
+      if (remoteFile.modified < localModifiedTime) {
+        // 本地文件较新，删除云端文件并上传新文件
+        console.log("Local file is newer, updating remote file...")
+        await deleteRemoteFile(token, remoteFileInfo.id)
+        await uploadFileToFolder(token, folderId, fileName, localContent)
+      } else if (remoteFile.modified > localModifiedTime) {
+        // 云端文件较新，删除本地文件
+        console.log("Remote file is newer, import remote file...")
+        await omImport(remoteFile.collections)
+      }
+    } else {
+      // 云端文件不存在，直接上传
+      console.log("Remote file does not exist, uploading to Drive...")
+      await uploadFileToFolder(token, folderId, fileName, localContent)
+    }
+  } catch (error) {
+    console.error("Error during sync:", error)
+  }
 }
