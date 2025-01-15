@@ -182,6 +182,7 @@ export const syncFile = async (
   localContent?,
   localModifiedTime?
 ) => {
+  let res = "Remote file is updated"
   try {
     // query remote file info
     const remoteFileInfo = await queryRemoteFile(token, folderId, fileName)
@@ -200,12 +201,15 @@ export const syncFile = async (
         // 云端文件较新，删除本地文件
         console.log("Remote file is newer, import remote file...")
         await omImport(remoteFile.collections)
+        return
       }
     } else {
       // 云端文件不存在，直接上传
       console.log("Remote file does not exist, uploading to Drive...")
       await uploadFileToFolder(token, folderId, fileName, localContent)
     }
+
+    return res
   } catch (error) {
     console.error("Error during sync:", error)
   }

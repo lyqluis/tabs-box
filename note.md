@@ -191,7 +191,8 @@
   - [x] hightlight in list & sidebar when search query exists
 - [ ] incognito mode
   - [ ] filter search result with incognito
-- [ ] **feature: save file in cloud**
+- [x] feature: save file in cloud
+  - [ ] **sync data syled**
 - [x] feature: drag tabs between windows
   - Sortable / App
   - dnd context

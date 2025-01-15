@@ -31,6 +31,7 @@ const useImport = () => {
       // incase the next import length will not update
       setImportLength(collections.length)
     })
+
     // 1. import file
     // click IMPORT button
     if (!importCollections) {
@@ -49,13 +50,6 @@ const useImport = () => {
         }
       })
     }
-    // else {
-    //   console.log("🪝📁 useImport import from cloud", importCollections)
-    //   openDialog({
-    //     message: "Processing",
-    //     content: <span className="loading loading-spinner loading-lg"></span>
-    //   })
-    // }
 
     // 1.1 compare data with old one
     let newCollections = compareCollections(importCollections, collections)

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
@@ -13,6 +13,7 @@ import {
 
 import { useGlobalCtx } from "./context"
 import { useDialog } from "./Dialog/DialogContext"
+import { toast } from "./Toast"
 
 function AuthDrive() {
   const [authToken, setAuthToken] = useStorage<any>("authToken")
@@ -22,8 +23,8 @@ function AuthDrive() {
   const {
     state: { collections }
   } = useGlobalCtx()
-  const { openDialog } = useDialog()
-  const { isImporting, error, execute: importData } = useImport()
+  const { openDialog, setDialog } = useDialog()
+  const { error: importError, execute: importData } = useImport()
 
   const handleLogin = async () => {
     try {
@@ -81,30 +82,6 @@ function AuthDrive() {
     }
   }
 
-  const syncDataToDrive = async () => {
-    if (!authToken) {
-      console.error("No auth token found")
-      return
-    }
-
-    setIsSyncing(true)
-
-    const folderName = "tst"
-    const fileName = "tabs-box.json"
-    const data = generateData(collections)
-
-    // find or create folder
-    let id // folder id
-    if (!folderId) {
-      id = await findOrCreateFolder(authToken.token, folderName)
-      setFolderId(id)
-    }
-    // upload file to the folder
-    await uploadFileToFolder(authToken.token, folderId ?? id, fileName, data)
-
-    setIsSyncing(false)
-  }
-
   const syncData = async () => {
     if (!authToken) {
       console.error("No auth token found")
@@ -112,6 +89,10 @@ function AuthDrive() {
     }
 
     setIsSyncing(true)
+    openDialog({
+      message: "Processing",
+      content: <span className="loading loading-spinner loading-lg"></span>
+    })
 
     const folderName = "tst"
     const fileName = "tabs-box.json"
@@ -126,7 +107,7 @@ function AuthDrive() {
     }
 
     // sync file to the folder
-    await syncFile(
+    const closeDialogContent = await syncFile(
       authToken.token,
       folderId,
       fileName,
@@ -135,8 +116,22 @@ function AuthDrive() {
       lastModifiedTime
     )
 
+    if (closeDialogContent) {
+      setDialog({
+        message: "Done!",
+        content: closeDialogContent,
+        cancelText: "Ok"
+      })
+    }
     setIsSyncing(false)
   }
+
+  useEffect(() => {
+    if (importError) {
+      console.error("Import error:", importError)
+      toast.current?.show({ message: importError, title: "Error" })
+    }
+  }, [importError])
 
   return (
     <div className="p-2">
@@ -146,14 +141,6 @@ function AuthDrive() {
           <p>Logged in!</p>
           <button className="btn" onClick={() => validateToken(authToken)}>
             check token
-          </button>
-          <button
-            className="btn"
-            onClick={() =>
-              queryRemoteFile(authToken.token, folderId, "tabs-box.json")
-            }
-          >
-            query file
           </button>
           <button className="btn" onClick={syncData} disabled={isSyncing}>
             {isSyncing ? "Syncing..." : "Sync Data"}
