@@ -7,7 +7,6 @@ import { useGlobalCtx } from "./context"
 import { Droppable } from "./Dnd"
 import { setCurrentId } from "./reducers/actions"
 import { highlight, useSearchCtx } from "./searchContext"
-import AuthDrive from "./AuthDrive"
 
 const SideBarItem = ({ item, isEdited, isSelected, onSelect }) => {
   const type = item.created ? "collection" : "window"
@@ -118,8 +117,6 @@ const SideBar = ({}) => {
           ></SideBarItem>
         ))}
       </ul>
-      {/* TODO: test auth drive */}
-      <AuthDrive />
     </aside>
   )
 }

@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react"
+import CloudSvg from "react:~assets/svg/cloud.svg"
+import DriveSvg from "react:~assets/svg/drive.svg"
+import LogoutSvg from "react:~assets/svg/logout.svg"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
+import useAsyncAction from "~tabs/hooks/useAsyncAction"
 import useImport from "~tabs/hooks/useImport"
+import { validateToken, type AuthToken } from "~tabs/utils/auth"
 import { generateData, getLastModifiedTime } from "~tabs/utils/data"
-import {
-  findOrCreateFolder,
-  queryRemoteFile,
-  syncFile,
-  uploadFileToFolder
-} from "~tabs/utils/syncData"
+import { findOrCreateFolder, syncFile } from "~tabs/utils/syncData"
 
 import { useGlobalCtx } from "./context"
 import { useDialog } from "./Dialog/DialogContext"
+import LoadingBtn from "./LoadingBtn"
 import { toast } from "./Toast"
 
-function AuthDrive() {
+const CloudFileSync = ({ className }) => {
   const [authToken, setAuthToken] = useStorage<any>("authToken")
   const [folderId, setFolderId] = useStorage<string>("folderId")
   const [isSyncing, setIsSyncing] = useState(false)
@@ -26,20 +27,20 @@ function AuthDrive() {
   const { openDialog, setDialog } = useDialog()
   const { error: importError, execute: importData } = useImport()
 
-  const handleLogin = async () => {
+  const login = async (): Promise<AuthToken> => {
     try {
-      // { grantedScopes?: string[]; token: string }
       const authToken = await chrome.identity.getAuthToken({
         interactive: true
       })
-      setAuthToken(authToken)
       console.log("Token received:", authToken)
+      setAuthToken(authToken)
+      return authToken
     } catch (error) {
       console.error("Login failed:", error)
     }
   }
 
-  const handleLogout = async () => {
+  const logout = async () => {
     try {
       // 移除缓存的 Token
       chrome.identity.removeCachedAuthToken({ token: authToken.token }, () => {
@@ -55,37 +56,21 @@ function AuthDrive() {
     }
   }
 
-  const validateToken = async (authToken) => {
-    try {
-      const response = await fetch(
-        "https://www.googleapis.com/drive/v3/about?fields=user",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${authToken.token}`
-          }
-        }
-      )
-
-      if (response.ok) {
-        const data = await response.json()
-        console.log("Token is valid:", data)
-        return true
-      } else {
-        const errorData = await response.json()
-        console.error("Token is invalid:", errorData)
-        return false
-      }
-    } catch (error) {
-      console.error("Error validating token:", error)
-      return false
-    }
-  }
+  const { execute: handleLogin, isExecuting: isLoginProcessing } =
+    useAsyncAction(login)
+  const { execute: handleLogout, isExecuting: isLogoutProcessing } =
+    useAsyncAction(logout)
 
   const syncData = async () => {
+    let token
     if (!authToken) {
       console.error("No auth token found")
-      return
+      console.log("Refresh token")
+      token = await handleLogin()
+    }
+    const isTokenValid = await validateToken(authToken ?? token)
+    if (!isTokenValid) {
+      token = await handleLogin()
     }
 
     setIsSyncing(true)
@@ -134,31 +119,54 @@ function AuthDrive() {
   }, [importError])
 
   return (
-    <div className="p-2">
-      <h1>Google Drive Sync</h1>
+    <div
+      className={
+        "flex items-center gap-1 p-2" +
+        " relative pl-4 before:absolute before:bottom-3 before:left-0 before:top-3 before:w-px before:bg-gray-300 before:content-['']" +
+        (className ? ` ${className}` : "")
+      }
+    >
+      {/* Login button */}
+      <LoadingBtn
+        className={
+          "btn btn-circle mr-2 min-h-4 min-w-4" +
+          (authToken
+            ? " h-10 w-10 ring ring-primary ring-offset-2 ring-offset-base-100"
+            : "")
+        }
+        loadingFlag={isLoginProcessing}
+        onClick={handleLogin}
+      >
+        <DriveSvg
+          className={
+            "h-full w-full" + (authToken ? " fill-slate-700" : " fill-gray-400")
+          }
+        />
+      </LoadingBtn>
+
       {authToken ? (
-        <div className="flex flex-col items-center">
-          <p>Logged in!</p>
-          <button className="btn" onClick={() => validateToken(authToken)}>
-            check token
-          </button>
-          <button className="btn" onClick={syncData} disabled={isSyncing}>
-            {isSyncing ? "Syncing..." : "Sync Data"}
-          </button>
-          <button className="btn" onClick={handleLogout}>
-            logout
-          </button>
-          <button className="btn" onClick={handleLogin}>
-            quick login
-          </button>
-        </div>
-      ) : (
-        <button className="btn" onClick={handleLogin}>
-          Login with Google
-        </button>
-      )}
+        <>
+          <LoadingBtn
+            className="btn btn-ghost"
+            onClick={syncData}
+            disabled={isSyncing}
+            loadingFlag={isSyncing}
+          >
+            <CloudSvg className="h-5 w-5 fill-slate-700" />
+            <span className="hidden lg:inline">Sync Data</span>
+          </LoadingBtn>
+          <LoadingBtn
+            className="btn btn-ghost"
+            onClick={handleLogout}
+            loadingFlag={isLogoutProcessing}
+          >
+            <LogoutSvg className="h-5 w-5 fill-slate-700" />
+            <span className="hidden lg:inline">Log out</span>
+          </LoadingBtn>
+        </>
+      ) : null}
     </div>
   )
 }
 
-export default AuthDrive
+export default CloudFileSync

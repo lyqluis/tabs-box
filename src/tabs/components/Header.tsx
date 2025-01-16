@@ -2,6 +2,7 @@ import useExport from "~tabs/hooks/useExport"
 import useImport from "~tabs/hooks/useImport"
 import { applyWindow } from "~tabs/utils/platform"
 
+import CloudFileSync from "./CloudFileSync"
 import { useGlobalCtx } from "./context"
 import { useDialog } from "./Dialog/DialogContext"
 import LoadingBtn from "./LoadingBtn"
@@ -10,7 +11,7 @@ import {
   setCollectionWithLocalStorage,
   updateEditedList
 } from "./reducers/actions"
-import { Search, useSearchCtx } from "./searchContext"
+import { Search } from "./searchContext"
 import { toast } from "./Toast"
 
 const Header = () => {
@@ -23,7 +24,6 @@ const Header = () => {
   const { openDialog } = useDialog()
   const { isImporting, execute } = useImport()
   const { isExporting, exportData } = useExport()
-  const { query, handleSearch } = useSearchCtx()
 
   if (!current) return null
 
@@ -77,12 +77,14 @@ const Header = () => {
           save
         </LoadingBtn>
       )}
-      <button
+      {/* <button
         className={`btn btn-outline btn-primary p-2`}
         onClick={() => toast.current?.show({ message: "this is a message" })}
       >
         show message
-      </button>
+      </button> */}
+      {/* // TODO: test file sync */}
+      <CloudFileSync className="ml-auto" />
     </header>
   )
 }
