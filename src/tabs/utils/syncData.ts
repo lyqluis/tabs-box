@@ -1,10 +1,4 @@
-import { setCollections } from "~tabs/components/reducers/actions"
-
-import {
-  compareCollections,
-  formatCollections,
-  generateExportBlob
-} from "./data"
+import { formatJSON, generateExportBlob } from "./data"
 
 export const findOrCreateFolder = async (token, folderName) => {
   // 查询是否已存在该目录
@@ -189,8 +183,9 @@ export const syncFile = async (
 
     if (remoteFileInfo) {
       // read remote json's last modified time
-      console.log(`remote file [${fileName}] existsm info: `, remoteFileInfo)
-      const remoteFile = await readRemoteFile(token, remoteFileInfo.id)
+      console.log(`remote file [${fileName}] exists, info: `, remoteFileInfo)
+      const f = await readRemoteFile(token, remoteFileInfo.id)
+      const remoteFile = formatJSON(f)
       console.log("remote file content:", remoteFile)
       if (remoteFile.modified < localModifiedTime) {
         // 本地文件较新，删除云端文件并上传新文件
@@ -200,9 +195,10 @@ export const syncFile = async (
       } else if (remoteFile.modified > localModifiedTime) {
         // 云端文件较新，删除本地文件
         console.log("Remote file is newer, import remote file...")
-        await omImport(remoteFile.collections)
+        await omImport(remoteFile)
         return
       }
+      // 云端文件和当前一样或者该文件不存在 modified 属性
     } else {
       // 云端文件不存在，直接上传
       console.log("Remote file does not exist, uploading to Drive...")

@@ -25,7 +25,7 @@ const useImport = () => {
   const { openDialog, setDialog } = useDialog()
   const [importLength, setImportLength] = useState(collections.length)
 
-  const importData = async (importCollections) => {
+  const importData = async (importJson) => {
     setIsImporting(true)
     flushSync(() => {
       // incase the next import length will not update
@@ -34,9 +34,9 @@ const useImport = () => {
 
     // 1. import file
     // click IMPORT button
-    if (!importCollections) {
-      console.log("🪝📁 useImport click IMPORT button", importCollections)
-      importCollections = await importFile({
+    if (!importJson) {
+      console.log("🪝📁 useImport click IMPORT button", importJson)
+      importJson = await importFile({
         onFileConfirmed: () => {
           openDialog({
             message: "Processing",
@@ -51,8 +51,9 @@ const useImport = () => {
       })
     }
 
+    let newCollections = importJson.collections
     // 1.1 compare data with old one
-    let newCollections = compareCollections(importCollections, collections)
+    newCollections = compareCollections(newCollections, collections)
     // 1.2 format collections
     newCollections = formatCollections(newCollections)
     // 1.3 sort collections

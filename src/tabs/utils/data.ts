@@ -183,7 +183,14 @@ export const formatCollections = (collections) => {
   })
 }
 
-const formatJSON = (data): Collection[] => {
+// normalize data from session-buddy(in case)
+export const formatJSON = (data): any => {
+  // add `modified` via `created`
+  if (!data.modified) {
+    const created = data.created
+    data.modified = new Date(created).getTime()
+  }
+  // normalize collections
   const collections = data.collections
   if (!collections || !collections.length) return
   // iterate collections to formate and store local
@@ -209,7 +216,8 @@ const formatJSON = (data): Collection[] => {
     return collection
   })
 
-  return newCollections
+  data.collections = newCollections
+  return data
 }
 
 // TODO: enhance download file via fetch & Response.body/Range
@@ -272,3 +280,5 @@ export const importFile = ({
     input.click()
   })
 }
+
+export const normalizeData = (data: any) => {}
