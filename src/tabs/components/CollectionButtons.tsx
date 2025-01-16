@@ -31,7 +31,7 @@ const DropDownActionButton = ({ className, inputRef }) => {
     deleteWindow,
     openCollection,
     pinnedCollection,
-    saveCollection,
+    saveCurrentToCollection,
     deleteCollection,
     activeTitleInput,
     openChooseCollectionDialog,
@@ -62,7 +62,7 @@ const DropDownActionButton = ({ className, inputRef }) => {
       {
         text: "save as new collection",
         icon: <FolderPlus className={iconClassName} />,
-        callback: () => saveCollection(),
+        callback: () => saveCurrentToCollection(),
         includes: ["window"]
       },
       {
