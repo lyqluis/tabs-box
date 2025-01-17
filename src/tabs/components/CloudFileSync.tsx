@@ -13,6 +13,7 @@ import { findOrCreateFolder, syncFile } from "~tabs/utils/syncData"
 
 import { useGlobalCtx } from "./context"
 import { useDialog } from "./Dialog/DialogContext"
+import Icon from "./Icon"
 import LoadingBtn from "./LoadingBtn"
 import { toast } from "./Toast"
 
@@ -79,7 +80,7 @@ const CloudFileSync = ({ className }) => {
       content: <span className="loading loading-spinner loading-lg"></span>
     })
 
-    const folderName = "tst"
+    const folderName = "tabs-box"
     const fileName = "tabs-box.json"
     const data = generateData(collections)
     const lastModifiedTime = getLastModifiedTime(collections)
@@ -137,7 +138,8 @@ const CloudFileSync = ({ className }) => {
         loadingFlag={isLoginProcessing}
         onClick={handleLogin}
       >
-        <DriveSvg
+        <Icon
+          Svg={DriveSvg}
           className={
             "h-full w-full" + (authToken ? " fill-slate-700" : " fill-gray-400")
           }
@@ -152,7 +154,7 @@ const CloudFileSync = ({ className }) => {
             disabled={isSyncing}
             loadingFlag={isSyncing}
           >
-            <CloudSvg className="h-5 w-5 fill-slate-700" />
+            <Icon Svg={CloudSvg} />
             <span className="hidden lg:inline">Sync Data</span>
           </LoadingBtn>
           <LoadingBtn
@@ -160,7 +162,7 @@ const CloudFileSync = ({ className }) => {
             onClick={handleLogout}
             loadingFlag={isLogoutProcessing}
           >
-            <LogoutSvg className="h-5 w-5 fill-slate-700" />
+            <Icon Svg={LogoutSvg} />
             <span className="hidden lg:inline">Log out</span>
           </LoadingBtn>
         </>

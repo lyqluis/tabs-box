@@ -136,8 +136,7 @@
   }
   ```
   - 2. use `useSyncExternalStore` to subscribe to an external store and message list (https://juejin.cn/post/7223705034412802107#heading-10)
-  - [-] bugs
-    - [x] transition animations for conditional rendering
+  - [x] bugs: transition animations for conditional rendering
 - [x] export & import feature
   - [x] data foramt
   - [x] import
@@ -189,10 +188,12 @@
   - [x] escape input '\' to create regexp
   - [x] add windows in search data, add window as search result
   - [x] hightlight in list & sidebar when search query exists
-- [ ] incognito mode
+- [ ] **header media query**
+- [x] **svg icon compoennt**
+- [ ] **util: trans session-buddy data to tabs-box**
+- [ ] **incognito mode**
   - [ ] filter search result with incognito
 - [x] feature: save file in cloud
-  - [ ] **sync data syled**
 - [x] feature: drag tabs between windows
   - Sortable / App
   - dnd context
