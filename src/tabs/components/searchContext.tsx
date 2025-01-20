@@ -13,6 +13,7 @@ import WindowSvg from "react:~assets/svg/window.svg"
 
 import useDropdown from "../hooks/useDropdown"
 import { useGlobalCtx } from "./context"
+import Icon from "./Icon"
 import { setCurrentId } from "./reducers/actions"
 
 interface SearchContextType {
@@ -215,7 +216,9 @@ export const Search = () => {
           onChange={handleChange}
           ref={inputRef}
         />
-        <Cross
+
+        <Icon
+          Svg={Cross}
           className={`${query ? "visible" : "invisible"} h-4 w-4 cursor-pointer`}
           onClick={handleClear}
         />
@@ -241,10 +244,16 @@ export const Search = () => {
                       <i className="flex h-6 w-6 flex-none items-center justify-center rounded-full bg-gray-300">
                         {item.type ? (
                           // window icon
-                          <WindowSvg className="h-auto w-4 fill-slate-700" />
+                          <Icon
+                            Svg={WindowSvg}
+                            className="h-auto w-4 fill-slate-700"
+                          />
                         ) : (
                           // collection icon
-                          <Folder className="h-auto w-4 fill-slate-700" />
+                          <Icon
+                            Svg={Folder}
+                            className="h-auto w-4 fill-slate-700"
+                          />
                         )}
                       </i>
                     )}

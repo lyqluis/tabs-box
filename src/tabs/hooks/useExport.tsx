@@ -3,6 +3,7 @@ import Check from "react:~assets/svg/check.svg"
 
 import { useGlobalCtx } from "~tabs/components/context"
 import { useDialog } from "~tabs/components/Dialog/DialogContext"
+import Icon from "~tabs/components/Icon"
 import { exportFile, generateData } from "~tabs/utils/data"
 
 const EXPORT_TIME = 1500
@@ -69,7 +70,7 @@ const useExport = () => {
     <div className="flex w-full items-center">
       {finished ? (
         <>
-          <Check className="mr-2 h-10 w-10" />
+          <Icon Svg={Check} className="mr-2 h-10 w-10" />
           Ready {count} collections
         </>
       ) : (

@@ -9,6 +9,7 @@ import { ListItem } from "."
 import { useGlobalCtx } from "../context"
 import { useDialog } from "../Dialog/DialogContext"
 import { Sortable, useDndContext, useSortableItem } from "../Dnd"
+import Icon from "../Icon"
 import { removeWindow, updateEditedList } from "../reducers/actions"
 
 interface ListProps {
@@ -97,15 +98,12 @@ const List: React.FC<ListProps> = ({
       >
         {/* draggable */}
         {type === "collection" && (
-          <i
-            className={`list-item__handle flex h-5 w-5 flex-none items-center justify-start`}
-          >
-            <DragableIcon
-              className={`flex h-full w-full fill-slate-300 hover:cursor-grab focus:cursor-grabbing focus:outline-none`}
-              {...attributes}
-              {...listeners}
-            ></DragableIcon>
-          </i>
+          <Icon
+            Svg={DragableIcon}
+            className="list-item__handle flex h-5 w-5 flex-none items-center justify-start fill-slate-300 hover:cursor-grab focus:cursor-grabbing focus:outline-none"
+            {...attributes}
+            {...listeners}
+          />
         )}
         {selectedList.length > 0 ? (
           <label className="label cursor-pointer">
@@ -118,7 +116,10 @@ const List: React.FC<ListProps> = ({
             />
           </label>
         ) : (
-          <WindowIcon className="h-full w-7 flex-none fill-slate-700"></WindowIcon>
+          <Icon
+            Svg={WindowIcon}
+            className="h-full w-7 flex-none fill-slate-700"
+          />
         )}
         <span className="ml-2 text-base font-bold">Window</span>
         {/* // todo: remove window.id */}

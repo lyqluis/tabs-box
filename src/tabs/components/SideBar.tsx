@@ -5,6 +5,7 @@ import { useTabEvents, useWindowEvents } from "~tabs/utils/platform"
 
 import { useGlobalCtx } from "./context"
 import { Droppable } from "./Dnd"
+import Icon from "./Icon"
 import { setCurrentId } from "./reducers/actions"
 import { highlight, useSearchCtx } from "./searchContext"
 
@@ -37,13 +38,12 @@ const SideBarItem = ({ item, isEdited, isSelected, onSelect }) => {
           <span className="overflow-hidden text-ellipsis whitespace-nowrap">
             {highlight(item.title, query)}
           </span>
-          <i className={`flex h-5 w-5 flex-none items-center justify-start`}>
-            {item.pinned ? (
-              <Pinned className={`h-full w-full fill-danube-50`}></Pinned>
-            ) : (
-              ""
-            )}
-          </i>
+          {item.pinned ? (
+            <Icon
+              Svg={Pinned}
+              className="flex h-5 w-5 flex-none items-center justify-start fill-danube-50"
+            />
+          ) : null}
         </p>
         <p className={`text-xs font-extralight text-danube-200`}>
           Updated {fromNow(item.updated)}

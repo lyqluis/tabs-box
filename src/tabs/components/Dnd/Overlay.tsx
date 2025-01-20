@@ -4,6 +4,7 @@ import WindowIcon from "react:~assets/svg/window.svg"
 
 import { useSelectContext } from "~tabs/contexts/selectContext"
 
+import Icon from "../Icon"
 import { ListItem } from "../list"
 import { useDndContext } from "./Dnd"
 
@@ -26,14 +27,11 @@ export const OverlayList: FC<OverlayListProps> = ({ count }) => {
         {/* list operation */}
         <div className="sticky top-0 mb-4 mt-4 flex h-5 items-center justify-start">
           {/* draggable */}
-          <i
-            className={`list-item__handle flex h-5 w-5 flex-none items-center justify-start`}
-          >
-            <DragableIcon
-              className={`flex h-full w-full fill-slate-300 hover:cursor-grab focus:cursor-grabbing focus:outline-none`}
-            ></DragableIcon>
-          </i>
-          {<WindowIcon className="h-full w-7 fill-slate-700"></WindowIcon>}
+          <Icon
+            Svg={DragableIcon}
+            className="list-item__handle flex h-5 w-5 flex-none items-center justify-start fill-slate-300 hover:cursor-grab focus:cursor-grabbing focus:outline-none"
+          />
+          {<Icon Svg={WindowIcon} className="h-full w-7 fill-slate-700" />}
           <span className="ml-2 text-base font-bold">Window</span>
           {/* // todo: remove window.id */}
           {`: ${draggingItem.id}`}

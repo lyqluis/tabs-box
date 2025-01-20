@@ -1,3 +1,6 @@
+import ExportSvg from "react:~assets/svg/export.svg"
+import ImportSvg from "react:~assets/svg/import.svg"
+
 import useExport from "~tabs/hooks/useExport"
 import useImport from "~tabs/hooks/useImport"
 import { applyWindow } from "~tabs/utils/platform"
@@ -5,6 +8,7 @@ import { applyWindow } from "~tabs/utils/platform"
 import CloudFileSync from "./CloudFileSync"
 import { useGlobalCtx } from "./context"
 import { useDialog } from "./Dialog/DialogContext"
+import Icon from "./Icon"
 import LoadingBtn from "./LoadingBtn"
 import {
   removeCollection,
@@ -52,11 +56,21 @@ const Header = () => {
   return (
     <header className="flex h-16 w-auto flex-none items-center bg-danube-100 p-4">
       <Search />
-      <LoadingBtn onClick={exportData} loadingFlag={isExporting}>
-        export
+      <LoadingBtn
+        className="btn btn-ghost"
+        onClick={exportData}
+        loadingFlag={isExporting}
+      >
+        <Icon Svg={ExportSvg} />
+        <span className="hidden lg:inline">Export</span>
       </LoadingBtn>
-      <LoadingBtn onClick={execute} loadingFlag={isImporting}>
-        import
+      <LoadingBtn
+        className="btn btn-ghost"
+        onClick={execute}
+        loadingFlag={isImporting}
+      >
+        <Icon Svg={ImportSvg} />
+        <span className="hidden lg:inline">Import</span>
       </LoadingBtn>
       {type === "window" ? (
         <LoadingBtn
@@ -83,7 +97,6 @@ const Header = () => {
       >
         show message
       </button> */}
-      {/* // TODO: test file sync */}
       <CloudFileSync className="ml-auto" />
     </header>
   )

@@ -8,6 +8,8 @@ import {
 import Check from "react:~assets/svg/check.svg"
 import Cross from "react:~assets/svg/cross.svg"
 
+import Icon from "./Icon"
+
 type TitleInputProps = {
   title: string
   setTitle: (title: string) => void
@@ -74,13 +76,13 @@ const TitleInput = forwardRef(
             onClick={onSubmit}
             onMouseDown={onMouseDown}
           >
-            <Check></Check>
+            <Icon Svg={Check} />
           </button>
           <button
             className="btn btn-square btn-outline btn-primary btn-xs m-0.5 flex-none"
             onClick={closeEdit}
           >
-            <Cross></Cross>
+            <Icon Svg={Cross} />
           </button>
         </div>
       )

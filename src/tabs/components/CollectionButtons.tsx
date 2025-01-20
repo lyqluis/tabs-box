@@ -16,8 +16,9 @@ import { useSelectContext } from "~tabs/contexts/selectContext"
 import useOperations from "~tabs/hooks/useOperations"
 import { CURRENT_WINDOW } from "~tabs/utils/platform"
 
-import { useGlobalCtx } from "./context"
 import useDropdown from "../hooks/useDropdown"
+import { useGlobalCtx } from "./context"
+import Icon from "./Icon"
 
 const DropDownActionButton = ({ className, inputRef }) => {
   const {
@@ -40,12 +41,7 @@ const DropDownActionButton = ({ className, inputRef }) => {
     clone
   } = useOperations()
 
-  const iconClassName = "h-full w-full fill-slate-700"
-  const disabledIcon = "h-full w-full fill-slate-300"
-  const warnIcon = "h-full w-full fill-red-500"
   const warnClassName = "text-red-500 fill-red-500"
-
-  const svg = <More className={iconClassName}></More>
   const isCurrentWindow = current.id === CURRENT_WINDOW.id
 
   const windowMenu = useMemo(() => {
@@ -53,7 +49,7 @@ const DropDownActionButton = ({ className, inputRef }) => {
       {
         text: "go to window",
         icon: (
-          <Logout className={isCurrentWindow ? disabledIcon : iconClassName} />
+          <Icon Svg={Logout} type={isCurrentWindow ? "disabled" : undefined} />
         ),
         callback: goToWindow,
         disabled: isCurrentWindow,
@@ -61,19 +57,19 @@ const DropDownActionButton = ({ className, inputRef }) => {
       },
       {
         text: "save as new collection",
-        icon: <FolderPlus className={iconClassName} />,
+        icon: <Icon Svg={FolderPlus} />,
         callback: () => saveCurrentToCollection(),
         includes: ["window"]
       },
       {
         text: "save to collection",
-        icon: <Folder className={iconClassName} />,
+        icon: <Icon Svg={Folder} />,
         callback: openChooseCollectionDialog,
         includes: ["window"]
       },
       {
         text: "close window",
-        icon: <Cross className={warnIcon} />,
+        icon: <Icon Svg={Cross} type="warn" />,
         callback: deleteWindow,
         includes: ["window"],
         warn: true
@@ -85,25 +81,25 @@ const DropDownActionButton = ({ className, inputRef }) => {
     return [
       {
         text: current.pinned ? "unpin" : "pin",
-        icon: <PinOutline className={iconClassName} />,
+        icon: <Icon Svg={PinOutline} />,
         callback: pinnedCollection,
         includes: ["collection"]
       },
       {
         text: "edit title",
-        icon: <Edit className={iconClassName} />,
+        icon: <Icon Svg={Edit} />,
         callback: activeTitleInput(inputRef),
         includes: ["collection"]
       },
       {
         text: "open collection",
-        icon: <Computer className={iconClassName} />,
+        icon: <Icon Svg={Computer} />,
         callback: openCollection,
         includes: ["collection"]
       },
       {
         text: "delete collection",
-        icon: <Delete className={warnIcon} />,
+        icon: <Icon Svg={Delete} type="warn" />,
         callback: deleteCollection,
         includes: ["collection"],
         warn: true
@@ -133,18 +129,18 @@ const DropDownActionButton = ({ className, inputRef }) => {
     return [
       {
         text: copyText,
-        icon: <Copy className={iconClassName} />,
+        icon: <Icon Svg={Copy} />,
         callback: () => copy(copyItem)
       },
       // enhance: if clipboard is empty, disabled
       {
         text: "paste",
-        icon: <Paste className={iconClassName} />,
+        icon: <Icon Svg={Paste} />,
         callback: () => paste(current)
       },
       {
         text: "clone",
-        icon: <Package className={iconClassName} />,
+        icon: <Icon Svg={Package} />,
         callback: clone,
         includes: ["collection"]
       }
@@ -171,7 +167,7 @@ const DropDownActionButton = ({ className, inputRef }) => {
         className={className}
         onClick={() => handleToggle()}
       >
-        {svg}
+        <Icon Svg={More} />
       </button>
       <Dropdown>
         {/* // todo: delete */}
@@ -191,7 +187,7 @@ const DropDownActionButton = ({ className, inputRef }) => {
               className={`${item.disabled ? "disabled" : ""} ${item.warn ? warnClassName : ""}`}
             >
               <a onClick={item.callback}>
-                <i className="h-5">{item.icon}</i>
+                {item.icon}
                 {item.text}
               </a>
             </li>

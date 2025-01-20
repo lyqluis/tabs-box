@@ -5,6 +5,7 @@ import Pinned from "react:~assets/svg/pin.svg"
 import { jumptToTab, openTabs } from "~tabs/utils/platform"
 
 import { useDndContext, useSortableItem } from "../Dnd"
+import Icon from "../Icon"
 import { highlight, useSearchCtx } from "../searchContext"
 
 interface ListItemProps {
@@ -75,17 +76,19 @@ const ListItem: FC<ListItemProps> = ({
         className={`flex h-5 w-5 flex-none items-center justify-start ${tab.pinned ? "" : "list-item__handle"}`}
       >
         {tab.pinned ? (
-          <Pinned
+          <Icon
+            Svg={Pinned}
             className={`h-full w-full fill-slate-700 hover:cursor-grab focus:cursor-grabbing focus:outline-none`}
             {...attributes}
             {...listeners}
-          ></Pinned>
+          />
         ) : (
-          <DragableIcon
+          <Icon
+            Svg={DragableIcon}
             className={`h-full w-full fill-slate-300 hover:cursor-grab focus:cursor-grabbing focus:outline-none ${isHovered || checked ? "flex" : "hidden"}`}
             {...attributes}
             {...listeners}
-          ></DragableIcon>
+          />
         )}
       </i>
       <div className="form-cont">
