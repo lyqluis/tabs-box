@@ -21,14 +21,10 @@ const SideBarItem = ({ item, isEdited, isSelected, onSelect }) => {
           {/* // TODO {current.id === window.id ? "Current" : "Window"} */}
           Window
         </p>
-        <p
-          className={`overflow-hidden text-ellipsis whitespace-nowrap text-xs font-extralight italic text-danube-200`}
-        >
+        <p className="overflow-hidden text-ellipsis whitespace-nowrap text-xs font-extralight italic">
           <span>{shortURL(item?.tabs?.find((tab) => !tab.pinned)?.url)}</span>
         </p>
-        <p className={`text-xs font-extralight text-danube-200`}>
-          {item?.tabs?.length + " tabs"}
-        </p>
+        <p className="text-xs font-light">{item?.tabs?.length + " tabs"}</p>
       </>
     )
   } else {
@@ -41,13 +37,14 @@ const SideBarItem = ({ item, isEdited, isSelected, onSelect }) => {
           {item.pinned ? (
             <Icon
               Svg={Pinned}
-              className="flex h-5 w-5 flex-none items-center justify-start fill-danube-50"
+              className={
+                "flex h-5 w-5 flex-none items-center justify-start " +
+                (isSelected ? "fill-primary-content" : "fill-base-content")
+              }
             />
           ) : null}
         </p>
-        <p className={`text-xs font-extralight text-danube-200`}>
-          Updated {fromNow(item.updated)}
-        </p>
+        <p className="text-xs font-light">Updated {fromNow(item.updated)}</p>
       </>
     )
   }
@@ -59,8 +56,12 @@ const SideBarItem = ({ item, isEdited, isSelected, onSelect }) => {
           <span className="badge indicator-item badge-warning badge-xs"></span>
         )}
         <li
-          className={`mb-2.5 flex h-20 w-full cursor-pointer flex-col justify-between overflow-hidden rounded-md p-3.5 
-          font-light shadow hover:bg-danube-800 hover:text-danube-50 ${isSelected ? "bg-danube-800 font-medium text-danube-50" : ""}`}
+          className={
+            "mb-2.5 flex h-20 w-full cursor-pointer flex-col justify-between overflow-hidden rounded-md p-3.5 shadow-md hover:bg-primary hover:text-primary-content" +
+            (isSelected
+              ? " bg-primary font-semibold text-primary-content"
+              : " bg-base-100 font-normal text-base-content")
+          }
           onClick={() => onSelect(item)}
         >
           {itemContent}
@@ -87,12 +88,7 @@ const SideBar = ({}) => {
   if (!current) return <>loading</>
 
   return (
-    <aside
-      className="flex h-screen w-1/3 min-w-52 flex-col bg-gradient-to-b
-       from-danube-700 to-danube-600 px-3.5
-       text-base font-medium text-danube-200"
-    >
-      <h1>side bar</h1>
+    <aside className="flex h-screen w-1/3 min-w-52 flex-col bg-gradient-to-b from-base-200 from-80% to-base-300 px-3.5 text-base font-medium text-base-content">
       <h2>windows</h2>
       <ul className="max-h-60 flex-none overflow-y-scroll p-2">
         {windows.map((window) => (

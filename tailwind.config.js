@@ -26,29 +26,38 @@ module.exports = {
   daisyui: {
     themes: [
       {
-        mytheme: {
-          primary: "#33569a",
-          "primary-content": "#e0eef9",
-          secondary: "#417dcf",
-          "secondary-content": "#e0eef9",
-          accent: "#a2ceee",
-          "accent-content": "#0a0f14",
-          neutral: "#202f4b",
-          "neutral-content": "#e0eef9",
+        default: {
+          primary: "#447dee",
+          "primary-focus": "#3960d5",
+          "primary-content": "#f0f0ff",
+          secondary: "#4aabe8",
+          "secondary-focus": "#3c8ecd",
+          "secondary-content": "#f5fbff",
+          accent: "#2edcff",
+          "accent-focus": "#2cbfdd",
+          "accent-content": "#424242",
+          neutral: "#1a1a1a",
+          "neutral-focus": "#000000",
+          "neutral-content": "#ffffff",
           "base-100": "#ffffff",
-          "base-200": "#dedede",
-          "base-300": "#bebebe",
-          "base-content": "#161616",
-          info: "#bae6fd",
-          "info-content": "#0d1316",
-          success: "#d1fae5",
-          "success-content": "#101512",
-          warning: "#fde68a",
-          "warning-content": "#161410",
-          error: "#fecaca",
-          "error-content": "#160f0f"
+          "base-200": "#f5f5f5",
+          "base-300": "#ebebeb",
+          "base-content": "#000000",
+          info: "#4a77bf",
+          success: "#348f32",
+          warning: "#ed7635",
+          error: "#e83d30",
+          "--rounded-box": "1rem",
+          "--rounded-btn": ".5rem",
+          "--rounded-badge": "1.9rem",
+          "--animation-btn": ".25s",
+          "--animation-input": ".2s",
+          "--btn-text-case": "uppercase",
+          "--navbar-padding": ".5rem",
+          "--border-btn": "1px"
         }
       },
+      "light",
       "dark"
     ]
   }
