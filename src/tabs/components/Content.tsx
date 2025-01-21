@@ -5,15 +5,11 @@ import useOperations from "~tabs/hooks/useOperations"
 import { useRefresh } from "~tabs/hooks/useRefresh"
 import { fromNow } from "~tabs/utils"
 import {
-  closeWindow,
   CURRENT_WINDOW,
-  jumptToWindow,
-  openWindow
 } from "~tabs/utils/platform"
 
 import DropDownActionButton from "./CollectionButtons"
 import { useGlobalCtx } from "./context"
-import { useDialog } from "./Dialog/DialogContext"
 import { Sortable } from "./Dnd"
 import useDropdown from "../hooks/useDropdown"
 import { List } from "./list"
@@ -23,9 +19,7 @@ import TitleInput from "./TitleInput"
 const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
   const {
     state: { windows, collections },
-    dispatch
   } = useGlobalCtx()
-  const { openDialog } = useDialog()
   const allTabsNumber =
     type === "collection"
       ? selectedItem.windows.reduce((n, window) => (n += window.tabs.length), 0)
@@ -35,13 +29,9 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
     goToWindow,
     deleteWindow,
     openCollection,
-    pinnedCollection,
     saveCurrentToCollection,
     deleteCollection,
-    // activeTitleInput,
-    // CollectionTitle
     setCollectionTitle,
-    openChooseCollectionDialog
   } = useOperations()
   const {
     Dropdown: MoveSelectedDropdown,
@@ -211,7 +201,7 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
           >
             {type === "window" ? "close" : "delete"}
           </button>
-          {/* // TODO: reponsiable in small window, buttons shrink to be one */}
+          {/* // TODO: responsiable in small window, buttons shrink to be one */}
           {/* actions in small screen */}
           <DropDownActionButton
             inputRef={inputRef}
