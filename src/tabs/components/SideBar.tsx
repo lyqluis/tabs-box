@@ -87,10 +87,12 @@ const SideBar = ({}) => {
 
   if (!current) return <>loading</>
 
+  // TODO: scroll arrow icon, scroll shadow
   return (
-    <aside className="flex h-screen w-1/3 min-w-52 flex-col bg-gradient-to-b from-base-200 from-80% to-base-300 px-3.5 text-base font-medium text-base-content">
+    <aside className="flex h-screen w-1/3 min-w-52 flex-col bg-gradient-to-b from-base-200 from-80% to-base-300 pl-3.5 pr-[0.375rem] text-base font-medium text-base-content">
+      icon
       <h2>windows</h2>
-      <ul className="max-h-60 flex-none overflow-y-scroll p-2">
+      <ul className="scrollbar max-h-60 flex-none overflow-y-scroll">
         {windows.map((window) => (
           <SideBarItem
             key={window.id}
@@ -102,7 +104,7 @@ const SideBar = ({}) => {
         ))}
       </ul>
       <h2>collections</h2>
-      <ul className="flex-grow overflow-y-scroll p-2">
+      <ul className="scrollbar flex-grow overflow-y-scroll">
         {collections.map((collection) => (
           <SideBarItem
             key={collection.id}
