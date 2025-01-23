@@ -3,11 +3,11 @@ import { createPortal } from "react-dom"
 
 import ToastMessage from "./ToastMessage"
 
-type ToastItem = {
+export type ToastItem = {
   id: string | number
   title?: string
   message: string
-  type?: "info" | "error" | "warn"
+  type?: "info" | "success" | "error" | "warn"
   duration?: number
   cancelText?: string
   confirmText?: string
@@ -20,9 +20,9 @@ const ToastContainer = () => {
   const [toastList, setToastList] = useState<ToastItem[]>([])
 
   useImperativeHandle(toastRef, () => ({
-    show: (options) => {
+    show: (options: ToastItem) => {
       const id = Date.now()
-      const toastItem = {
+      const toastItem: ToastItem = {
         id,
         type: "info",
         ...options
