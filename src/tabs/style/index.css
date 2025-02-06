@@ -45,12 +45,11 @@
 /* TODO: scroll container inner shaodw */
 .scroll-container {
   position: relative;
-  overflow-y: auto;
 }
 
 .scroll-container::before,
 .scroll-container::after {
-  display: none;
+  display: block;
   content: "";
   position: sticky;
   left: 0;
@@ -58,6 +57,7 @@
   height: 10px; /* 阴影高度 */
   pointer-events: none; /* 确保阴影不阻挡交互 */
   z-index: 1; /* 确保阴影在内容之上 */
+  visibility: hidden;
 }
 
 .scroll-container::before {
@@ -72,7 +72,7 @@
 
 .scroll-container.top-shadow::before,
 .scroll-container.bottom-shadow::after {
-  display: block;
+  visibility: visible;
 }
 
 #input-title::after {
