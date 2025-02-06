@@ -7,6 +7,7 @@
   - [x] show pinned item
   - [x] scroll y
   - [x] show updated time
+  - [x] windows and collections list scroll shadow display
 - [-] List
   - [ ] how to distinguish whether the current window is from a collection or a new one unsaved
   - [ ] style: URL that exceeds fades out with a gradient
@@ -173,6 +174,7 @@
   - [x] tabs in new added window can not be selected
   - [x] export
   - [?] **dragging in cloned collection doesn't work well**
+  - [ ] **dragging window in collection may not expand**
 - [x] enhance: export async function & dialog
   - add a dialog to show the export status
 - [x] abstract save locally function
@@ -189,9 +191,9 @@
   - [x] add windows in search data, add window as search result
   - [x] hightlight in list & sidebar when search query exists
 - [ ] **header media query**
-- [x] **svg icon compoennt**
 - [ ] **util: trans session-buddy data to tabs-box**
-- [ ] **incognito mode**
+- [-] incognito mode
+  - [x] add incognito icon
   - [ ] filter search result with incognito
 - [x] feature: save file in cloud
 - [x] feature: drag tabs between windows
