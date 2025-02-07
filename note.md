@@ -9,7 +9,7 @@
   - [x] show updated time
   - [x] windows and collections list scroll shadow display
   - [x] scroll to top button & style
-  - [ ] **click search result, target collection should scroll to top in Sidebar**
+  - [x] click search result, target collection should scroll to top in Sidebar
 - [-] List
   - [ ] how to distinguish whether the current window is from a collection or a new one unsaved
   - [ ] style: URL that exceeds fades out with a gradient

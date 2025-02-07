@@ -29,14 +29,6 @@ const useScroll = () => {
 
     const handleScroll = () => {
       const { scrollTop, clientHeight, scrollHeight } = element
-      console.log(
-        "usescroll, scrolltop",
-        scrollTop,
-        "clientHeight",
-        clientHeight,
-        "scrollHeight",
-        scrollHeight
-      )
 
       if (scrollTop > 5) {
         setIsOverflowTop(true)
