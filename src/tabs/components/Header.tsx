@@ -16,6 +16,7 @@ import {
   updateEditedList
 } from "./reducers/actions"
 import { Search } from "./searchContext"
+import Theme from "./Theme"
 import { toast } from "./Toast"
 
 const Header = () => {
@@ -97,6 +98,7 @@ const Header = () => {
       >
         show message
       </button> */}
+        <Theme />
       <CloudFileSync className="ml-auto" />
     </header>
   )
