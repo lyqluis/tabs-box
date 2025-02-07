@@ -1,4 +1,5 @@
 import Pinned from "react:~assets/svg/pin.svg"
+import TopSvg from "react:~assets/svg/top.svg"
 
 import useScroll from "~tabs/hooks/useScroll"
 import { fromNow, shortURL } from "~tabs/utils"
@@ -88,7 +89,8 @@ const SideBar = ({}) => {
     isOverflowTop: isOverflowTopWindowList,
     isOverflowBottom: isOverflowBottomWindowList
   } = useScroll()
-  const { scrollRef, isOverflowTop, isOverflowBottom } = useScroll()
+  const { scrollRef, isOverflowTop, isOverflowBottom, scrollToTop } =
+    useScroll()
   useTabEvents()
   useWindowEvents()
 
@@ -97,8 +99,9 @@ const SideBar = ({}) => {
   // TODO: scroll arrow icon, scroll shadow
   return (
     <aside className="flex h-screen w-1/3 min-w-52 flex-col bg-gradient-to-b from-base-200 from-80% to-base-300 pl-3.5 pr-[0.375rem] text-base font-medium text-base-content">
-      icon
-      <h2>windows</h2>
+      <div className="my-2 mr-5 flex justify-between">
+        <p>windows</p>
+      </div>
       <ul
         ref={windowListRef}
         className={
@@ -117,7 +120,14 @@ const SideBar = ({}) => {
           ></SideBarItem>
         ))}
       </ul>
-      <h2>collections</h2>
+      <div className="mb-2 mr-5 flex justify-between">
+        <p>collections</p>
+        {isOverflowTop ? (
+          <button className="btn btn-circle btn-xs" onClick={scrollToTop}>
+            <Icon Svg={TopSvg} />
+          </button>
+        ) : null}
+      </div>
       <ul
         ref={scrollRef}
         className={

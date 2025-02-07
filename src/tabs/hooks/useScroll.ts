@@ -15,6 +15,14 @@ const useScroll = () => {
     }
   }, [])
 
+  const scrollTo = (top = 0) => {
+    if (element) {
+      element.scrollTop = top
+    }
+  }
+
+  const scrollToTop = () => scrollTo(0)
+
   // TODO: throttle
   useEffect(() => {
     if (!element) return
@@ -30,7 +38,7 @@ const useScroll = () => {
         scrollHeight
       )
 
-      if (scrollTop > 0) {
+      if (scrollTop > 5) {
         setIsOverflowTop(true)
       } else {
         setIsOverflowTop(false)
@@ -51,7 +59,7 @@ const useScroll = () => {
     }
   }, [element])
 
-  return { scrollRef, isOverflowBottom, isOverflowTop }
+  return { scrollRef, isOverflowBottom, isOverflowTop, scrollToTop, scrollTo }
 }
 
 export default useScroll
