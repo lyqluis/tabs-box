@@ -98,6 +98,7 @@ const useOperations = () => {
   const clone = () => {
     const collection = cloneCollection(current)
     dispatch(addCollection(collection))
+    dispatch(setCurrentId(collection.id))
   }
 
   const openCollection = async () => {

@@ -151,7 +151,13 @@ const DropDownActionButton = ({ className, inputRef }) => {
     const separator = { separator: true, key: "selected-tabs" }
     const menu =
       type === "window"
-        ? [...windowMenu, separator, ...selectedMenu]
+        ? [
+            ...windowMenu,
+            separator,
+            ...selectedMenu.filter(
+              (item) => !item.includes || item.includes.includes("window")
+            )
+          ]
         : [...collectionMenu, separator, ...selectedMenu]
     return menu
   }, [collectionMenu, windowMenu, selectedMenu])
