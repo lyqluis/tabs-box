@@ -12,9 +12,9 @@ import Folder from "react:~assets/svg/folder.svg"
 import WindowSvg from "react:~assets/svg/window.svg"
 
 import useDropdown from "../hooks/useDropdown"
-import { useGlobalCtx } from "./context"
-import Icon from "./Icon"
-import { setCurrentId } from "./reducers/actions"
+import { useGlobalCtx } from "../components/context"
+import Icon from "../components/Icon"
+import { setCurrentId } from "../components/reducers/actions"
 
 interface SearchContextType {
   query: string

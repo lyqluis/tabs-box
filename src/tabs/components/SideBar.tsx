@@ -6,11 +6,11 @@ import useScroll from "~tabs/hooks/useScroll"
 import { fromNow, shortURL } from "~tabs/utils"
 import { useTabEvents, useWindowEvents } from "~tabs/utils/platform"
 
+import { highlight, useSearchCtx } from "../contexts/searchContext"
 import { useGlobalCtx } from "./context"
 import { Droppable } from "./Dnd"
 import Icon from "./Icon"
 import { setCurrentId } from "./reducers/actions"
-import { highlight, useSearchCtx } from "./searchContext"
 
 const SideBarItem = ({ item, isEdited, isSelected, onSelect }) => {
   const type = item.created ? "collection" : "window"

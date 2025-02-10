@@ -13,7 +13,7 @@ import { SelectProvider } from "./contexts/selectContext"
 import { getAllCollections } from "./store"
 import { HistoryProvider } from "./utils/operationStack"
 import { getAllWindows } from "./utils/platform"
-import { SearchProvider } from "./components/searchContext"
+import { SearchProvider } from "./contexts/searchContext"
 
 const TabsBoxPage = () => {
   const [loading, setLoading] = useState(true)

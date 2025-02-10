@@ -6,7 +6,7 @@ import { jumptToTab, openTabs } from "~tabs/utils/platform"
 
 import { useDndContext, useSortableItem } from "../Dnd"
 import Icon from "../Icon"
-import { highlight, useSearchCtx } from "../searchContext"
+import { highlight, useSearchCtx } from "../../contexts/searchContext"
 
 interface ListItemProps {
   tab: Tab
