@@ -37,14 +37,35 @@ export const useDndContext = () => useContext(ctx)
  * Droppable
  * wrapper the SideBar Item
  */
-export const Droppable = ({ item = null, children }) => {
+export const Droppable = ({ item = null, className, children }) => {
   const { setNodeRef, isOver } = useDroppable({
     id: item?.id ?? "area"
   })
 
+  const droppableOverlayStyle: React.CSSProperties = {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "oklch(var(--p))",
+    opacity: 0.5,
+    pointerEvents: "none" as React.CSSProperties["pointerEvents"], // 穿透遮罩层，允许点击下方的子组件
+    display: isOver ? "block" : "none"
+  }
+
   return (
-    <div ref={setNodeRef} style={{ background: isOver ? "orange" : "" }}>
+    <div
+      ref={setNodeRef}
+      className={className + " relative"}
+      style={{
+        border: "2px solid transparent",
+        borderColor: isOver ? "oklch(var(--p))" : "transparent"
+      }}
+    >
       {children}
+      {/* droppable overlay */}
+      <div style={droppableOverlayStyle}></div>
     </div>
   )
 }

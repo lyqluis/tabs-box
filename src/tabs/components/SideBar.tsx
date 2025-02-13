@@ -12,7 +12,7 @@ import { Droppable } from "./Dnd"
 import Icon from "./Icon"
 import { setCurrentId } from "./reducers/actions"
 
-const SideBarItem = ({ item, isEdited, isSelected, onSelect }) => {
+const SideBarItem = ({ item, isSelected, onSelect }) => {
   const type = item.created ? "collection" : "window"
   const { query } = useSearchCtx()
 
@@ -53,23 +53,18 @@ const SideBarItem = ({ item, isEdited, isSelected, onSelect }) => {
   }
 
   return (
-    <Droppable item={item}>
-      <div className="indicator w-full">
-        {isEdited && (
-          <span className="badge indicator-item badge-warning badge-xs"></span>
-        )}
-        <li
-          className={
-            "mb-2.5 flex h-20 w-full cursor-pointer flex-col justify-between overflow-hidden rounded-md p-3.5 shadow-md hover:bg-primary hover:text-primary-content" +
-            (isSelected
-              ? " bg-primary font-semibold text-primary-content"
-              : " bg-base-100 font-normal text-base-content")
-          }
-          onClick={() => onSelect(item)}
-        >
-          {itemContent}
-        </li>
-      </div>
+    <Droppable item={item} className="mb-2.5 rounded-md">
+      <li
+        className={
+          "flex h-20 w-full cursor-pointer flex-col justify-between overflow-hidden rounded-md p-3.5 shadow-md hover:bg-primary hover:text-primary-content" +
+          (isSelected
+            ? " bg-primary font-semibold text-primary-content"
+            : " bg-base-100 font-normal text-base-content")
+        }
+        onClick={() => onSelect(item)}
+      >
+        {itemContent}
+      </li>
     </Droppable>
   )
 }
