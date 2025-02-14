@@ -35,8 +35,18 @@ const CloudFileSync = ({ className }) => {
       })
       console.log("Token received:", authToken)
       setAuthToken(authToken)
+      toast.current?.show({
+        type: "success",
+        title: "Login success",
+        message: "You have successfully logged in"
+      })
       return authToken
     } catch (error) {
+      toast.current?.show({
+        type: "error",
+        title: "Login failed",
+        message: error.toString()
+      })
       console.error("Login failed:", error)
     }
   }
@@ -51,9 +61,14 @@ const CloudFileSync = ({ className }) => {
         }
         setAuthToken(null)
         console.log("Token removed successfully")
+        toast.current?.show({
+          type: "success",
+          title: "Logout success",
+          message: "You have successfully logged out"
+        })
       })
     } catch (error) {
-      console.error("Logout failed:", error)
+      console.error("Logout failed:", authToken, error)
     }
   }
 
