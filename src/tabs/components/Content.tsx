@@ -112,7 +112,7 @@ const ContentLayout = ({ selectedItem, selectedList, type, children }) => {
     <div
       ref={ContentLayoutRef}
       className="flex flex-auto flex-col overflow-hidden"
-      style={{ background: "#FFD700" }}
+      // style={{ background: "#FFD700" }}
       onClick={cancelAllSelected}
     >
       <div className="flex flex-none justify-between px-5 pb-0 pt-8">

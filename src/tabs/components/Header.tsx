@@ -15,7 +15,7 @@ import {
   setCollectionWithLocalStorage,
   updateEditedList
 } from "./reducers/actions"
-import { Search } from "./searchContext"
+import { Search } from "../contexts/searchContext"
 import Theme from "./Theme"
 import { toast } from "./Toast"
 
@@ -55,53 +55,60 @@ const Header = () => {
   const isCurrentEdited = editedMap[current.id] ?? false
 
   return (
-    <header className="flex h-16 w-auto flex-none items-center bg-danube-100 p-4">
-      <Search />
-      <LoadingBtn
-        className="btn btn-ghost"
-        onClick={exportData}
-        loadingFlag={isExporting}
-      >
-        <Icon Svg={ExportSvg} />
-        <span className="hidden lg:inline">Export</span>
-      </LoadingBtn>
-      <LoadingBtn
-        className="btn btn-ghost"
-        onClick={execute}
-        loadingFlag={isImporting}
-      >
-        <Icon Svg={ImportSvg} />
-        <span className="hidden lg:inline">Import</span>
-      </LoadingBtn>
-      {type === "window" ? (
+    <header className="h-20 w-auto flex-none bg-base-300">
+      <div className="flex h-full w-full items-center p-4">
+        <Search />
         <LoadingBtn
-          className={`btn p-2 ${isCurrentEdited ? "btn-error animate-bounce" : "btn-outline btn-primary"}`}
-          onClick={apply}
-          loadingTime={1000}
-          disabled={!isCurrentEdited}
+          className="btn btn-ghost"
+          onClick={exportData}
+          loadingFlag={isExporting}
         >
-          apply
+          <Icon Svg={ExportSvg} />
+          <span className="hidden lg:inline">Export</span>
         </LoadingBtn>
-      ) : (
         <LoadingBtn
-          className={`btn p-2 ${isCurrentEdited ? "btn-error animate-bounce" : "btn-outline btn-primary"}`}
-          onClick={save}
-          loadingTime={1000}
-          disabled={!isCurrentEdited}
+          className="btn btn-ghost"
+          onClick={execute}
+          loadingFlag={isImporting}
         >
-          save
+          <Icon Svg={ImportSvg} />
+          <span className="hidden lg:inline">Import</span>
         </LoadingBtn>
-      )}
-      {/* <button
-        className={`btn btn-outline btn-primary p-2`}
-        onClick={() => toast.current?.show({ message: "this is a message" })}
-      >
-        show message
-      </button> */}
+        {type === "window" ? (
+          <LoadingBtn
+            className={`btn p-2 ${isCurrentEdited ? "btn-error animate-bounce" : "btn-outline btn-primary"}`}
+            onClick={apply}
+            loadingTime={1000}
+            disabled={!isCurrentEdited}
+          >
+            apply
+          </LoadingBtn>
+        ) : (
+          <LoadingBtn
+            className={`btn p-2 ${isCurrentEdited ? "btn-error animate-bounce" : "btn-outline btn-primary"}`}
+            onClick={save}
+            loadingTime={1000}
+            disabled={!isCurrentEdited}
+          >
+            save
+          </LoadingBtn>
+        )}
+        {/* <button
+          className={`btn btn-outline btn-primary p-2`}
+          onClick={() =>
+            toast.current?.show({
+              title: 'Login failed',
+              message:
+                "Error: OAuth2 request failed: Service responded with error: 'bad client id: 728943705731-ab09q4tsitrts56601klsrgfvunlfvti.apps.googleusercontent.com'"
+            })
+          }
+        >
+          show message
+        </button> */}
         <Theme />
-      <CloudFileSync className="ml-auto" />
+        <CloudFileSync className="ml-auto" />
+      </div>
     </header>
   )
 }
-
 export default Header
