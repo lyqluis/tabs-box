@@ -1,0 +1,170 @@
+@import "tailwindcss";
+@plugin "daisyui";
+@plugin "daisyui/theme" {
+  name: "custom-blue";
+  default: true;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: #ffffff;
+  --color-base-200: #f5f5f5;
+  --color-base-300: #ebebeb;
+  --color-base-content: #000000;
+  --color-primary: #447dee;
+  --color-primary-content: #f0f0ff;
+  --color-secondary: #4aabe8;
+  --color-secondary-content: #f5fbff;
+  --color-accent: #2edcff;
+  --color-accent-content: #424242;
+  --color-neutral: #1a1a1a;
+  --color-neutral-content: #ffffff;
+  --color-info: #4a77bf;
+  --color-info-content: oklch(29% 0.066 243.157);
+  --color-success: #348f32;
+  --color-success-content: oklch(37% 0.077 168.94);
+  --color-warning: #ed7635;
+  --color-warning-content: oklch(41% 0.112 45.904);
+  --color-error: #e83d30;
+  --color-error-content: oklch(27% 0.105 12.094);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* enable tailwind `dark:` to set dark mode*/
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+.btn {
+  --btn-p: 0.5rem;
+}
+
+/* @source inline("dropdown-{left,right,top,bottom,start,center,end}"); */
+
+.list-item__handle {
+  cursor: move;
+  cursor: -webkit-grabbing;
+}
+
+@layer components {
+  /* scrollbar */
+  /* Modern browsers (chrome version > 121) with `scrollbar-*` support */
+  /* https://developer.chrome.com/docs/css-ui/scrollbar-styling?hl=zh-cn */
+  @supports (scrollbar-width: auto) {
+    .scrollbar {
+      scrollbar-width: thin;
+      scrollbar-color: #0003 transparent;
+    }
+  }
+  /* Legacy browsers with `::-webkit-scrollbar-*` support */
+  @supports (: : -webkit-scrollbar) {
+    .scrollbar::-webkit-scrollbar {
+      width: 1.25rem;
+    }
+    .scrollbar::-webkit-scrollbar-track {
+      background-color: transparent;
+    }
+    .scrollbar::-webkit-scrollbar-track-piece {
+      background-color: transparent;
+    }
+    .scrollbar::-webkit-scrollbar-thumb {
+      border: 0.375rem solid transparent;
+      border-radius: 1000px;
+      background-clip: padding-box;
+      background-color: transparent;
+    }
+    .scrollbar:hover::-webkit-scrollbar-thumb {
+      background-color: #0003;
+    }
+    .scrollbar::-webkit-scrollbar-thumb:hover {
+      background-color: #0005;
+    }
+    .scroller:hover {
+      --fix: ; /* This custom property invalidates styles on hover, thereby enforcing a style recomputation. This is needed to work around a bug in Safari. */
+    }
+  }
+  .right-mask::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 2rem;
+    @apply to-base-100 bg-gradient-to-r from-transparent;
+    pointer-events: none;
+  }
+}
+
+/* TODO: scroll container inner shaodw */
+.scroll-container {
+  position: relative;
+}
+
+.scroll-container::before,
+.scroll-container::after {
+  display: block;
+  content: "";
+  position: sticky;
+  left: 0;
+  right: 0;
+  height: 10px; /* 阴影高度 */
+  pointer-events: none; /* 确保阴影不阻挡交互 */
+  z-index: 1; /* 确保阴影在内容之上 */
+  visibility: hidden;
+}
+
+.scroll-container::before {
+  top: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), transparent);
+}
+
+.scroll-container::after {
+  bottom: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.2), transparent);
+}
+
+.scroll-container.top-shadow::before,
+.scroll-container.bottom-shadow::after {
+  visibility: visible;
+}
+
+#input-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: #ccc;
+  pointer-events: none;
+}
+
+.tooltip {
+  &.tooltip-open,
+  &[data-tip]:hover,
+  &:hover,
+  &:has(:focus-visible) {
+    > .tooltip-content,
+    &[data-tip]:before,
+    &:after {
+      --tt-pos: 0.5rem;
+    }
+  }
+}
+.tooltip {
+  > :where(.tooltip-content),
+  &[data-tip]:before {
+    font-size: 0.6875rem;
+  }
+}
+
+/* daisyui dropdown position default does not work */
+/* .dropdown-bottom { */
+/*   --anchor-v: bottom; */
+/* } */
+/* .dropdown-end { */
+/*   --anchor-h: span-left; */
+/* } */
