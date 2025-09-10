@@ -4,7 +4,8 @@ import { memo, useMemo } from "react"
 import { List } from "./list"
 import { Sortable } from "./Dnd"
 // import { useGlobalCtx } from "./contexts/context"
-import { useGlobalCtxSelector } from "./contexts/context2"
+import { useGlobalCtxSelector } from "./contexts/data/context2"
+import { useOperationsContext } from "./contexts/operationsContext"
 
 const ContentLayout = memo(({ header, children }) => (
 	<div className='flex flex-auto flex-col overflow-hidden'>
@@ -52,13 +53,11 @@ const Title = memo(({ current, type }) => {
 			</div>
 			<div className='m-2 min-w-1 flex-initial'>
 				{/* <TitleInput
-                ref={inputRef}
-                title={
-                  current.title ?? (isCurrentWindow ? "This Window" : "Window")
-                }
-                disable={type === "window"}
-                // setTitle={setCollectionTitle}
-              ></TitleInput> */}
+					ref={inputRef}
+					title={current.title ?? (isCurrentWindow ? "This Window" : "Window")}
+					disable={type === "window"}
+					// setTitle={setCollectionTitle}
+				></TitleInput> */}
 				{/* {CollectionTitle} */}
 				<p className='my-2'>
 					<span>{allTabsNumber} tabs</span> | Updated {fromNow(current.updated)}
@@ -71,7 +70,7 @@ const Title = memo(({ current, type }) => {
 // TODO:
 // - collection operations
 // - selected operations
-const CollectionOperations = memo(({ windows, current }) => {
+const CollectionOperations = memo(({ windows, current, type }) => {
 	const isCurrentWindow = current.id === CURRENT_WINDOW.id
 
 	return (
@@ -142,47 +141,46 @@ const CollectionOperations = memo(({ windows, current }) => {
 	)
 })
 
-const ContentBody = memo(({ current, type }) => {
-	if (current.tabs) {
+const ContentBody = memo(
+	({ current, type, onSelect, tabsByWindowMap, setTabsByWindow }) => {
+		if (current.tabs) {
+			return (
+				<List
+					window={current}
+					type={type}
+					onSelect={onSelect}
+					selectedMap={tabsByWindowMap}
+					setWindowTabs={setTabsByWindow}
+				></List>
+			)
+		}
+
 		return (
-			<List
-				window={current}
-				type={type}
-				// onSelect={onSelect}
-				// selectedMap={tabsByWindowMap}
-				// setWindowTabs={setTabsByWindow}
-			></List>
+			<Sortable
+				list={current.windows}
+				listId={current.id}
+			>
+				{current.windows.map((window) => (
+					<List
+						key={window.id}
+						window={window}
+						type={type}
+						onSelect={onSelect}
+						selectedMap={tabsByWindowMap}
+						setWindowTabs={setTabsByWindow}
+					></List>
+				))}
+			</Sortable>
 		)
 	}
-
-	return (
-		<Sortable
-			list={current.windows}
-			listId={current.id}
-		>
-			{current.windows.map((window) => (
-				<List
-					key={window.id}
-					window={window}
-					type={type}
-					// onSelect={onSelect}
-					// selectedMap={tabsByWindowMap}
-					// setWindowTabs={setTabsByWindow}
-				></List>
-			))}
-		</Sortable>
-	)
-})
+)
 
 const Content = () => {
-	// const {
-	// 	state: { collections },
-	// 	current,
-	// 	type,
-	// } = useGlobalCtx()
 	const current = useGlobalCtxSelector((v) => v.current)
 	const collections = useGlobalCtxSelector((v) => v.state.collections)
 	const type = useGlobalCtxSelector((v) => v.type)
+	const { selectedList, tabsByWindowMap, onSelect, setTabsByWindow } =
+		useOperationsContext()
 
 	if (!current) return <h1>loading</h1>
 
@@ -199,6 +197,9 @@ const Content = () => {
 			<ContentBody
 				current={current}
 				type={type}
+				onSelect={onSelect}
+				tabsByWindowMap={tabsByWindowMap}
+				setTabsByWindow={setTabsByWindow}
 			/>
 		</ContentLayout>
 	)

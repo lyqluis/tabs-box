@@ -10,9 +10,7 @@ import { openWindow } from "@/utils/platform"
 import { memo, useEffect, useMemo, useRef } from "react"
 
 import { ListItem } from "."
-// import ListItem from "@/components/tst/ListItem"
-// import { useGlobalCtx } from "../contexts/context"
-import { useGlobalCtxSelector } from "../contexts/context2"
+import { useGlobalCtxSelector } from "../contexts/data/context2"
 import { Sortable, useDndContext, useSortableItem } from "../Dnd"
 import Icon from "../Icon"
 import { removeWindow } from "../reducers/actions"
@@ -51,48 +49,48 @@ const List: React.FC<ListProps> = ({
 	setWindowTabs,
 }) => {
 	// 使用 useMemo 优化 pinnedTabs 和 tabs 的计算
-	// const pinnedTabs = useMemo(() => {
-	//   return window?.tabs?.filter((tab) => tab.pinned) ?? []
-	// }, [window?.tabs])
+	const pinnedTabs = useMemo(() => {
+		return window?.tabs?.filter((tab) => tab.pinned) ?? []
+	}, [window?.tabs])
 
-	// const tabs = useMemo(() => {
-	//   return window?.tabs?.filter((tab) => !tab.pinned) ?? []
-	// }, [window?.tabs])
-	// const { current, dispatch } = useGlobalCtx()
+	const tabs = useMemo(() => {
+		return window?.tabs?.filter((tab) => !tab.pinned) ?? []
+	}, [window?.tabs])
+
 	const current = useGlobalCtxSelector((v) => v.current)
 	const dispatch = useGlobalCtxSelector((v) => v.dispatch)
-	// const { draggingItem } = useDndContext()
-	// const { copy, paste } = useOperationsContext()
+	const { draggingItem } = useDndContext()
+	const { copy, paste } = useOperationsContext()
 	// const { settings } = useSettings()
 
 	const allCheckBox = useRef(null)
-	// const selectedList = selectedMap.get(window.id) ?? [] // otherwise multiList in sortable will fail
+	const selectedList = selectedMap.get(window.id) ?? [] // otherwise multiList in sortable will fail
 
 	// 创建 selectedIds 的 Set 以优化查找性能
-	// const selectedIdsSet = useMemo(() => {
-	//   return new Set(selectedList.map((tab) => tab.id))
-	// }, [selectedList])
+	const selectedIdsSet = useMemo(() => {
+		return new Set(selectedList.map((tab) => tab.id))
+	}, [selectedList])
 
-	// const selectAll = (e) => {
-	//   const selectedCount = selectedList.length
-	//   if (selectedCount === window.tabs.length) {
-	//     // remove all
-	//     setWindowTabs(window.id, [])
-	//   } else {
-	//     // select all
-	//     setWindowTabs(window.id, window.tabs)
-	//   }
-	// }
+	const selectAll = (e) => {
+		const selectedCount = selectedList.length
+		if (selectedCount === window.tabs.length) {
+			// remove all
+			setWindowTabs(window.id, [])
+		} else {
+			// select all
+			setWindowTabs(window.id, window.tabs)
+		}
+	}
 
-	// useEffect(() => {
-	//   const selectCount = selectedList.length
-	//   if (!allCheckBox.current) return
-	//   if (selectCount > 0 && selectCount < window.tabs.length) {
-	//     allCheckBox.current.indeterminate = true
-	//   } else {
-	//     allCheckBox.current.indeterminate = false
-	//   }
-	// }, [selectedList.length, window.tabs.length])
+	useEffect(() => {
+		const selectCount = selectedList.length
+		if (!allCheckBox.current) return
+		if (selectCount > 0 && selectCount < window.tabs.length) {
+			allCheckBox.current.indeterminate = true
+		} else {
+			allCheckBox.current.indeterminate = false
+		}
+	}, [selectedList.length, window.tabs.length])
 
 	const { attributes, listeners, setNodeRef, style } = useSortableItem({
 		id: window.id,
@@ -105,8 +103,8 @@ const List: React.FC<ListProps> = ({
 		/>
 	)
 
-	// if ((!pinnedTabs || !pinnedTabs.length) && (!tabs || !tabs.length))
-	//   return null
+	if ((!pinnedTabs || !pinnedTabs.length) && (!tabs || !tabs.length))
+		return null
 
 	return (
 		<div
@@ -114,7 +112,7 @@ const List: React.FC<ListProps> = ({
 			ref={setNodeRef}
 			style={{
 				...style,
-				// opacity: draggingItem?.id === window.id ? 0.5 : 1,
+				opacity: draggingItem?.id === window.id ? 0.5 : 1,
 			}}
 		>
 			{/* list operation */}
@@ -137,8 +135,8 @@ const List: React.FC<ListProps> = ({
 							ref={allCheckBox}
 							type='checkbox'
 							className='checkbox-primary checkbox checkbox-sm'
-							// checked={selectedList.length === window.tabs.length}
-							// onChange={selectAll}
+							checked={selectedList.length === window.tabs.length}
+							onChange={selectAll}
 						/>
 					</label>
 					{windowIcon}
@@ -146,7 +144,7 @@ const List: React.FC<ListProps> = ({
 				<span className='ml-2 text-base font-bold'>Window</span>
 				{/* {settings?.dev && `: ${window.id}`} */}
 				{/* quick action */}
-				{/* {type === "collection" && (
+				{type === "collection" && (
 					<>
 						<div
 							className='tooltip'
@@ -217,49 +215,38 @@ const List: React.FC<ListProps> = ({
 							</button>
 						</div>
 					</>
-				)} */}
+				)}
 			</div>
 			{/* tabs */}
-			{/* <Sortable
+			<Sortable
 				list={window?.tabs}
 				listId={window.id}
-			> */}
-			{/* pinned tabs */}
-			{/* {pinnedTabs.map((tab, i) => {
-          return !tab.hidden ? (
-            <ListItem
-              tab={tab}
-              key={`${window.id}-${tab.url}-${i}`}
-              // checked={selectedIdsSet.has(tab.id)}
-              onSelect={onSelect}
-              type={type}
-            ></ListItem>
-          ) : null
-        })} */}
-			{/* non-pinned tabs */}
-			{window?.tabs?.map((tab, i) => {
-				return !tab.hidden ? (
-					<ListItem
-						tab={tab}
-						key={`${window.id}-${tab.url}-${i}`}
-						// checked={selectedIdsSet.has(tab.id)}
-						onSelect={onSelect}
-						type={type}
-					></ListItem>
-				) : null
-				// return (
-				// 	<p className='flex'>
-				// 		<img
-				// 			src={tab.favIconUrl}
-				// 			alt=''
-				// 			className='w-4 h-4 flex-none'
-				// 			loading='lazy'
-				// 		/>{" "}
-				// 		- {tab.url}
-				// 	</p>
-				// )
-			})}
-			{/* </Sortable> */}
+			>
+				{/* pinned tabs */}
+				{pinnedTabs.map((tab, i) => {
+					return !tab.hidden ? (
+						<ListItem
+							tab={tab}
+							key={`${window.id}-${tab.url}-${i}`}
+							checked={selectedIdsSet.has(tab.id)}
+							onSelect={onSelect}
+							type={type}
+						></ListItem>
+					) : null
+				})}
+				{/* non-pinned tabs */}
+				{tabs?.map((tab, i) => {
+					return !tab.hidden ? (
+						<ListItem
+							tab={tab}
+							key={`${window.id}-${tab.url}-${i}`}
+							checked={selectedIdsSet.has(tab.id)}
+							onSelect={onSelect}
+							type={type}
+						></ListItem>
+					) : null
+				})}
+			</Sortable>
 		</div>
 	)
 }

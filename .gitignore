@@ -11,6 +11,11 @@ node_modules
 dist
 dist-ssr
 *.local
+.output
+stats.html
+stats-*.json
+.wxt
+web-ext.config.ts
 
 # Editor directories and files
 .vscode/*
@@ -22,3 +27,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# local env files
+.env*
+
+# typescript
+.tsbuildinfo
+.qodo

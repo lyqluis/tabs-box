@@ -7,22 +7,22 @@ import { fromNow, shortURL } from "@/utils"
 import { useTabEvents, useWindowEvents } from "@/utils/platform"
 import { memo, useEffect, useMemo, useTransition } from "react"
 
-// import { CollectoinActionButtons } from "./CollectionButtons"
+import { CollectoinActionButtons } from "./CollectionButtons"
 // import { useGlobalCtx } from "./contexts/context"
-import { useGlobalCtxSelector } from "./contexts/context2"
+import { useGlobalCtxSelector } from "./contexts/data/context2"
 import { Droppable } from "./Dnd"
 import Icon from "./Icon"
-import { setCurrent, setCurrentId } from "./reducers/actions"
-// import { highlight, useSearchCtx } from "./search/searchContext"
+import { setCurrentId } from "./reducers/actions"
+import { highlight, useSearchCtx } from "./search/searchContext"
 
 const SideBarItem = ({ item, isSelected, onSelect }) => {
 	const type = item.created ? "collection" : "window"
 	// const { query } = useSearchCtx()
-	// const {
-	// 	Dropdown: SideBarItemDropdown,
-	// 	toggleRef: sidebarItemToggleRef,
-	// 	handleToggle,
-	// } = useDropdown()
+	const {
+		Dropdown: SideBarItemDropdown,
+		toggleRef: sidebarItemToggleRef,
+		handleToggle,
+	} = useDropdown()
 
 	let itemContent
 	if (type === "window") {
@@ -64,52 +64,49 @@ const SideBarItem = ({ item, isSelected, onSelect }) => {
 	}
 
 	return (
-		// <Droppable item={item} className="mb-2.5 rounded-md">
-		<div
-			className={
-				"group hover:bg-primary hover:text-primary-content flex h-20 w-full cursor-pointer flex-col justify-between overflow-hidden rounded-md p-3.5 shadow-md" +
-				(isSelected
-					? " bg-primary text-primary-content font-semibold"
-					: " bg-base-100 text-base-content font-normal")
-			}
-			onClick={() => onSelect(item)}
-			data-id={item.id}
+		<Droppable
+			item={item}
+			className='mb-2.5 rounded-md'
 		>
-			{itemContent}
-			{/* TODO: */}
-			<div className='absolute top-0 right-2 bottom-0 flex items-center'>
-				{/* group-hover:flex */}
-				{/* <DropDownActionButton */}
-				{/*   className="btn btn-circle btn-ghost" */}
-				{/*   position="start" */}
-				{/* /> */}
-				<div
-					role='button'
-					// ref={sidebarItemToggleRef}
-					className='btn btn-ghost btn-circle'
-					onClick={(e) => {
-						e.stopPropagation()
-						handleToggle()
-					}}
-				>
-					<Icon Svg={More} />
+			<div
+				className={
+					"group hover:bg-primary hover:text-primary-content flex h-20 w-full cursor-pointer flex-col justify-between overflow-hidden rounded-md p-3.5 shadow-md" +
+					(isSelected
+						? " bg-primary text-primary-content font-semibold"
+						: " bg-base-100 text-base-content font-normal")
+				}
+				onClick={() => onSelect(item)}
+				data-id={item.id}
+			>
+				{itemContent}
+				{/* TODO: */}
+				<div className='absolute top-0 right-2 bottom-0 flex items-center'>
+					{/* group-hover:flex */}
+					{/* <DropDownActionButton
+						className='btn btn-circle btn-ghost'
+						position='start'
+					/> */}
+					<div
+						role='button'
+						ref={sidebarItemToggleRef}
+						className='btn btn-ghost btn-circle'
+						onClick={(e) => {
+							e.stopPropagation()
+							handleToggle()
+						}}
+					>
+						<Icon Svg={More} />
+					</div>
+					<SideBarItemDropdown>
+						<CollectoinActionButtons collection={item} />
+					</SideBarItemDropdown>
 				</div>
-				{/* <SideBarItemDropdown>
-            <CollectoinActionButtons collection={item} />
-          </SideBarItemDropdown> */}
 			</div>
-		</div>
-		// </Droppable>
+		</Droppable>
 	)
 }
 
 const SideBar = ({}) => {
-	// const {
-	// 	state: { windows, collections, currentId },
-	// 	type,
-	// 	current,
-	// 	dispatch,
-	// } = useGlobalCtx()
 	const windows = useGlobalCtxSelector((v) => v.state.windows)
 	const collections = useGlobalCtxSelector((v) => v.state.collections)
 	const currentId = useGlobalCtxSelector((v) => v.state.currentId)

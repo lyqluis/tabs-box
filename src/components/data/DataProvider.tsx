@@ -1,62 +1,24 @@
 import {
-	// createContext,
-	type Dispatch,
 	type ReactNode,
 	useCallback,
-	// useContext,
 	useEffect,
 	useMemo,
 	useReducer,
 	useState,
 } from "react"
 
-import { setCollections, setWindows } from "../reducers/actions"
-import { reducer } from "../reducers/reducer"
+import { setCollections, setWindows } from "../../reducers/actions"
+import { reducer } from "../../reducers/reducer"
 import { getAllWindows } from "@/assets/mock/windows"
 import { getAllMockCollections } from "@/assets/mock/collections"
-import { createContext, useContextSelector } from "use-context-selector"
-
-interface State {
-	editedMap: object
-	source: object
-	windows: Window[]
-	collections: Collection[]
-	currentId: number | string | null
-	current: any
-	clipboard: clipItem[] // todo: clip item type
-	history?: Collection[]
-}
-
-interface GlobalContextType {
-	state: State
-	dispatch: Dispatch<any>
-	current: Window | Collection | undefined
-	type: "window" | "collection"
-}
-
-const ctx = createContext<GlobalContextType | null>(null)
+import { ctx, initialJSON } from "./context2"
 
 const { Provider } = ctx
 
-export const useGlobalCtxSelector = (cb) => useContextSelector(ctx, cb)
-
-const initialJSON: State = {
-	editedMap: {},
-	source: {},
-	windows: [],
-	collections: [],
-	currentId: null,
-	current: null,
-	clipboard: [],
-	history: [],
-}
-
 // PERF: current is too slow, when select item in sidebar, Content render is slow, Sidebar is more slow
 export const ProviderWithReducer = ({
-	// data: { windows, collections },
 	children,
 }: {
-	// data: { windows: Window[]; collections: Collection[] }
 	children: ReactNode
 }) => {
 	const [state, dispatch] = useReducer(reducer, initialJSON)

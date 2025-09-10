@@ -1,7 +1,7 @@
 import DragableIcon from "@/assets/svg/dragable.svg?react"
 import Pinned from "@/assets/svg/pinned.svg?react"
 import { jumptToTab, openTabs } from "@/utils/platform"
-import { memo, useCallback, useMemo, useState, type FC } from "react"
+import { memo, useCallback, useMemo, type FC } from "react"
 
 import { useDndContext, useSortableItem } from "../Dnd"
 import Icon from "../Icon"
@@ -73,10 +73,11 @@ const ListItem: FC<ListItemProps> = ({
 	} = useSortableItem({
 		id: tab.id,
 	})
-	// const { draggingItem } = useDndContext()
+	const { draggingItem } = useDndContext()
 	const { query, jumped } = useSearchCtx()
-	// const [isHovered, setIsHovered] = useState(false)
-	const { settings } = useSettings() // TODO: dev, delete
+	const {
+		settings: { dev },
+	} = useSettings() // TODO: dev, delete
 
 	const onChange = useCallback(
 		(e) => {
@@ -84,8 +85,6 @@ const ListItem: FC<ListItemProps> = ({
 		},
 		[onSelect, tab, checked]
 	)
-	// const onMouseOver = useCallback((e) => setIsHovered(true), [])
-	// const onMouseLeave = useCallback((e) => setIsHovered(false), [])
 
 	const handleClickUrl = useCallback(() => {
 		console.log("on click url", type)
@@ -114,12 +113,9 @@ const ListItem: FC<ListItemProps> = ({
 			ref={setNodeRef}
 			style={{
 				...sortableStyle,
-				// opacity: !overlay && draggingItem?.id === tab.id ? 0.5 : 1
+				opacity: !overlay && draggingItem?.id === tab.id ? 0.5 : 1
 			}}
 			className={className}
-			// TODO: delete
-			// onMouseOver={onMouseOver}
-			// onMouseLeave={onMouseLeave}
 		>
 			{/* TODO: perf */}
 			<PinnedOrHandleIcon
@@ -128,12 +124,12 @@ const ListItem: FC<ListItemProps> = ({
 				attributes={attributes}
 				listeners={listeners}
 			></PinnedOrHandleIcon>
-			{/* <input
+			<input
 				type='checkbox'
 				className='checkbox-primary checkbox checkbox-sm'
 				checked={checked ?? false}
 				onChange={onChange}
-			/> */}
+			/>
 			<span className='m-0.5 flex w-6 flex-none items-center justify-center'>
 				{type === "window" && tab.status === "loading" ? (
 					<span className='loading loading-spinner loading-sm text-gray-500'></span>
@@ -151,7 +147,7 @@ const ListItem: FC<ListItemProps> = ({
 				title={tab.url}
 				onClick={handleClickUrl}
 			>
-				{settings.dev && tab.id}
+				{dev && tab.id}
 				{highlight(tab.url, query)}
 			</a>
 		</li>
