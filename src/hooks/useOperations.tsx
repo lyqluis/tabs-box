@@ -22,7 +22,7 @@ import { cloneWindow, createWindow } from "@/utils/window"
 import { useCallback, useEffect, useMemo, useRef } from "react"
 
 import useModal from "./useModal"
-import { useGlobalCtxSelector } from "@/components/contexts/data"
+import { useGlobalCtxSelector } from "@/components/data"
 
 // TODO: use `collectoin` param to replace `current`
 const useOperations = (selectOperations) => {

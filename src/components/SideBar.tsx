@@ -9,7 +9,7 @@ import { memo, useEffect, useMemo, useTransition } from "react"
 
 import { CollectoinActionButtons } from "./CollectionButtons"
 // import { useGlobalCtx } from "./contexts/context"
-import { useGlobalCtxSelector } from "./contexts/data/context2"
+import { useGlobalCtxSelector } from "./data/context2"
 import { Droppable } from "./Dnd"
 import Icon from "./Icon"
 import { setCurrentId } from "./reducers/actions"

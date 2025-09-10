@@ -10,7 +10,7 @@ import { openWindow } from "@/utils/platform"
 import { memo, useEffect, useMemo, useRef } from "react"
 
 import { ListItem } from "."
-import { useGlobalCtxSelector } from "../contexts/data/context2"
+import { useGlobalCtxSelector } from "../data/context2"
 import { Sortable, useDndContext, useSortableItem } from "../Dnd"
 import Icon from "../Icon"
 import { removeWindow } from "../reducers/actions"

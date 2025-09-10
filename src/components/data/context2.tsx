@@ -27,11 +27,13 @@ export const initialJSON: State = {
 	history: [],
 }
 
+export type CurrentType = "window" | "collection"
+
 interface GlobalContextType {
 	state: State
 	dispatch: Dispatch<any>
 	current: Window | Collection | undefined
-	type: "window" | "collection"
+	type: CurrentType
 }
 
 export const ctx = createContext<GlobalContextType | null>(null)

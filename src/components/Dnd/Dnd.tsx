@@ -26,7 +26,7 @@ import {
 } from "../reducers/actions"
 import { useSettings } from "../setting/settingContext"
 import { OverlayList } from "./Overlay"
-import { useGlobalCtxSelector } from "../contexts/data"
+import { useGlobalCtxSelector } from "../data"
 
 const ctx = createContext(null)
 const { Provider } = ctx

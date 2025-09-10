@@ -1,5 +1,5 @@
 import { useGlobalCtx } from "@/components/contexts/context"
-import { useGlobalCtxSelector } from "@/components/contexts/data"
+import { useGlobalCtxSelector } from "@/components/data"
 import {
 	addTabs,
 	removeTabs,
