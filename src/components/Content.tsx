@@ -17,7 +17,6 @@ import {
 
 import useDropdown from "../hooks/useDropdown"
 import DropDownActionButton from "./CollectionButtons"
-// import { useGlobalCtx } from "./contexts/context"
 import { useRefresh } from "./dev" // TODO: dev, delete
 import { Sortable } from "./Dnd"
 import Icon from "./Icon"
@@ -156,7 +155,7 @@ const SelectedOperations = ({ current, type, collections, allTabsNumber }) => {
         setSelectedList([])
       }
     },
-    [setSelectedList],
+    [setSelectedList, current],
   )
 
   const copySelected = useCallback(() => {
@@ -173,7 +172,7 @@ const SelectedOperations = ({ current, type, collections, allTabsNumber }) => {
       }
     }
     copy({ value: selectedList, type: copyType })
-  }, [selectedList, copy])
+  }, [selectedList, copy, current])
 
   return (
     <div

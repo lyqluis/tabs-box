@@ -5,13 +5,13 @@ import type { FC } from "react"
 import { useOperationsContext } from "../contexts/operationsContext"
 import Icon from "../Icon"
 import { ListItem } from "../list"
-import { useDndContext } from "./Dnd"
+import { useDndContext, useDndSelector } from "./Dnd"
 
 interface OverlayListProps {
   count?: number // number of selected list item
 }
 export const OverlayList: FC<OverlayListProps> = ({ count }) => {
-  const { draggingItem } = useDndContext()
+  const draggingItem = useDndSelector((v) => v.draggingItem)
   const { selectedList } = useOperationsContext()
 
   if (!draggingItem) return null
