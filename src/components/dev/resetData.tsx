@@ -1,22 +1,21 @@
 import { localClearAllCollections } from "@/store"
 import { clearAllBaseCollections } from "@/store/syncBase"
-
-import { useGlobalCtx } from "../contexts/context"
-import { setCollections } from "../reducers/actions"
+import { useGlobalCtxSelector } from "../data"
+import { setCollections } from "../data/actions"
 
 export const useDev = () => {
-  const { dispatch } = useGlobalCtx()
+	const dispatch = useGlobalCtxSelector((v) => v.dispatch)
 
-  const resetAllCollections = () => {
-    dispatch(setCollections([]))
-    localClearAllCollections()
-  }
-  const resetSyncBaseData = () => {
-    clearAllBaseCollections()
-  }
+	const resetAllCollections = () => {
+		dispatch(setCollections([]))
+		localClearAllCollections()
+	}
+	const resetSyncBaseData = () => {
+		clearAllBaseCollections()
+	}
 
-  return {
-    resetAllCollections,
-    resetSyncBaseData
-  }
+	return {
+		resetAllCollections,
+		resetSyncBaseData,
+	}
 }

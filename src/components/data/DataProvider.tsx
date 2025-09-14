@@ -7,8 +7,8 @@ import {
 	useState,
 } from "react"
 
-import { setCollections, setWindows } from "../reducers/actions"
-import { reducer } from "../reducers/reducer"
+import { setCollections, setWindows } from "./actions"
+import { reducer } from "./reducer"
 import { getAllWindows } from "@/assets/mock/windows"
 import { getAllMockCollections } from "@/assets/mock/collections"
 import { ctx, initialJSON } from "./context2"

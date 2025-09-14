@@ -10,9 +10,9 @@ import { memo, useEffect, useMemo, useTransition } from "react"
 import { CollectoinActionButtons } from "./CollectionButtons"
 // import { useGlobalCtx } from "./contexts/context"
 import { useGlobalCtxSelector } from "./data/context2"
-import { Droppable } from "./Dnd"
+import { Droppable } from "./dnd"
 import Icon from "./Icon"
-import { setCurrentId } from "./reducers/actions"
+import { setCurrentId } from "./data/actions"
 import { highlight, useSearchCtx } from "./search/searchContext"
 
 const SideBarItem = ({ item, isSelected, onSelect }) => {

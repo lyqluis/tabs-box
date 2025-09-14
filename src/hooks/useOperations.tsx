@@ -7,8 +7,8 @@ import {
 	setCurrentId,
 	updateCollection,
 	updateEditedList,
-} from "@/components/reducers/actions"
-import { useSettings } from "@/components/setting/settingContext"
+} from "@/components/data/actions"
+import { useSettingsContextSelector } from "@/components/setting/settingContext"
 import { toast } from "@/components/Toast"
 import {
 	createClippedItem,
@@ -19,7 +19,7 @@ import { cloneCollection, createCollection } from "@/utils/data"
 import { closeWindow, jumptToWindow, openWindow } from "@/utils/platform"
 import { cloneTab } from "@/utils/tab"
 import { cloneWindow, createWindow } from "@/utils/window"
-import { useCallback, useEffect, useMemo, useRef } from "react"
+import { useCallback, useEffect, useRef } from "react"
 
 import useModal from "./useModal"
 import { useGlobalCtxSelector } from "@/components/data"
@@ -42,16 +42,19 @@ const useOperations = (selectOperations) => {
 	// - copy
 	// - paste
 
-	const {
-		state: { windows, collections, currentId },
-		current,
-		dispatch,
-	} = useGlobalCtxSelector((v) => v)
+	const { collections, currentId, current, dispatch } = useGlobalCtxSelector(
+		(v) => ({
+			currentId: v.state.currentId,
+			collections: v.state.collections,
+			current: v.current,
+			dispatch: v.dispatch,
+		})
+	)
 	const { modal } = useModal()
 	const { selectedList, tabsByWindowMap, addSelectedToCollection } =
 		selectOperations
 	// TODO:
-	const { settings } = useSettings()
+	const settings = useSettingsContextSelector((v) => v.settings)
 
 	const saveCurrentToCollection = useCallback(
 		(collection?) => {

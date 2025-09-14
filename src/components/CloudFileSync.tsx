@@ -14,7 +14,7 @@ import { useRef, useState } from "react"
 import { useGlobalCtx } from "./contexts/context"
 import Icon from "./Icon"
 import LoadingBtn from "./LoadingBtn"
-import { setCollections } from "./reducers/actions"
+import { setCollections } from "./data/actions"
 import { toast } from "./Toast"
 
 const CloudFileSync = ({ className = "" }) => {

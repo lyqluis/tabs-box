@@ -2,14 +2,21 @@
 import { useCallback, useState } from "react"
 import Dropdown from "../Dropdown"
 import { ThemeControllerIconInside } from "../Theme"
-import { LANGUAGE_OPTIONS, SETTING_TEXT, useSettings } from "./settingContext"
+import {
+	LANGUAGE_OPTIONS,
+	SETTING_TEXT,
+	useSettingsContextSelector,
+} from "./settingContext"
 import Modal from "../Modal"
 import Icon from "../Icon"
 import ToolsSvg from "@/assets/svg/tools.svg?react"
 
 // 6. 创建设置界面组件
 const BooleanSetting = ({ field, name, value }) => {
-	const { settings, updateSettings } = useSettings()
+	const { settings, updateSettings } = useSettingsContextSelector((v) => ({
+		settings: v.settings,
+		updateSettings: v.updateSettings,
+	}))
 	return (
 		<div className='flex w-full items-center justify-between'>
 			<label className='label'>
@@ -34,7 +41,7 @@ const BooleanSetting = ({ field, name, value }) => {
 }
 
 const FieldSettings = ({ name, value }) => {
-	const { settings } = useSettings()
+	const settings = useSettingsContextSelector((v) => v.settings)
 	return (
 		<>
 			<div className='flex w-full flex-col justify-between'>
@@ -57,7 +64,7 @@ const FieldSettings = ({ name, value }) => {
 }
 
 const ThemeSetting = () => {
-	const { settings } = useSettings()
+	const settings = useSettingsContextSelector((v) => v.settings)
 	return (
 		<div className='flex w-full justify-between'>
 			<label className='label'>
@@ -76,7 +83,10 @@ const ThemeSetting = () => {
 }
 
 const LanguageSetting = () => {
-	const { settings, updateSettings } = useSettings()
+	const { settings, updateSettings } = useSettingsContextSelector((v) => ({
+		settings: v.settings,
+		updateSettings: v.updateSettings,
+	}))
 	const handleClick = (e) => {
 		updateSettings({ language: e.target.value })
 		document.activeElement.blur()
@@ -152,7 +162,10 @@ const SettingTypeRenderer = ({ field, name, value }) => {
 }
 
 const SettingsPanel = () => {
-	const { settings, updateSettings } = useSettings()
+	const { settings, updateSettings } = useSettingsContextSelector((v) => ({
+		settings: v.settings,
+		updateSettings: v.updateSettings,
+	}))
 
 	return (
 		<div className='settings-panel'>

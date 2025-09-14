@@ -9,7 +9,7 @@ import {
 	setWindow,
 	setWindows,
 	updateTab,
-} from "@/components/reducers/actions"
+} from "@/components/data/actions"
 import { CURRENT_WINDOW as MOCK_CURRENT_WINDOW} from "@/assets/mock/windows"
 export const getCurrentWindow = async () => {
 	// const current = await chrome.windows.getCurrent()  // TODO: replace

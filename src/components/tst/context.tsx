@@ -8,7 +8,7 @@ import {
   type Dispatch,
   type ReactNode,
 } from "react"
-import { setCollections, setWindows } from "../reducers/actions"
+import { setCollections, setWindows } from "../data/actions"
 import { reducer } from "./reducer"
 import { getAllWindows } from "@/assets/mock/windows"
 import { getAllCollections } from "@/store"

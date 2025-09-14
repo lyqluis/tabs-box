@@ -115,6 +115,7 @@ export const reducer = (state: any, action: any) => {
         }
         return { ...state, windows }
       }
+      break
     }
     case UPDATE_TAB: {
       const tab = action.payload
@@ -130,6 +131,7 @@ export const reducer = (state: any, action: any) => {
         }
         return { ...state, windows }
       }
+      break
     }
     case REMOVE_TAB: {
       console.log("🧠 reducer REMOVE_TAB", action.payload)
@@ -146,6 +148,7 @@ export const reducer = (state: any, action: any) => {
         }
         return { ...state, windows }
       }
+      return state
     }
     case UPDATE_EDITED_LIST: {
       console.log("🧠 reducer UPDATE_EDITED_LIST", action.payload)

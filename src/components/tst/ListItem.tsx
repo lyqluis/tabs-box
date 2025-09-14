@@ -3,7 +3,7 @@ import Pinned from "@/assets/svg/pinned.svg?react"
 import { jumptToTab, openTabs } from "@/utils/platform"
 import { memo, useState, type FC } from "react"
 
-import { useDndContext, useSortableItem } from "../Dnd"
+import { useDndContext, useSortableItem } from "../dnd"
 import Icon from "../Icon"
 import { highlight, useSearchCtx } from "../search/searchContext"
 import { useSettings } from "../setting/settingContext"
@@ -80,14 +80,13 @@ const ListItem: FC<ListItemProps> = ({
 	return (
 		<li
 			className={className}
-			// className='flex flex-nowrap items-center py-1 overflow-hidden text-ellipsis whitespace-nowrap align-baseline text-base font-light hover:bg-slate-100 dark:hover:bg-slate-800'
 		>
 			<Favicon url={tab.favIconUrl} />
 			<span
 				className={`mr-2 flex-none ${tab.status === "loading" ? "text-gray-500" : ""}`}
 			>
-				{/* {highlight(tab.title, query)} */}
-				{tab.title}
+				{highlight(tab.title, query)}
+				{/* {tab.title} */}
 			</span>
 			<a
 				className='link-hover link items-center overflow-hidden text-sm text-ellipsis whitespace-nowrap text-slate-400 dark:text-slate-500'
@@ -95,8 +94,8 @@ const ListItem: FC<ListItemProps> = ({
 				onClick={() => handleClickUrl(tab)}
 			>
 				{settings.dev && tab.id}
-				{/* {highlight(tab.url, query)} */}
-				{tab.url}
+				{highlight(tab.url, query)}
+				{/* {tab.url} */}
 			</a>
 		</li>
 	)

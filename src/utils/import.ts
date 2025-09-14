@@ -1,4 +1,4 @@
-import { setCollections } from "@/components/reducers/actions"
+import { setCollections } from "@/components/data/actions"
 import { localSaveCollection } from "@/store"
 import { compareCollections, formatCollections, importFile } from "@/utils/data"
 

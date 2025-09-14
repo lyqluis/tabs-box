@@ -1,16 +1,18 @@
-import { useGlobalCtx } from "@/components/contexts/context"
 import {
 	setCollections,
 	setWindows,
 	updateEditedList,
-} from "@/components/reducers/actions"
+} from "@/components/data/actions"
 import { getAllCollections } from "@/store"
 import { sortCollections } from "@/utils/collection"
 import { getAllWindows } from "@/utils/platform"
 import { useGlobalCtxSelector } from "../data"
 
 export const useRefresh = () => {
-	const { current, dispatch } = useGlobalCtxSelector((v) => v)
+	const { current, dispatch } = useGlobalCtxSelector((v) => ({
+		current: v.current,
+		dispatch: v.dispatch,
+	}))
 
 	const getAllTabs = async () => {
 		try {

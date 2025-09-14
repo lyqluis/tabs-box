@@ -5,17 +5,19 @@ import {
 	removeTabs,
 	updateEditedList,
 	updateTabs,
-} from "@/components/reducers/actions"
+} from "@/components/data/actions"
 import { openTabs } from "@/utils/platform"
 import { useCallback, useEffect, useMemo, useState } from "react"
 
 const useSelect = () => {
-	const {
-		state: { currentId, collections },
-		current,
-		type,
-		dispatch,
-	} = useGlobalCtxSelector((v) => v)
+	const { currentId, collections, current, type, dispatch } =
+		useGlobalCtxSelector((v) => ({
+			currentId: v.state.currentId,
+			collections: v.state.collections,
+			current: v.current,
+			type: v.type,
+			dispatch: v.dispatch,
+		}))
 	// always store current's selected
 	const [selectedList, setSelectedList] = useState<Tab[]>([])
 

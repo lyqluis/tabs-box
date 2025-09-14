@@ -1,5 +1,6 @@
-import { createContext, memo, useContext } from "react"
-// import { createContext } from "use-context-selector"
+import { memo } from "react"
+import { createContext, useContextSelector } from "@/hooks/useContextSelector"
+
 // 1. 定义类型和默认值
 // type Theme = "light" | "dark" | "system"
 type Theme = boolean // false: light, true: dark
@@ -79,11 +80,12 @@ export const SETTING_TEXT = {
 }
 
 // 2. 创建 Context
-export const SettingsContext = createContext<{
+interface SettingsContextType {
 	settings: AppSettings
 	updateSettings: (newSettings: Partial<AppSettings>) => void
 	resetSettings: () => void
-}>({
+}
+export const SettingsContext = createContext({
 	settings: DEFAULT_SETTINGS,
 	updateSettings: () => {},
 	resetSettings: () => {},
@@ -92,7 +94,10 @@ export const SettingsContext = createContext<{
 // 3. 创建 Provider 组件
 
 // 4. 创建自定义 Hook
-export const useSettings = () => useContext(SettingsContext)
+// export const useSettings = () => useContext(SettingsContext)	// TODO: delete
+export const useSettingsContextSelector = (
+	selector: (value: SettingsContextType) => unknown
+) => useContextSelector(SettingsContext, selector)
 
 // 5. 在根组件包裹 Provider
 
