@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON文件对比合并工具</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      font-weight: 300;
+    }
+
+    .header p {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    .upload-section {
+      padding: 30px;
+      background: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .upload-row {
+      display: flex;
+      gap: 30px;
+      margin-bottom: 20px;
+    }
+
+    .upload-box {
+      flex: 1;
+      border: 2px dashed #dee2e6;
+      border-radius: 10px;
+      padding: 30px;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      background: white;
+    }
+
+    .upload-box:hover {
+      border-color: #4facfe;
+      background: #f8f9ff;
+    }
+
+    .upload-box.dragover {
+      border-color: #4facfe;
+      background: #e3f2fd;
+    }
+
+    .upload-icon {
+      font-size: 3em;
+      color: #6c757d;
+      margin-bottom: 15px;
+    }
+
+    .upload-text {
+      color: #6c757d;
+      font-size: 1.1em;
+      margin-bottom: 15px;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .upload-btn {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: transform 0.2s ease;
+    }
+
+    .upload-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .file-info {
+      margin-top: 15px;
+      padding: 10px;
+      background: #e8f5e8;
+      border-radius: 5px;
+      color: #155724;
+      font-size: 0.9em;
+    }
+
+    .compare-section {
+      padding: 30px;
+      display: none;
+    }
+
+    .compare-controls {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .control-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1.1em;
+      margin: 0 10px;
+      transition: transform 0.2s ease;
+    }
+
+    .control-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .control-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .comparison-container {
+      display: flex;
+      gap: 30px;
+      min-height: 600px;
+    }
+
+    .json-panel {
+      flex: 1;
+      border: 1px solid #dee2e6;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      background: #f8f9fa;
+      padding: 15px 20px;
+      border-bottom: 1px solid #dee2e6;
+      font-weight: 600;
+      color: #495057;
+    }
+
+    .panel-content {
+      max-height: 600px;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .tree-item {
+      margin-bottom: 5px;
+      border-radius: 5px;
+      padding: 8px;
+      transition: background-color 0.2s ease;
+    }
+
+    .tree-item:hover {
+      background-color: #f8f9fa;
+    }
+
+    .tree-item.added {
+      background-color: #d4edda;
+      border-left: 4px solid #28a745;
+    }
+
+    .tree-item.removed {
+      background-color: #f8d7da;
+      border-left: 4px solid #dc3545;
+    }
+
+    .tree-item.modified {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+    }
+
+    .tree-toggle {
+      cursor: pointer;
+      user-select: none;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tree-toggle::before {
+      content: '▶';
+      font-size: 0.8em;
+      transition: transform 0.2s ease;
+    }
+
+    .tree-toggle.expanded::before {
+      transform: rotate(90deg);
+    }
+
+    .tree-children {
+      margin-left: 20px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .tree-children.expanded {
+      display: block;
+    }
+
+    .item-details {
+      font-size: 0.9em;
+      color: #6c757d;
+      margin-left: 20px;
+      margin-top: 3px;
+    }
+
+    .edit-btn {
+      background: #17a2b8;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.8em;
+      margin-left: 10px;
+    }
+
+    .edit-btn:hover {
+      background: #138496;
+    }
+
+    .edit-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+    }
+
+    .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      margin-bottom: 20px;
+      font-size: 1.3em;
+      font-weight: 600;
+      color: #495057;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #495057;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ced4da;
+      border-radius: 5px;
+      font-size: 1em;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .modal-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+
+    .modal-btn.primary {
+      background: #007bff;
+      color: white;
+    }
+
+    .modal-btn.secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    .result-section {
+      padding: 30px;
+      display: none;
+      background: #f8f9fa;
+    }
+
+    .result-content {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    .download-btn {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1.1em;
+      margin-top: 20px;
+      transition: transform 0.2s ease;
+    }
+
+    .download-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .legend {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9em;
+    }
+
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 3px;
+    }
+
+    .legend-color.added {
+      background-color: #d4edda;
+      border-left: 4px solid #28a745;
+    }
+
+    .legend-color.removed {
+      background-color: #f8d7da;
+      border-left: 4px solid #dc3545;
+    }
+
+    .legend-color.modified {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>JSON文件对比合并工具</h1>
+      <p>上传两份JSON文件，对比差异，编辑内容，最终合并成统一数据</p>
+    </div>
+
+    <div class="upload-section">
+      <div class="upload-row">
+        <div class="upload-box" id="upload1">
+          <div class="upload-icon">📁</div>
+          <div class="upload-text">拖拽文件到此处或点击上传</div>
+          <button class="upload-btn" onclick="document.getElementById('file1').click()">选择文件</button>
+          <input type="file" id="file1" class="file-input" accept=".json" />
+          <div id="file1-info" class="file-info" style="display: none;"></div>
+        </div>
+        <div class="upload-box" id="upload2">
+          <div class="upload-icon">📁</div>
+          <div class="upload-text">拖拽文件到此处或点击上传</div>
+          <button class="upload-btn" onclick="document.getElementById('file2').click()">选择文件</button>
+          <input type="file" id="file2" class="file-input" accept=".json" />
+          <div id="file2-info" class="file-info" style="display: none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="compare-section" id="compareSection">
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color added"></div>
+          <span>新增项目</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color removed"></div>
+          <span>删除项目</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color modified"></div>
+          <span>修改项目</span>
+        </div>
+      </div>
+
+      <div class="compare-controls">
+        <button class="control-btn" id="compareBtn" onclick="compareFiles()">开始对比</button>
+        <button class="control-btn" id="mergeBtn" onclick="mergeFiles()" disabled>合并数据</button>
+        <button class="control-btn" onclick="resetFiles()">重新上传</button>
+      </div>
+
+      <div class="comparison-container">
+        <div class="json-panel">
+          <div class="panel-header">文件 1</div>
+          <div class="panel-content" id="panel1"></div>
+        </div>
+        <div class="json-panel">
+          <div class="panel-header">文件 2</div>
+          <div class="panel-content" id="panel2"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-section" id="resultSection">
+      <h2 style="margin-bottom: 20px; color: #495057;">合并结果</h2>
+      <div class="result-content" id="resultContent"></div>
+      <button class="download-btn" onclick="downloadResult()">下载合并后的JSON文件</button>
+    </div>
+  </div>
+
+  <!-- 编辑模态框 -->
+  <div class="edit-modal" id="editModal">
+    <div class="modal-content">
+      <div class="modal-header">编辑项目</div>
+      <div id="editForm"></div>
+      <div class="modal-buttons">
+        <button class="modal-btn secondary" onclick="closeEditModal()">取消</button>
+        <button class="modal-btn primary" onclick="saveEdit()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let file1Data = null;
+    let file2Data = null;
+    let currentEditItem = null;
+    let mergedData = null;
+
+    // 文件上传处理
+    function setupFileUpload() {
+      const uploadBoxes = document.querySelectorAll('.upload-box');
+
+      uploadBoxes.forEach((box, index) => {
+        const fileInput = document.getElementById(`file${index + 1}`);
+        const fileInfo = document.getElementById(`file${index + 1}-info`);
+
+        // 拖拽上传
+        box.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          box.classList.add('dragover');
+        });
+
+        box.addEventListener('dragleave', () => {
+          box.classList.remove('dragover');
+        });
+
+        box.addEventListener('drop', (e) => {
+          e.preventDefault();
+          box.classList.remove('dragover');
+          const files = e.dataTransfer.files;
+          if (files.length > 0) {
+            handleFile(files[0], index + 1);
+          }
+        });
+
+        // 文件选择
+        fileInput.addEventListener('change', (e) => {
+          if (e.target.files.length > 0) {
+            handleFile(e.target.files[0], index + 1);
+          }
+        });
+      });
+    }
+
+    function handleFile(file, fileNumber) {
+      if (file.type !== 'application/json') {
+        alert('请上传JSON格式的文件');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (fileNumber === 1) {
+            file1Data = data;
+          } else {
+            file2Data = data;
+          }
+
+          const fileInfo = document.getElementById(`file${fileNumber}-info`);
+          fileInfo.innerHTML = `✅ 文件已上传: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+          fileInfo.style.display = 'block';
+
+          if (file1Data && file2Data) {
+            document.getElementById('compareSection').style.display = 'block';
+            document.getElementById('compareBtn').disabled = false;
+          }
+        } catch (error) {
+          alert('JSON文件格式错误，请检查文件内容');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // 对比文件
+    function compareFiles() {
+      if (!file1Data || !file2Data) return;
+
+      const panel1 = document.getElementById('panel1');
+      const panel2 = document.getElementById('panel2');
+
+      // 清空面板
+      panel1.innerHTML = '';
+      panel2.innerHTML = '';
+
+      // 展示文件1
+      renderJsonTree(file1Data, panel1, 'file1');
+      // 展示文件2
+      renderJsonTree(file2Data, panel2, 'file2');
+
+      // 标记差异
+      markDifferences();
+
+      document.getElementById('mergeBtn').disabled = false;
+    }
+
+    function renderJsonTree(data, container, fileSource) {
+      if (!data.collections || !Array.isArray(data.collections)) {
+        container.innerHTML = '<div style="color: #dc3545;">无效的JSON格式，缺少collections数组</div>';
+        return;
+      }
+
+      data.collections.forEach((collection, collectionIndex) => {
+        const collectionDiv = createTreeItem(
+          `📁 Collection: ${collection.title || '未命名'} (ID: ${collection.id || '未知'})`,
+          'collection',
+          collection,
+          fileSource,
+          collectionIndex
+        );
+
+        if (collection.windows && Array.isArray(collection.windows)) {
+          collection.windows.forEach((window, windowIndex) => {
+            const windowDiv = createTreeItem(
+              `🪟 Window: ${window.title || '未命名'} (ID: ${window.id || '未知'})`,
+              'window',
+              window,
+              fileSource,
+              collectionIndex,
+              windowIndex
+            );
+
+            if (window.tabs && Array.isArray(window.tabs)) {
+              window.tabs.forEach((tab, tabIndex) => {
+                const tabDiv = createTreeItem(
+                  `📄 Tab: ${tab.title || '未命名'} (ID: ${tab.id || '未知'})`,
+                  'tab',
+                  tab,
+                  fileSource,
+                  collectionIndex,
+                  windowIndex,
+                  tabIndex
+                );
+                windowDiv.querySelector('.tree-children').appendChild(tabDiv);
+              });
+            }
+            collectionDiv.querySelector('.tree-children').appendChild(windowDiv);
+          });
+        }
+        container.appendChild(collectionDiv);
+      });
+    }
+
+    function createTreeItem(title, type, data, fileSource, collectionIndex, windowIndex, tabIndex) {
+      const div = document.createElement('div');
+      div.className = 'tree-item';
+      div.dataset.type = type;
+      div.dataset.fileSource = fileSource;
+      div.dataset.collectionIndex = collectionIndex;
+      div.dataset.windowIndex = windowIndex;
+      div.dataset.tabIndex = tabIndex;
+
+      const toggle = document.createElement('div');
+      toggle.className = 'tree-toggle';
+      toggle.textContent = title;
+      toggle.onclick = () => toggleExpand(toggle);
+
+      const details = document.createElement('div');
+      details.className = 'item-details';
+      details.innerHTML = `
+                <div>ID: ${data.id || '无'}</div>
+                ${data.url ? `<div>URL: ${data.url}</div>` : ''}
+                <button class="edit-btn" onclick="editItem('${fileSource}', '${type}', ${collectionIndex}, ${windowIndex !== undefined ? windowIndex : 'null'}, ${tabIndex !== undefined ? tabIndex : 'null'})">编辑</button>
+            `;
+
+      const children = document.createElement('div');
+      children.className = 'tree-children';
+
+      div.appendChild(toggle);
+      div.appendChild(details);
+      div.appendChild(children);
+
+      return div;
+    }
+
+    function toggleExpand(toggle) {
+      toggle.classList.toggle('expanded');
+      const children = toggle.parentElement.querySelector('.tree-children');
+      children.classList.toggle('expanded');
+    }
+
+    function markDifferences() {
+      const items1 = document.querySelectorAll('#panel1 .tree-item');
+      const items2 = document.querySelectorAll('#panel2 .tree-item');
+
+      // 简单的差异标记逻辑
+      items1.forEach(item1 => {
+        const type = item1.dataset.type;
+        const collectionIndex = item1.dataset.collectionIndex;
+        const windowIndex = item1.dataset.windowIndex;
+        const tabIndex = item1.dataset.tabIndex;
+
+        // 查找对应的item2
+        const item2 = findCorrespondingItem(items2, type, collectionIndex, windowIndex, tabIndex);
+
+        if (!item2) {
+          item1.classList.add('removed');
+        } else {
+          // 检查内容是否相同
+          if (!areItemsEqual(item1, item2)) {
+            item1.classList.add('modified');
+            item2.classList.add('modified');
+          }
+        }
+      });
+
+      items2.forEach(item2 => {
+        const type = item2.dataset.type;
+        const collectionIndex = item2.dataset.collectionIndex;
+        const windowIndex = item2.dataset.windowIndex;
+        const tabIndex = item2.dataset.tabIndex;
+
+        const item1 = findCorrespondingItem(items1, type, collectionIndex, windowIndex, tabIndex);
+
+        if (!item1) {
+          item2.classList.add('added');
+        }
+      });
+    }
+
+    function findCorrespondingItem(items, type, collectionIndex, windowIndex, tabIndex) {
+      return Array.from(items).find(item =>
+        item.dataset.type === type &&
+        item.dataset.collectionIndex === collectionIndex &&
+        item.dataset.windowIndex === windowIndex &&
+        item.dataset.tabIndex === tabIndex
+      );
+    }
+
+    function areItemsEqual(item1, item2) {
+      // 简化的相等性检查，实际应用中可能需要更复杂的逻辑
+      const title1 = item1.querySelector('.tree-toggle').textContent;
+      const title2 = item2.querySelector('.tree-toggle').textContent;
+      return title1 === title2;
+    }
+
+    // 编辑功能
+    function editItem(fileSource, type, collectionIndex, windowIndex, tabIndex) {
+      const data = fileSource === 'file1' ? file1Data : file2Data;
+      let item;
+
+      if (type === 'collection') {
+        item = data.collections[collectionIndex];
+      } else if (type === 'window') {
+        item = data.collections[collectionIndex].windows[windowIndex];
+      } else if (type === 'tab') {
+        item = data.collections[collectionIndex].windows[windowIndex].tabs[tabIndex];
+      }
+
+      currentEditItem = {
+        fileSource,
+        type,
+        collectionIndex,
+        windowIndex,
+        tabIndex,
+        data: { ...item }
+      };
+
+      showEditModal(item, type);
+    }
+
+    function showEditModal(item, type) {
+      const modal = document.getElementById('editModal');
+      const form = document.getElementById('editForm');
+
+      let formHTML = '';
+
+      if (type === 'collection') {
+        formHTML = `
+                    <div class="form-group">
+                        <label>ID:</label>
+                        <input type="text" id="editId" value="${item.id || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label>Title:</label>
+                        <input type="text" id="editTitle" value="${item.title || ''}">
+                    </div>
+                `;
+      } else if (type === 'window') {
+        formHTML = `
+                    <div class="form-group">
+                        <label>ID:</label>
+                        <input type="text" id="editId" value="${item.id || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label>Title:</label>
+                        <input type="text" id="editTitle" value="${item.title || ''}">
+                    </div>
+                `;
+      } else if (type === 'tab') {
+        formHTML = `
+                    <div class="form-group">
+                        <label>ID:</label>
+                        <input type="text" id="editId" value="${item.id || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label>Title:</label>
+                        <input type="text" id="editTitle" value="${item.title || ''}">
+                    </div>
+                    <div class="form-group">
+                        <label>URL:</label>
+                        <input type="text" id="editUrl" value="${item.url || ''}">
+                    </div>
+                `;
+      }
+
+      form.innerHTML = formHTML;
+      modal.style.display = 'block';
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').style.display = 'none';
+      currentEditItem = null;
+    }
+
+    function saveEdit() {
+      if (!currentEditItem) return;
+
+      const id = document.getElementById('editId').value;
+      const title = document.getElementById('editTitle').value;
+      const url = document.getElementById('editUrl') ? document.getElementById('editUrl').value : undefined;
+
+      const data = currentEditItem.fileSource === 'file1' ? file1Data : file2Data;
+      let item;
+
+      if (currentEditItem.type === 'collection') {
+        item = data.collections[currentEditItem.collectionIndex];
+      } else if (currentEditItem.type === 'window') {
+        item = data.collections[currentEditItem.collectionIndex].windows[currentEditItem.windowIndex];
+      } else if (currentEditItem.type === 'tab') {
+        item = data.collections[currentEditItem.collectionIndex].windows[currentEditItem.windowIndex].tabs[currentEditItem.tabIndex];
+      }
+
+      item.id = id;
+      item.title = title;
+      if (url !== undefined) {
+        item.url = url;
+      }
+
+      closeEditModal();
+      compareFiles(); // 重新渲染
+    }
+
+    // 合并功能
+    function mergeFiles() {
+      if (!file1Data || !file2Data) return;
+
+      // 简单的合并策略：以file1为基础，添加file2中不存在的项目
+      mergedData = JSON.parse(JSON.stringify(file1Data));
+
+      const collections1 = file1Data.collections || [];
+      const collections2 = file2Data.collections || [];
+
+      collections2.forEach(collection2 => {
+        const existingCollection = collections1.find(c => c.id === collection2.id);
+
+        if (!existingCollection) {
+          // 添加整个collection
+          mergedData.collections.push(JSON.parse(JSON.stringify(collection2)));
+        } else {
+          // 合并windows
+          const windows1 = existingCollection.windows || [];
+          const windows2 = collection2.windows || [];
+
+          windows2.forEach(window2 => {
+            const existingWindow = windows1.find(w => w.id === window2.id);
+
+            if (!existingWindow) {
+              // 添加整个window
+              existingCollection.windows.push(JSON.parse(JSON.stringify(window2)));
+            } else {
+              // 合并tabs
+              const tabs1 = existingWindow.tabs || [];
+              const tabs2 = window2.tabs || [];
+
+              tabs2.forEach(tab2 => {
+                const existingTab = tabs1.find(t => t.id === tab2.id);
+
+                if (!existingTab) {
+                  // 添加tab
+                  existingWindow.tabs.push(JSON.parse(JSON.stringify(tab2)));
+                }
+              });
+            }
+          });
+        }
+      });
+
+      showResult();
+    }
+
+    function showResult() {
+      const resultSection = document.getElementById('resultSection');
+      const resultContent = document.getElementById('resultContent');
+
+      resultContent.innerHTML = '';
+      renderJsonTree(mergedData, resultContent, 'merged');
+      resultSection.style.display = 'block';
+
+      // 滚动到结果区域
+      resultSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function downloadResult() {
+      if (!mergedData) return;
+
+      const dataStr = JSON.stringify(mergedData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'merged_data.json';
+      link.click();
+
+      URL.revokeObjectURL(url);
+    }
+
+    function resetFiles() {
+      file1Data = null;
+      file2Data = null;
+      mergedData = null;
+
+      document.getElementById('file1').value = '';
+      document.getElementById('file2').value = '';
+      document.getElementById('file1-info').style.display = 'none';
+      document.getElementById('file2-info').style.display = 'none';
+      document.getElementById('compareSection').style.display = 'none';
+      document.getElementById('resultSection').style.display = 'none';
+      document.getElementById('compareBtn').disabled = true;
+      document.getElementById('mergeBtn').disabled = true;
+    }
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      setupFileUpload();
+    });
+
+    // 点击模态框外部关闭
+    document.getElementById('editModal').addEventListener('click', (e) => {
+      if (e.target.id === 'editModal') {
+        closeEditModal();
+      }
+    });
+  </script>
+</body>
+
+</html>
