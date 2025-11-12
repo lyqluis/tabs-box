@@ -3,13 +3,14 @@ import { reactive, ref } from "vue"
 import Layout from "./Layout.vue"
 import FileOperator from "./FileOperator.vue"
 import DragDropFileUpload from "./DragDropFileUpload.vue"
+import file0 from "../../mock/data0.json"
 import file1 from "../../mock/data1.json"
 import file2 from "../../mock/data2.json"
 import file3 from "../../mock/data3.json"
 import { compareCollectionsByTitleImproved, formatData } from "../utils/data"
 
 // data
-const collectionsA = ref(formatData(file1))
+const collectionsA = ref(formatData(file0))
 const collectionsB = ref(formatData(file3))
 
 const leftFile = ref<File | null>(null)

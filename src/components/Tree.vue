@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { type PropType } from "vue"
+import { computed, type PropType } from "vue"
 import { useSelectorStore } from "../store/selector"
 import Checkbox from "./Checkbox.vue"
 
@@ -11,6 +11,8 @@ const props = defineProps({
   },
 })
 
+// TODO: computed n window | n tabs
+
 // selector
 const selectorStore = useSelectorStore()
 </script>
@@ -21,11 +23,13 @@ const selectorStore = useSelectorStore()
       <details :class="col.deleted && 'text-gray-400'">
         <summary>
           <Checkbox :item="col" />
-          {{ col.title ?? "undefined" }} ({{ col.id }})
+          {{ col.title ?? "undefined" }}
+          <span class="text-sm text-gray-400">({{ col.id }})</span>
+          <span>{{ col.conflict && "⚠️" }}</span>
         </summary>
         <ul>
           <li v-for="w in col.windows ?? col.folders" :key="w.id || w.name">
-            <details :class="w.deleted && 'text-gray-400'">
+            <details :class="w.deleted && 'text-gray-400'" open>
               <summary>
                 <Checkbox :item="w" />
                 {{ w.name ?? "window" }} ({{ w.id }})

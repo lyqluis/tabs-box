@@ -3,7 +3,7 @@ import { hashCollection } from "./hash"
 export const formatData = (file) => {
   const { collections } = file
 
-  return collections.map((col) => {
+  const res = collections.map((col) => {
     const windows = col.folders ?? col.windows
     col.windows = windows.map((w) => {
       const tabs = w.links ?? w.tabs
@@ -20,6 +20,12 @@ export const formatData = (file) => {
     if (col.folders) delete col.folders
     return col
   })
+
+  return sortCollection(res)
+}
+
+const sortCollection = (collections: any[]) => {
+  return collections.sort((a, b) => a.created - b.created)
 }
 
 /**
@@ -64,6 +70,7 @@ export const compareCollectionsByTitleImproved = async (
   // Get all unique titles from both collections
   const allTitles = new Set([...mapA.keys(), ...mapB.keys()])
 
+  // BUG: 也可能存在名字不一样，但是hash一样的情况
   for (const title of allTitles) {
     const hasA = mapA.has(title)
     const hasB = mapB.has(title)
@@ -129,6 +136,11 @@ export const compareCollectionsByTitleImproved = async (
   // const hashMapA = new Map<string, any>()
   const hashMapB = new Map<string, any>()
 
+  const generateHash = async (collections: any[]) => {
+    for (const col of collections) {
+      const hash = await hashCollection(col)
+    }
+  }
   const addToHashMap = async (collections: any[], hashMap) => {
     for (const col of collections) {
       const hash = await hashCollection(col)
@@ -137,13 +149,12 @@ export const compareCollectionsByTitleImproved = async (
   }
 
   await Promise.all([
+    generateHash(untitledA),
     // addToHashMap(untitledA, hashMapA),
     addToHashMap(untitledB, hashMapB),
   ])
 
-  // TODO: compare untitiled by hash
-  // iterate untitled collections A, get hash,
-  // chech if hashMapB has this hash as key
+  // compare untitiled by hash
   for (const colA of untitledA) {
     const hash = colA.hash
     if (hashMapB.has(hash)) {
@@ -159,5 +170,45 @@ export const compareCollectionsByTitleImproved = async (
     conflictCollectionsB.push(col)
   }
 
+  tagConfictCollections(conflictCollectionsA, conflictCollectionsB)
+
   return { sameCollections, conflictCollectionsA, conflictCollectionsB }
+}
+
+// tag conflict collections between A and B
+// find out those with the same name or id but not undefined
+const tagConfictCollections = (collectionsA, collectionsB) => {
+  for (const colA of collectionsA) {
+    const titleA = colA.title
+    const idA = colA.id
+    const hashA = colA.hash
+    const colB = collectionsB.find(
+      (c) => c.id === idA || (titleA && c.title === titleA) || c.hash === hashA,
+    )
+    if (colA && colB) {
+      colA.conflict = colB.id
+      colB.conflict = colA.id
+    }
+  }
+}
+
+// TODO:
+// tag in compare that window should be tagged with conflict ?
+export const addItemToTarget = (item, toCollections) => {
+  if (item.window) {
+    // tab
+    const window = tab.window
+    const collection = window.collection
+    let toCollection
+    if (collection.conflict) {
+      toCollection = toCollections.find((c) => c.id === collection.conflict)
+    }
+  } else if (item.collection) {
+    // window
+  } else {
+    // collection
+  }
+}
+export const deleteItem = (item) => {
+  item.deleted = true
 }
