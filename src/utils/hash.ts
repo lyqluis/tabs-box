@@ -1,3 +1,6 @@
+import type { TaskCollection, TaskWindow } from "../types/data"
+import type { WrappedCollection, WrappedWindow } from "./data"
+
 // 生成稳定哈希（使用SHA-256，可替换为其他算法）
 async function generateHash(str: string) {
   // console.log("generateHash start")
@@ -18,7 +21,7 @@ async function generateHash(str: string) {
 
 // TODO: no need
 // 生成Tab的哈希（基于URL）
-async function hashTab(tab: Tab) {
+async function hashTab(tab) {
   return generateHash(
     JSON.stringify({
       url: tab.url, // 可扩展其他属性如title
@@ -27,28 +30,28 @@ async function hashTab(tab: Tab) {
 }
 
 // 生成Window的哈希（基于所有Tab哈希的排序组合）
-async function hashWindow(window: Window) {
+async function hashWindow(window: TaskWindow) {
   // NOTE: which is better performance?
   // 1. hashTab => hashWindow
   // 2. join all urls => hashWindow
   // const tabHashes = await Promise.all(window.tabs.map(hashTab))
   // return generateHash(JSON.stringify(tabHashes.sort())) // 排序保证顺序无关
-  const urls = window.tabs.map((tab) => tab.url).sort()
+  const urls = window.raw.tabs.map((tab) => tab.raw.url).sort()
   // console.log("hashwindow - urls", urls)
   const hash = await generateHash(urls.join("|"))
   // console.log("hashwindow finished", hash)
-  window.hash = hash
+  window.extra.hash = hash
   return hash
 }
 
 // 生成Collection的哈希（基于标题和所有Window哈希）
-async function hashCollection(collection: Collection) {
+async function hashCollection(collection: TaskCollection) {
   // console.log("hash collection start")
-  const windowHashes = await Promise.all(collection.windows.map(hashWindow))
+  const windowHashes = await Promise.all(collection.raw.windows.map(hashWindow))
   const hash = await generateHash(
     JSON.stringify(windowHashes.sort()), // 排序保证窗口顺序无关
   )
-  collection.hash = hash
+  collection.extra.hash = hash
   return hash
 }
 

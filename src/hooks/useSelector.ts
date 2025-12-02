@@ -1,4 +1,3 @@
-import { defineStore } from "pinia"
 import { computed, ref } from "vue"
 import type { Collection, WrappedCollection } from "../types/data"
 
@@ -8,9 +7,9 @@ export type SelectedItem = {
   windowIndex?: number
 }
 
-export const useSelectorStore = defineStore("selector", () => {
+export const useSelector = () => {
   // 1. 状态
-  const selectedList = ref<SelectedItem[]>([])
+  const selectedList = ref<WrappedCollection[]>([])
   const isTransferMode = ref(false) // 是否开启select模式
   const activeFileOperatorId = ref<string | number | null>(null) // 当前激活的FileOperator ID
 
@@ -77,11 +76,4 @@ export const useSelectorStore = defineStore("selector", () => {
     enableTranferMode,
     disableTransferMode,
   }
-})
-
-// DEV: 仅开发模式生效，繁殖热重载暴露数据
-if (import.meta.hot) {
-  import.meta.hot.accept(() => {
-    useSelectorStore().$reset()
-  })
 }

@@ -1,31 +1,40 @@
+import { readonly, shallowReactive } from "vue"
+import type {
+  WrappedData,
+  Tab,
+  Window,
+  Collection,
+  TaskCollection,
+  TaskTab,
+  TaskWindow,
+  WrappedCollection,
+  WrappedTab,
+  WrappedWindow,
+} from "../types/data"
 import { hashCollection } from "./hash"
 
-export const formatData = (file) => {
+export const formatData = (file: any) => {
   const { collections } = file
 
-  const res = collections.map((col) => {
+  const res: TaskCollection[] = collections.map((col: any) => {
     const windows = col.folders ?? col.windows
-    col.windows = windows.map((w) => {
+    col.windows = windows.map((w: any) => {
       const tabs = w.links ?? w.tabs
-      w.tabs = tabs.map((t) => {
-        t.window = w
-        t.windowId = w.id
-        return t
+      w.tabs = tabs.map((t: any) => {
+        return { raw: t, extra: {} }
       })
       if (w.links) delete w.links
-      w.collection = col
-      w.collectionId = col.id
-      return w
+      return { raw: w, extra: {} }
     })
     if (col.folders) delete col.folders
-    return col
+    return { raw: col, extra: {} }
   })
 
   return sortCollection(res)
 }
 
-const sortCollection = (collections: any[]) => {
-  return collections.sort((a, b) => a.created - b.created)
+const sortCollection = (collections: TaskCollection[]) => {
+  return collections.sort((a, b) => a.raw.created - b.raw.created)
 }
 
 /**
@@ -35,18 +44,24 @@ const sortCollection = (collections: any[]) => {
  * @returns Merged collection array with all collections preserved
  */
 export const compareCollectionsByTitleImproved = async (
-  collections1: any[],
-  collections2: any[],
-): Promise<any[]> => {
-  if (!collections1?.length) return collections2
-  if (!collections2?.length) return collections1
+  collections1: TaskCollection[],
+  collections2: TaskCollection[],
+): Promise<{
+  sames: TaskCollection[]
+  conflictsA: TaskCollection[]
+  conflictsB: TaskCollection[]
+}> => {
+  if (!collections1?.length)
+    return { sames: [], conflictsA: [], conflictsB: collections2 }
+  if (!collections2?.length)
+    return { sames: [], conflictsA: collections1, conflictsB: [] }
 
   // 1. Process collections with defined titles - create enhanced mapping
-  const createEnhancedTitleMap = async (collections) => {
-    const map = new Map()
+  const createEnhancedTitleMap = async (collections: TaskCollection[]) => {
+    const map = new Map<string, TaskCollection[]>()
 
     for (const col of collections) {
-      const title = col.title
+      const title = col.raw.title
       // Ignore undefined and empty string titles
       if (!title) continue
 
@@ -63,9 +78,9 @@ export const compareCollectionsByTitleImproved = async (
   const mapA = await createEnhancedTitleMap(collections1)
   const mapB = await createEnhancedTitleMap(collections2)
 
-  const sameCollections = []
-  const conflictCollectionsA = []
-  const conflictCollectionsB = []
+  const sames = []
+  const conflictsA = []
+  const conflictsB = []
 
   // Get all unique titles from both collections
   const allTitles = new Set([...mapA.keys(), ...mapB.keys()])
@@ -87,12 +102,12 @@ export const compareCollectionsByTitleImproved = async (
 
         for (const colB of colsB) {
           // Compare by hash
-          const hashA = colA.hash
-          const hashB = colB.hash
+          const hashA = colA.extra.hash
+          const hashB = colB.extra.hash
 
           if (hashA === hashB) {
             // Hashes match, keep one (prefer B as it's from local storage)
-            sameCollections.push(colB)
+            sames.push(colB)
             foundMatch = true
             break
           }
@@ -100,33 +115,33 @@ export const compareCollectionsByTitleImproved = async (
 
         // If no match found, add collection A (it's from imported data)
         if (!foundMatch) {
-          conflictCollectionsA.push(colA)
+          conflictsA.push(colA)
         }
       }
 
       // Add collections from B that weren't matched with A
       for (const colB of colsB) {
-        const existsInResult = sameCollections.some((c) => c.id === colB.id)
+        const existsInResult = sames.some((c) => c.raw.id === colB.raw.id)
         if (!existsInResult) {
-          conflictCollectionsB.push(colB)
+          conflictsB.push(colB)
         }
       }
     } else if (hasA) {
       // Only in A - add all collections with this title
       const colsA = mapA.get(title)!
-      conflictCollectionsA.push(...colsA)
+      conflictsA.push(...colsA)
     } else if (hasB) {
       // Only in B - add all collections with this title
       const colsB = mapB.get(title)!
-      conflictCollectionsB.push(...colsB)
+      conflictsB.push(...colsB)
     }
   }
 
   // TODO:
   // 2. Handle collections without titles (empty string, undefined, null)
   // Incremental processing, all kept, user can delete manually
-  const filterUntitled = (collections: any[]) => {
-    return collections.filter((col) => !col.title)
+  const filterUntitled = (collections: TaskCollection[]) => {
+    return collections.filter((col) => !col.raw.title)
   }
 
   const untitledA = filterUntitled(collections1)
@@ -134,14 +149,17 @@ export const compareCollectionsByTitleImproved = async (
 
   // Hash -> collection for untitled collections
   // const hashMapA = new Map<string, any>()
-  const hashMapB = new Map<string, any>()
+  const hashMapB = new Map<string, TaskCollection>()
 
-  const generateHash = async (collections: any[]) => {
+  const generateHash = async (collections: TaskCollection[]) => {
     for (const col of collections) {
       const hash = await hashCollection(col)
     }
   }
-  const addToHashMap = async (collections: any[], hashMap) => {
+  const addToHashMap = async (
+    collections: TaskCollection[],
+    hashMap: Map<string, TaskCollection>,
+  ) => {
     for (const col of collections) {
       const hash = await hashCollection(col)
       hashMap.set(hash as string, col)
@@ -156,45 +174,160 @@ export const compareCollectionsByTitleImproved = async (
 
   // compare untitiled by hash
   for (const colA of untitledA) {
-    const hash = colA.hash
+    const hash = colA.extra.hash ?? ""
     if (hashMapB.has(hash)) {
-      sameCollections.push(colA)
+      sames.push(colA)
       hashMapB.delete(hash)
     } else {
-      conflictCollectionsA.push(colA)
+      conflictsA.push(colA)
     }
   }
 
   // Add all unique untitled collections
   for (const col of hashMapB.values()) {
-    conflictCollectionsB.push(col)
+    conflictsB.push(col)
   }
 
-  tagConfictCollections(conflictCollectionsA, conflictCollectionsB)
+  tagConfictCollections(conflictsA, conflictsB)
 
-  return { sameCollections, conflictCollectionsA, conflictCollectionsB }
+  return { sames, conflictsA, conflictsB }
 }
 
 // tag conflict collections between A and B
 // find out those with the same name or id but not undefined
-const tagConfictCollections = (collectionsA, collectionsB) => {
+const tagConfictCollections = (
+  collectionsA: TaskCollection[],
+  collectionsB: TaskCollection[],
+) => {
   for (const colA of collectionsA) {
-    const titleA = colA.title
-    const idA = colA.id
-    const hashA = colA.hash
+    const titleA = colA.raw.title
+    const idA = colA.raw.id
+    const hashA = colA.extra.hash
     const colB = collectionsB.find(
-      (c) => c.id === idA || (titleA && c.title === titleA) || c.hash === hashA,
+      (c) =>
+        c.raw.id === idA ||
+        (titleA && c.raw.title === titleA) ||
+        c.extra.hash === hashA,
     )
     if (colA && colB) {
-      colA.conflict = colB.id
-      colB.conflict = colA.id
+      colA.extra.conflict = colB.raw.id
+      colB.extra.conflict = colA.raw.id
     }
+  }
+}
+
+/* -------------------- shallowReactive ------------------------*/
+const wrapTab = (tab: TaskTab) =>
+  shallowReactive({
+    data: readonly(tab.raw),
+    checked: false,
+    ...tab.extra,
+    window: null as any,
+    windowId: null as any,
+  })
+
+const wrapWindow = (window: TaskWindow) => {
+  const tabs = window.raw.tabs.map(wrapTab)
+  const win = shallowReactive({
+    data: readonly({ ...window.raw, tabs: tabs.map((t) => t.data) }),
+    tabs,
+    checked: false,
+    ...window.extra,
+    collection: null as any,
+    collectionId: null as any,
+  })
+  tabs.map((t) => {
+    t.window = win
+    t.windowId = win.data.id
+  })
+  return win
+}
+
+export const wrapCollection = (col: TaskCollection) => {
+  const windows = col.raw.windows.map(wrapWindow)
+  const collection = shallowReactive({
+    data: readonly({ ...col.raw, windows: windows.map((w) => w.data) }),
+    windows,
+    checked: false,
+    ...col.extra,
+  })
+  windows.map((w) => {
+    w.collection = collection
+    w.collectionId = collection.data.id
+  })
+  return collection
+}
+/* -------------------- shallowReactive end ------------------------*/
+
+export const cloneWrappedTab = (tab: WrappedTab) => {
+  return shallowReactive({
+    ...tab,
+  })
+}
+export const cloneWrappedWindow = (w: WrappedWindow) => {
+  const tabs = w.tabs.map(cloneWrappedTab)
+  const win = shallowReactive({
+    ...w,
+    tabs,
+  })
+  tabs.map((t) => {
+    t.window = win
+  })
+  return win
+}
+export const cloneWrappedCollection = (col: WrappedCollection) => {
+  const windows = col.windows.map(cloneWrappedWindow)
+  const collection = shallowReactive({
+    ...col,
+    windows,
+    transferred: false,
+  })
+  windows.map((w) => {
+    w.collection = collection
+  })
+  return collection
+}
+
+export const isCollectionChecked = (item) => {
+  if (item.windows) {
+    return item.checked
+  }
+  return false
+}
+
+// TODO: handle transfer
+// 1. if traget is window, transfer all checked tabs to target
+// 2. if target is collection,
+// 2.1 if from is window, ?
+// 2.2 if from is tas, ?
+// 3. from is collection, how to transfer to the list
+// TODO:
+export const getAllCheckedItems = (
+  type: "tab" | "window" | "collection",
+  item,
+) => {
+  // debugger
+  if (type === "tab") {
+    if (item.tabs) return item.tabs.filter((t) => t.checked)
+    if (item.windows)
+      return item.windows.reduce((acc, w) => {
+        acc.push(...w.tabs.filter((t) => t.checked))
+        return acc
+      }, [])
+    return item.checked ? [item] : null
+  }
+  if (type === "window") {
+    if (item.tabs) return item.checked ? [item] : null
+    if (item.windows)
+      return item.windows.filter((w) => w.checked || w.indeterminate)
+    return item.window.checked ? [item.window] : null
   }
 }
 
 // TODO:
 // tag in compare that window should be tagged with conflict ?
-export const addItemToTarget = (item, toCollections) => {
+// @parent, Window | Collection
+export const addItemToTarget = (item, parent) => {
   if (item.window) {
     // tab
     const window = tab.window
@@ -202,6 +335,7 @@ export const addItemToTarget = (item, toCollections) => {
     let toCollection
     if (collection.conflict) {
       toCollection = toCollections.find((c) => c.id === collection.conflict)
+    } else {
     }
   } else if (item.collection) {
     // window
@@ -211,4 +345,43 @@ export const addItemToTarget = (item, toCollections) => {
 }
 export const deleteItem = (item) => {
   item.deleted = true
+}
+
+export const moveTabsToWindow = (tabs: WrappedTab[], window: WrappedWindow) => {
+  const clonedTabs = tabs.map(cloneWrappedTab)
+  clonedTabs.map((t) => {
+    t.window = window
+    t.windowId = window.data.id
+  })
+  window.tabs = [...window.tabs, ...clonedTabs]
+  return clonedTabs
+}
+export const moveWindowsToCollection = (
+  windows: WrappedWindow[],
+  collection: WrappedCollection,
+) => {
+  const clonedWindows = windows.map(cloneWrappedWindow)
+  clonedWindows.map((w) => {
+    // only move checked tabs
+    w.tabs = w.tabs.filter((t) => t.checked)
+    w.collection = collection
+    w.collectionId = collection.data.id
+  })
+  collection.windows = [...collection.windows, ...clonedWindows]
+  return clonedWindows
+}
+export const moveCollectionToList = (
+  collection: WrappedCollection,
+  list: WrappedCollection[],
+) => {
+  // 1. clone a new item
+  const col = cloneWrappedCollection(collection)
+  // only move checked windows/windows with checked tabs
+  col.windows = col.windows.filter((w) => w.checked || w.indeterminate)
+  col.windows.map((w) => {
+    w.tabs = w.tabs.filter((t) => t.checked)
+  })
+  console.log("move collection cloned", col)
+  // 2. add new item to target list
+  list.value = [...list.value, col]
 }

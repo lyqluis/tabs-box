@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, ref } from "vue"
+import { reactive, ref, shallowRef } from "vue"
 import Layout from "./Layout.vue"
 import FileOperator from "./FileOperator.vue"
 import DragDropFileUpload from "./DragDropFileUpload.vue"
@@ -7,18 +7,37 @@ import file0 from "../../mock/data0.json"
 import file1 from "../../mock/data1.json"
 import file2 from "../../mock/data2.json"
 import file3 from "../../mock/data3.json"
-import { compareCollectionsByTitleImproved, formatData } from "../utils/data"
+import {
+  compareCollectionsByTitleImproved,
+  formatData,
+  moveCollectionToList,
+  wrapCollection,
+  getAllCheckedItems,
+  moveTabsToWindow,
+  moveWindowsToCollection,
+} from "../utils/data"
+import { useSelectorStore } from "../store/selector"
+import type {
+  WrappedCollection,
+  WrappedWindow,
+  WrappedTab,
+} from "../types/data"
+import { checkTree } from "../utils/tree"
 
 // data
-const collectionsA = ref(formatData(file0))
-const collectionsB = ref(formatData(file3))
+const collectionsA = ref(formatData(JSON.parse(JSON.stringify(file0))))
+const collectionsB = ref(formatData(JSON.parse(JSON.stringify(file3))))
+const sameCollections = ref([])
+const conflictCollectionsA = shallowRef<WrappedCollection[]>([])
+const conflictCollectionsB = shallowRef<WrappedCollection[]>([])
 
+const selectorStore = useSelectorStore()
+
+/* -------------- no use --------------- */
 const leftFile = ref<File | null>(null)
 const rightFile = ref<File | null>(null)
 const leftContent = ref<string>("")
 const rightContent = ref<string>("")
-const diffResult = reactive({})
-
 const handleFileUpload = (side: "left" | "right", file: File) => {
   if (side === "left") {
     leftFile.value = file
@@ -36,14 +55,72 @@ const handleFileUpload = (side: "left" | "right", file: File) => {
   }
   reader.readAsText(file)
 }
+/* -------------- no use --------------- */
 
 const compareFiles = async () => {
-  const result = await compareCollectionsByTitleImproved(
-    collectionsA.value,
-    collectionsB.value,
-  )
-  Object.assign(diffResult, result)
-  console.log("compare", diffResult)
+  // const result = await compareCollectionsByTitleImproved(
+  //   collectionsA.value,
+  //   collectionsB.value,
+  // )
+  // Object.assign(diffResult, result)
+  const { sames, conflictsA, conflictsB } =
+    await compareCollectionsByTitleImproved(
+      collectionsA.value,
+      collectionsB.value,
+    )
+  sameCollections.value = sames
+  conflictCollectionsA.value = conflictsA.map(wrapCollection)
+  conflictCollectionsB.value = conflictsB.map(wrapCollection)
+  // console.log("compare", diffResult)
+}
+
+const moveCollection = (targetSide: "left" | "right") => {
+  const targetCollections =
+    targetSide === "left" ? conflictCollectionsA : conflictCollectionsB
+  const sourceId = targetSide === "left" ? "right" : "left"
+  const selectedList = selectorStore.getSelectedListByOperator(sourceId)
+  selectedList.map((item) => {
+    // 1. add new item to target list
+    // 2. add `transferred` flag to item
+    moveCollectionToList(item.value, targetCollections)
+    item.value.transferred = true
+  })
+}
+const moveToTarget = (target, operatorId: "left" | "right") => {
+  const sourceId = operatorId === "left" ? "right" : "left"
+  const selectedList = selectorStore.getSelectedListByOperator(sourceId)
+  if (target.tabs) {
+    // target is window, move all checked tabs
+    // 1. get all checked tabs
+    const allCheckedItems: WrappedTab[] = []
+    selectedList.map((item) => {
+      allCheckedItems.push(...getAllCheckedItems("tab", item.value))
+    })
+    // 2. clone tabs, add cloned tabs to target
+    const clonedTabs = moveTabsToWindow(allCheckedItems, target)
+    clonedTabs.map((t) => checkTree(t, t?.checked))
+    // 3. add `transferred` to origin tabs
+    allCheckedItems.map((t) => {
+      t.transferred = true
+      checkTree(t, false)
+    })
+  } else if (target.windows) {
+    // target is collection, move checked tabs' window
+    // 1. get all checked window
+    const allCheckedWindows: WrappedWindow[] = []
+    selectedList.map((item) => {
+      allCheckedWindows.push(...getAllCheckedItems("window", item.value))
+    })
+    // 2. clone window, add cloned windows to target collection
+    const clonedWindows = moveWindowsToCollection(allCheckedWindows, target)
+    // 3. handle cloned windows `checked`
+    clonedWindows.map((w) => checkTree(w, !!w?.checked))
+    // 4. handle origin windows `transferred` and `checked`
+    allCheckedWindows.map((w) => {
+      w.transferred = true
+      checkTree(w, false)
+    })
+  }
 }
 </script>
 
@@ -83,19 +160,28 @@ const compareFiles = async () => {
     <template #content-container>
       <FileOperator
         fileName="file1"
-        :collections="diffResult?.conflictCollectionsA"
+        operator-id="left"
+        :collections="conflictCollectionsA"
+        @move-collection="moveCollection('left')"
+        @move-to-target="moveToTarget"
       />
-      <FileOperator :collections="diffResult?.conflictCollectionsB" />
+      <FileOperator
+        operator-id="right"
+        :collections="conflictCollectionsB"
+        @move-collection="moveCollection('right')"
+        @move-to-target="moveToTarget"
+      />
     </template>
   </Layout>
 </template>
 
 <style scoped>
-@reference '../style.css';
-
-.test {
-  @apply bg-red-500;
-}
+/* use tailwind in style tag */
+/* @reference '../style.css'; */
+/**/
+/* .test { */
+/*   @apply bg-red-500; */
+/* } */
 
 .file-upload-section {
   display: flex;

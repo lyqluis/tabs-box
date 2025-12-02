@@ -30,13 +30,38 @@
 
 ### 3. 交互操作按钮
 
-#### 迁移操作 (→)
+#### 精确转移操作 (→) - 🆕 新设计
 
-- **功能**: 将选中项目从一侧移动到另一侧
-- **行为**: 原位置删除，目标位置添加
-- **层级处理**: 支持Collection、Window、Tab三个层级
-- **数据完整性**: 深拷贝避免引用问题
-- 如果collection.conflict为true，则直接将最小项目（数组）添加到右侧同名/id的collection以及window内
+- **两步式交互**:
+  1. 在源文件中选择要转移的项目
+  2. 点击转移按钮，进入"等待选择目标"状态
+  3. 在目标文件中点击具体的目标位置
+  4. 系统将项目精确转移到选定的目标下
+
+- **行为变化**:
+  - 转移按钮变为"选择目标中..."状态
+  - 目标区域显示黄色高亮和"📍 可选目标"标识
+  - 支持精确定位：可以转移到Collection、Window或Tab级别
+  - 取消按钮：进入转移模式后可以随时取消操作
+
+- **层级支持**:
+  - **Collection → Collection**: 整个集合迁移
+  - **Window → Collection**: Window迁移到目标Collection内
+  - **Window → Window**: Window迁移到目标Window旁边
+  - **Tab → Window**: Tab迁移到目标Window内
+  - ~~**Tab → Collection**: Tab迁移到目标Collection的第一个Window内~~
+  - **最小移动单位是window**
+- ?
+  - 如何判断selected item是整个转移还是里面的tab转移
+  - 整个collection转移的话，没有选择target，但是确定按钮需要enabled
+  - 如果target是window，优先转移所有tab
+  - 如果target是collection，优先转移所有window
+
+- **视觉反馈**:
+  - 黄色脉冲提示横幅，显示"正在选择转移目标"
+  - 目标区域高亮显示，hover效果为蓝色
+  - 每个可选目标显示📍图标
+  - 转移按钮显示取消选项 ✕
 
 #### 复制操作 (⧈)
 
@@ -250,4 +275,3 @@ Object.values(groups).forEach((group) => {
 - **安全导出**准确合并的最终数据
 
 该设计方案充分考虑了用户体验、技术实现和未来扩展，为项目的后续发展奠定了坚实的基础。
-
