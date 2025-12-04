@@ -1,8 +1,12 @@
 <script lang="ts" setup>
 import { computed, ref } from "vue"
 import Tree from "./Tree.vue"
-import { useSelectorStore, type SelectedItem } from "../store/selector"
+import { useTransferStore } from "../store/transfer"
 import { getAllCheckedItems, moveCollectionToList } from "../utils/data"
+import { useSelector } from "../hooks/useSelector"
+import type { WrappedCollection } from "../types/data.d.ts"
+import { checkTree } from "../utils/tree"
+import { watch } from "vue"
 
 const props = defineProps({
   fileName: {
@@ -19,10 +23,19 @@ const props = defineProps({
   },
 })
 
+const {
+  selectedList,
+  addToSelectedList,
+  removeFromSelectedList,
+  clearSelectedList,
+} = useSelector()
+
+// transfer
+const transferStore = useTransferStore()
 const isSelectMode = computed<boolean>(() => {
   return (
-    selectorStore.isTransferMode &&
-    selectorStore.activeFileOperatorId === props.operatorId
+    transferStore.isTransferMode &&
+    transferStore.activeFileOperatorId === props.operatorId
   )
 })
 
@@ -32,16 +45,25 @@ const emit = defineEmits(["move-to-target", "move-collection"])
 // select模式相关状态
 const selectedItem = ref(null)
 
-// selector
-const selectorStore = useSelectorStore()
+const handleChecked = (checked: boolean, collection: WrappedCollection) => {
+  if (checked) {
+    addToSelectedList(collection)
+    transferStore.setAcitveFileOperatorId(props.operatorId)
+  } else {
+    removeFromSelectedList(collection)
+    transferStore.setAcitveFileOperatorId(props.operatorId)
+  }
+}
 
 const remove = () => {
   const checkedWindows = []
   const checkedTabs = []
-  selectorStore.selectedList.map((item: SelectedItem) => {
-    // TODO: find all checked sub windows and tabs, tag their `deleted` to true
-    const collection = item.value
-    checkedWindows.push(...getAllCheckedItems("window", collection))
+  console.log("remove", selectedList)
+  selectedList.value.map((item: WrappedCollection) => {
+    // find all checked sub windows and tabs, tag their `deleted` to true
+    // TODO: deleted ui in the tree
+    const collection = item
+    checkedWindows.push(...getAllCheckedItems("window", collection, false))
     checkedTabs.push(...getAllCheckedItems("tab", collection))
   })
   checkedWindows.map((w) => {
@@ -50,23 +72,24 @@ const remove = () => {
   checkedTabs.map((t) => {
     t.deleted = true
   })
-  selectorStore.clear()
+  selectedList.value.map((col) => checkTree(col, false))
+  clearSelectedList()
 }
 
 // DEV: 开启select模式
 const enableSelectMode = () => {
-  selectorStore.enableTranferMode(props.operatorId)
+  transferStore.enableTransferMode(props.operatorId)
   selectedItem.value = null
 }
 
 // 关闭select模式
 const disableSelectMode = () => {
-  selectorStore.disableTransferMode()
+  transferStore.disableTransferMode()
   selectedItem.value = null
   // 返回到另一个file的 checked + move enabled 状态
   const activeSelectedOperatorId =
     props.operatorId === "left" ? "right" : "left"
-  selectorStore.setAcitveFileOperatorId(activeSelectedOperatorId)
+  transferStore.setAcitveFileOperatorId(activeSelectedOperatorId)
 }
 
 const handleTransfer = (isMovingToRoot?: boolean) => {
@@ -75,9 +98,8 @@ const handleTransfer = (isMovingToRoot?: boolean) => {
     emit("move-collection", props.operatorId)
 
     disableSelectMode()
-    selectorStore.disableTransferMode()
+    transferStore.disableTransferMode()
     selectedItem.value = null
-    selectorStore.clear()
     return
   }
   // move specific tab/window to target selected item
@@ -90,27 +112,29 @@ const handleTransfer = (isMovingToRoot?: boolean) => {
     emit("move-to-target", selectedItem.value, props.operatorId)
 
     disableSelectMode()
-    selectorStore.disableTransferMode()
+    transferStore.disableTransferMode()
     selectedItem.value = null
-    selectorStore.clear()
   }
 }
 
 const move = () => {
-  if (selectorStore.selectedList.length) {
+  if (selectedList.value.length) {
     // enable tranfer mode
     const activeSelectedOperatorId =
       props.operatorId === "left" ? "right" : "left"
-    selectorStore.enableTranferMode(activeSelectedOperatorId)
+    transferStore.enableTransferMode(activeSelectedOperatorId)
+    transferStore.setTransferList(selectedList.value)
     selectedItem.value = null
   }
 }
 
-// TODO:
-// 1. 排序collections
-// - delete collection/window/tab
-// - add collection/window/tab
-// -
+watch(
+  () => transferStore.transferList,
+  (list, preList) => {
+    console.log("watch transfer list")
+    if (!list.length) selectedList.value = []
+  },
+)
 </script>
 
 <template>
@@ -128,27 +152,21 @@ const move = () => {
         >
           {{ isSelectMode ? "取消选择" : "选择模式" }}
         </div>
-        <div
+        <button
           class="btn btn-sm"
           @click="remove"
-          :disabled="
-            isSelectMode ||
-            !(
-              selectorStore.selectedList.length &&
-              selectorStore.activeFileOperatorId === operatorId
-            )
-          "
+          :disabled="!selectedList.length"
         >
           x
-        </div>
+        </button>
         <button
           class="btn btn-sm"
           @click="move"
           :disabled="
             isSelectMode ||
             !(
-              selectorStore.selectedList.length &&
-              selectorStore.activeFileOperatorId === operatorId
+              selectedList.length &&
+              transferStore.activeFileOperatorId === operatorId
             )
           "
         >
@@ -178,6 +196,7 @@ const move = () => {
         :operator-id="operatorId"
         :active-item-id="selectedItem?.data?.id"
         @item-selected="selectedItem = $event"
+        @item-checked="handleChecked"
       ></Tree>
     </div>
   </div>

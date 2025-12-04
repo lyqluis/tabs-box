@@ -25,7 +25,7 @@
 - [x] move tabs/windows/collections
 - [x] checked window/collection, sub item should be checked
 - [x] checked maybe set to data, convenient to set both checkbox ui and data
-- [ ] delete tab/window/collection
+- [x] delete tab/window/collection
 - [ ] export tree
   - use wrapped-collection.windows to replace data.windows; same to wrapped-window.tabs
 
@@ -33,3 +33,4 @@
 
 - [x] wrapped collectin.data.windows still has `raw` and `extra`, tab is the same
 - [x] click check box, will open conflict tree
+- [?] after hot reload, conflict expand not work

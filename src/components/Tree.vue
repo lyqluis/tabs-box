@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { onMounted, watch, type PropType } from "vue"
-import { useSelectorStore } from "../store/selector"
 import { findRootCollection, checkParent, checkTree } from "../utils/tree.ts"
 import { nextTick } from "vue"
 import type { WrappedCollection } from "../types/data"
+import { useTransferStore } from "../store/transfer"
 
 // Define the props for the Tree component
 const props = defineProps({
@@ -31,21 +31,15 @@ const props = defineProps({
 const emit = defineEmits(["item-selected", "item-checked"])
 
 // selector
-const selectorStore = useSelectorStore()
+const transferStore = useTransferStore()
 
 // TODO: computed n window | n tabs
 
 const handleItemCheck = (event, item) => {
   const checked = event.target.checked
-  console.log("[Tree]: item checked", checked, item)
   const collection = checkTree(item, checked)
-  if (checked) {
-    selectorStore.add({ value: collection, source: props.operatorId })
-    selectorStore.setAcitveFileOperatorId(props.operatorId)
-  } else {
-    selectorStore.remove({ value: collection, source: props.operatorId })
-    selectorStore.setAcitveFileOperatorId(props.operatorId)
-  }
+  emit("item-checked", checked, collection)
+  // console.log("[Tree]: item checked", checked, item)
 }
 
 const handleItemClick = (event: MouseEvent, item: WrappedCollection) => {
@@ -99,7 +93,7 @@ watch(
             :indeterminate="col.indeterminate"
             @change="handleItemCheck($event, col)"
             @click.stop=""
-            :disabled="selectorStore.isTransferMode || col.transferred"
+            :disabled="transferStore.isTransferMode || col.transferred"
           />
           {{ col.data.title ?? "undefined" }}
           {{ col.transferred ? "(transferred)" : "" }}
@@ -123,9 +117,10 @@ watch(
                   :indeterminate="w.indeterminate"
                   @change="handleItemCheck($event, w)"
                   :disabled="
-                    selectorStore.isTransferMode ||
+                    transferStore.isTransferMode ||
                     col.transferred ||
-                    w.transferred
+                    w.transferred ||
+                    w.deleted
                   "
                 />
                 {{ w.data.title ?? "window" }}
@@ -158,10 +153,11 @@ watch(
                       :indeterminate="tab.indeterminate"
                       @change="handleItemCheck($event, tab)"
                       :disabled="
-                        selectorStore.isTransferMode ||
+                        transferStore.isTransferMode ||
                         col.transferred ||
                         tab.transferred ||
-                        w.transferred
+                        w.transferred ||
+                        tab.deleted
                       "
                     />
                     {{ tab.data.title ?? tab.data.link }}

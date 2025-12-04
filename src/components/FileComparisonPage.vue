@@ -16,7 +16,7 @@ import {
   moveTabsToWindow,
   moveWindowsToCollection,
 } from "../utils/data"
-import { useSelectorStore } from "../store/selector"
+import { useTransferStore } from "../store/transfer"
 import type {
   WrappedCollection,
   WrappedWindow,
@@ -31,7 +31,7 @@ const sameCollections = ref([])
 const conflictCollectionsA = shallowRef<WrappedCollection[]>([])
 const conflictCollectionsB = shallowRef<WrappedCollection[]>([])
 
-const selectorStore = useSelectorStore()
+const transferStore = useTransferStore()
 
 /* -------------- no use --------------- */
 const leftFile = ref<File | null>(null)
@@ -77,24 +77,24 @@ const compareFiles = async () => {
 const moveCollection = (targetSide: "left" | "right") => {
   const targetCollections =
     targetSide === "left" ? conflictCollectionsA : conflictCollectionsB
-  const sourceId = targetSide === "left" ? "right" : "left"
-  const selectedList = selectorStore.getSelectedListByOperator(sourceId)
-  selectedList.map((item) => {
+  transferStore.transferList.map((col) => {
     // 1. add new item to target list
     // 2. add `transferred` flag to item
-    moveCollectionToList(item.value, targetCollections)
-    item.value.transferred = true
+    moveCollectionToList(col, targetCollections)
+    col.transferred = true
+    checkTree(col, false)
   })
+  transferStore.clearTransferList()
 }
+// BUG: after transferred, source selected list must be cleared
 const moveToTarget = (target, operatorId: "left" | "right") => {
-  const sourceId = operatorId === "left" ? "right" : "left"
-  const selectedList = selectorStore.getSelectedListByOperator(sourceId)
+  const selectedList = transferStore.transferList
   if (target.tabs) {
     // target is window, move all checked tabs
     // 1. get all checked tabs
     const allCheckedItems: WrappedTab[] = []
     selectedList.map((item) => {
-      allCheckedItems.push(...getAllCheckedItems("tab", item.value))
+      allCheckedItems.push(...getAllCheckedItems("tab", item))
     })
     // 2. clone tabs, add cloned tabs to target
     const clonedTabs = moveTabsToWindow(allCheckedItems, target)
@@ -109,7 +109,7 @@ const moveToTarget = (target, operatorId: "left" | "right") => {
     // 1. get all checked window
     const allCheckedWindows: WrappedWindow[] = []
     selectedList.map((item) => {
-      allCheckedWindows.push(...getAllCheckedItems("window", item.value))
+      allCheckedWindows.push(...getAllCheckedItems("window", item))
     })
     // 2. clone window, add cloned windows to target collection
     const clonedWindows = moveWindowsToCollection(allCheckedWindows, target)
@@ -121,6 +121,7 @@ const moveToTarget = (target, operatorId: "left" | "right") => {
       checkTree(w, false)
     })
   }
+  transferStore.clearTransferList()
 }
 </script>
 
@@ -162,13 +163,13 @@ const moveToTarget = (target, operatorId: "left" | "right") => {
         fileName="file1"
         operator-id="left"
         :collections="conflictCollectionsA"
-        @move-collection="moveCollection('left')"
+        @move-collection="moveCollection"
         @move-to-target="moveToTarget"
       />
       <FileOperator
         operator-id="right"
         :collections="conflictCollectionsB"
-        @move-collection="moveCollection('right')"
+        @move-collection="moveCollection"
         @move-to-target="moveToTarget"
       />
     </template>

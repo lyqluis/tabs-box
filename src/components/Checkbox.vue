@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { useSelectorStore } from "../store/selector"
-
 // Define the props for the Tree component
 const props = defineProps({
   item: {

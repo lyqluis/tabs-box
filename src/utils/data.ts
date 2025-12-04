@@ -305,6 +305,7 @@ export const isCollectionChecked = (item) => {
 export const getAllCheckedItems = (
   type: "tab" | "window" | "collection",
   item,
+  includeIndeterminate: boolean = true,
 ) => {
   // debugger
   if (type === "tab") {
@@ -318,8 +319,11 @@ export const getAllCheckedItems = (
   }
   if (type === "window") {
     if (item.tabs) return item.checked ? [item] : null
-    if (item.windows)
-      return item.windows.filter((w) => w.checked || w.indeterminate)
+    const windowFilter = includeIndeterminate
+      ? (w) => w.checked || w.indeterminate
+      : (w) => w.checked
+
+    if (item.windows) return item.windows.filter(windowFilter)
     return item.window.checked ? [item.window] : null
   }
 }
