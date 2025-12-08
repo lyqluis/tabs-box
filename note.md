@@ -26,8 +26,9 @@
 - [x] checked window/collection, sub item should be checked
 - [x] checked maybe set to data, convenient to set both checkbox ui and data
 - [x] delete tab/window/collection
-- [ ] export tree
+- [x] export tree
   - use wrapped-collection.windows to replace data.windows; same to wrapped-window.tabs
+- [ ] UI: merge import area inside the tree area
 
 # BUG
 

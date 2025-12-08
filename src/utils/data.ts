@@ -1,8 +1,5 @@
 import { readonly, shallowReactive } from "vue"
 import type {
-  WrappedData,
-  Tab,
-  Window,
   Collection,
   TaskCollection,
   TaskTab,
@@ -14,6 +11,7 @@ import type {
 import { hashCollection } from "./hash"
 
 export const formatData = (file: any) => {
+  console.log("file content: ", file)
   const { collections } = file
 
   const res: TaskCollection[] = collections.map((col: any) => {
@@ -388,4 +386,29 @@ export const moveCollectionToList = (
   console.log("move collection cloned", col)
   // 2. add new item to target list
   list.value = [...list.value, col]
+}
+
+export const generateExportCollections = (
+  collections: WrappedCollection[],
+): Collection[] => {
+  return collections.map((collection) => {
+    // Create a new collection object with data from the wrapped collection
+    const exportedCollection: Collection = {
+      ...collection.data,
+      windows: collection.windows.map((window) => {
+        // Create a new window object with data from the wrapped window
+        return {
+          ...window.data,
+          tabs: window.tabs.map((tab) => {
+            // Create a new tab object with data from the wrapped tab
+            return {
+              ...tab.data,
+            }
+          }),
+        }
+      }),
+    }
+
+    return exportedCollection
+  })
 }

@@ -2,7 +2,7 @@
 import { computed, ref } from "vue"
 import Tree from "./Tree.vue"
 import { useTransferStore } from "../store/transfer"
-import { getAllCheckedItems, moveCollectionToList } from "../utils/data"
+import { getAllCheckedItems, generateExportCollections } from "../utils/data"
 import { useSelector } from "../hooks/useSelector"
 import type { WrappedCollection } from "../types/data.d.ts"
 import { checkTree } from "../utils/tree"
@@ -40,7 +40,11 @@ const isSelectMode = computed<boolean>(() => {
 })
 
 // 定义emit
-const emit = defineEmits(["move-to-target", "move-collection"])
+const emit = defineEmits([
+  "move-to-target",
+  "move-collection",
+  "export-collections",
+])
 
 // select模式相关状态
 const selectedItem = ref(null)
@@ -128,6 +132,10 @@ const move = () => {
   }
 }
 
+const exportData = () => {
+  emit("export-collections", props.collections, props.fileName)
+}
+
 watch(
   () => transferStore.transferList,
   (list, preList) => {
@@ -170,7 +178,7 @@ watch(
             )
           "
         >
-          =>
+          {{ operatorId === "left" ? "→" : "←" }}
         </button>
         <button
           v-if="isSelectMode"
@@ -187,6 +195,7 @@ watch(
         >
           确定
         </button>
+        <button class="btn btn-sm" @click="exportData">↑</button>
       </div>
     </div>
     <div class="flex-1 overflow-y-auto min-h-0">

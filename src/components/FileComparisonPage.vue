@@ -15,7 +15,9 @@ import {
   getAllCheckedItems,
   moveTabsToWindow,
   moveWindowsToCollection,
+  generateExportCollections,
 } from "../utils/data"
+import { generateFileWithClientInfo } from "../utils/file"
 import { useTransferStore } from "../store/transfer"
 import type {
   WrappedCollection,
@@ -68,10 +70,36 @@ const compareFiles = async () => {
       collectionsA.value,
       collectionsB.value,
     )
-  sameCollections.value = sames
+  sameCollections.value = sames.map(wrapCollection)
   conflictCollectionsA.value = conflictsA.map(wrapCollection)
   conflictCollectionsB.value = conflictsB.map(wrapCollection)
   // console.log("compare", diffResult)
+}
+
+const exportData = (
+  wrappedCollections: WrappedCollection[],
+  fileName: string,
+) => {
+  const file = generateFileWithClientInfo()
+  const sameExportCollections = generateExportCollections(sameCollections.value)
+  const conflictExportCollections =
+    generateExportCollections(wrappedCollections)
+  // TODO: maybe sort colelctions
+  file.collections = [...sameExportCollections, ...conflictExportCollections]
+  console.log("export data: ", file)
+
+  // BUG: filename is not right, cause import file is not prepared
+  const dataStr = JSON.stringify(file, null, 2)
+  const blob = new Blob([dataStr], { type: "application/json" })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  console.log("filename", fileName)
+  a.download = `${fileName || "tabs-box-merged-data"}.json`
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
 }
 
 const moveCollection = (targetSide: "left" | "right") => {
@@ -154,8 +182,6 @@ const moveToTarget = (target, operatorId: "left" | "right") => {
         <!-- :disabled="!leftContent || !rightContent" -->
         比较文件
       </button>
-      <button class="btn">export file1</button>
-      <button class="btn">export file2</button>
     </template>
 
     <template #content-container>
@@ -165,12 +191,14 @@ const moveToTarget = (target, operatorId: "left" | "right") => {
         :collections="conflictCollectionsA"
         @move-collection="moveCollection"
         @move-to-target="moveToTarget"
+        @export-collections="exportData"
       />
       <FileOperator
         operator-id="right"
         :collections="conflictCollectionsB"
         @move-collection="moveCollection"
         @move-to-target="moveToTarget"
+        @export-collections="exportData"
       />
     </template>
   </Layout>
