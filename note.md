@@ -28,10 +28,11 @@
 - [x] delete tab/window/collection
 - [x] export tree
   - use wrapped-collection.windows to replace data.windows; same to wrapped-window.tabs
-- [ ] UI: merge import area inside the tree area
+- [x] UI: merge import area inside the tree area
 
 # BUG
 
 - [x] wrapped collectin.data.windows still has `raw` and `extra`, tab is the same
 - [x] click check box, will open conflict tree
 - [?] after hot reload, conflict expand not work
+- [ ] expand conflict on the left side always not work

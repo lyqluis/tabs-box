@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import { reactive, ref, shallowRef } from "vue"
+import { ref, shallowRef } from "vue"
 import Layout from "./Layout.vue"
 import FileOperator from "./FileOperator.vue"
-import DragDropFileUpload from "./DragDropFileUpload.vue"
 import file0 from "../../mock/data0.json"
 import file1 from "../../mock/data1.json"
 import file2 from "../../mock/data2.json"
@@ -27,44 +26,53 @@ import type {
 import { checkTree } from "../utils/tree"
 
 // data
-const collectionsA = ref(formatData(JSON.parse(JSON.stringify(file0))))
-const collectionsB = ref(formatData(JSON.parse(JSON.stringify(file3))))
+const collectionsA = ref([])
+const collectionsB = ref([])
 const sameCollections = ref([])
 const conflictCollectionsA = shallowRef<WrappedCollection[]>([])
 const conflictCollectionsB = shallowRef<WrappedCollection[]>([])
 
 const transferStore = useTransferStore()
 
-/* -------------- no use --------------- */
+/* -------------- file upload --------------- */
 const leftFile = ref<File | null>(null)
 const rightFile = ref<File | null>(null)
 const leftContent = ref<string>("")
 const rightContent = ref<string>("")
-const handleFileUpload = (side: "left" | "right", file: File) => {
-  if (side === "left") {
-    leftFile.value = file
-  } else {
-    rightFile.value = file
-  }
+
+const handleFileUploaded = (side: "left" | "right", file: File) => {
+  console.log(`File uploaded on ${side}:`, file)
+  const fileRef = side === "left" ? leftFile : rightFile
+  fileRef.value = file
 
   const reader = new FileReader()
+  reader.readAsText(file)
+
   reader.onload = (e) => {
-    if (side === "left") {
-      leftContent.value = e.target?.result as string
-    } else {
-      rightContent.value = e.target?.result as string
+    let contentRef, collectionsRef, conflictCollectionsRef
+    try {
+      if (side === "left") {
+        contentRef = leftContent
+        collectionsRef = collectionsA
+        conflictCollectionsRef = conflictCollectionsA
+      } else {
+        contentRef = rightContent
+        collectionsRef = collectionsB
+        conflictCollectionsRef = conflictCollectionsB
+      }
+      const content = e.target?.result as string
+      contentRef.value = content
+      const jsonData = JSON.parse(content) // 解析JSON内容
+      collectionsRef.value = formatData(jsonData)
+      console.log("file JSON data:", jsonData)
+    } catch (error) {
+      console.error("Failed to parse JSON:", error)
     }
   }
-  reader.readAsText(file)
 }
-/* -------------- no use --------------- */
+/* -------------- file upload end --------------- */
 
 const compareFiles = async () => {
-  // const result = await compareCollectionsByTitleImproved(
-  //   collectionsA.value,
-  //   collectionsB.value,
-  // )
-  // Object.assign(diffResult, result)
   const { sames, conflictsA, conflictsB } =
     await compareCollectionsByTitleImproved(
       collectionsA.value,
@@ -88,14 +96,12 @@ const exportData = (
   file.collections = [...sameExportCollections, ...conflictExportCollections]
   console.log("export data: ", file)
 
-  // BUG: filename is not right, cause import file is not prepared
   const dataStr = JSON.stringify(file, null, 2)
   const blob = new Blob([dataStr], { type: "application/json" })
   const url = URL.createObjectURL(blob)
   const a = document.createElement("a")
   a.href = url
-  console.log("filename", fileName)
-  a.download = `${fileName || "tabs-box-merged-data"}.json`
+  a.download = `${fileName || "tabs-box-merged-data.json"}`
   document.body.appendChild(a)
   a.click()
   document.body.removeChild(a)
@@ -155,28 +161,6 @@ const moveToTarget = (target, operatorId: "left" | "right") => {
 
 <template>
   <Layout>
-    <!-- // TODO: move upload to content-container -->
-    <template #upload-container>
-      <!-- TODO: merge upload ui to content container -->
-      <!-- <div class="file-upload-section"> -->
-      <!--   <div class="upload-pane"> -->
-      <!--     <DragDropFileUpload -->
-      <!--       side="left" -->
-      <!--       :on-file-upload="handleFileUpload" -->
-      <!--       accept=".txt,.js,.jsx,.ts,.tsx,.html,.css" -->
-      <!--     /> -->
-      <!--   </div> -->
-      <!---->
-      <!--   <div class="upload-pane"> -->
-      <!--     <DragDropFileUpload -->
-      <!--       side="right" -->
-      <!--       :on-file-upload="handleFileUpload" -->
-      <!--       accept=".txt,.js,.jsx,.ts,.tsx,.html,.css" -->
-      <!--     /> -->
-      <!--   </div> -->
-      <!-- </div> -->
-    </template>
-
     <template #actions>
       <button class="btn" @click="compareFiles">
         <!-- :disabled="!leftContent || !rightContent" -->
@@ -186,19 +170,22 @@ const moveToTarget = (target, operatorId: "left" | "right") => {
 
     <template #content-container>
       <FileOperator
-        fileName="file1"
+        :fileName="leftFile?.name"
         operator-id="left"
         :collections="conflictCollectionsA"
         @move-collection="moveCollection"
         @move-to-target="moveToTarget"
         @export-collections="exportData"
+        @file-uploaded="handleFileUploaded"
       />
       <FileOperator
+        :fileName="rightFile?.name"
         operator-id="right"
         :collections="conflictCollectionsB"
         @move-collection="moveCollection"
         @move-to-target="moveToTarget"
         @export-collections="exportData"
+        @file-uploaded="handleFileUploaded"
       />
     </template>
   </Layout>

@@ -1,8 +1,18 @@
 <script lang="ts" setup>
-import { ref } from "vue"
+import { computed } from "vue"
+import { ref, watch } from "vue"
 
 // Define props
 const props = defineProps({
+  // allow parent component to control directly
+  forceActive: {
+    type: Boolean,
+    default: false,
+  },
+  hasExistingData: {
+    type: Boolean,
+    default: false,
+  },
   side: {
     type: String as () => "left" | "right",
     required: true,
@@ -13,7 +23,7 @@ const props = defineProps({
   },
   accept: {
     type: String,
-    default: ".txt,.js,.jsx,.ts,.tsx,.html,.css",
+    default: ".txt,.js,.jsx,.ts,.tsx,.html,.css,.json",
   },
 })
 
@@ -21,6 +31,17 @@ const props = defineProps({
 const isDragOver = ref(false)
 const fileName = ref<string | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
+
+const isEffecttiveDragOver = computed(
+  () => props.forceActive || isDragOver.value,
+)
+
+watch(
+  () => props.forceActive,
+  (val) => {
+    isDragOver.value = val
+  },
+)
 
 // Handle drag events
 const handleDragEnter = (e: DragEvent) => {
@@ -67,25 +88,39 @@ const handleFileInputChange = (e: Event) => {
 const triggerFileInput = () => {
   fileInput.value?.click()
 }
+
+defineExpose({ handleFileSelection })
 </script>
 
 <template>
   <div class="file-upload-container">
-    <h2 class="font-bold mb-1">
-      {{ side === "left" ? "左侧文件" : "右侧文件" }}
-    </h2>
+    <!-- <h2 class="font-bold mb-1"> -->
+    <!--   {{ side === "left" ? "左侧文件" : "右侧文件" }} -->
+    <!-- </h2> -->
 
     <!-- Drag and drop area -->
     <div
       class="drag-drop-area"
-      :class="{ 'drag-over': isDragOver }"
-      @dragenter="handleDragEnter"
-      @dragleave="handleDragLeave"
-      @dragover="handleDragOver"
-      @drop="handleDrop"
+      :class="{
+        // 'flex-col': true,
+        'drag-over': isEffecttiveDragOver,
+      }"
+      v-on="
+        forceActive === undefined
+          ? {
+              dragenter: handleDragEnter,
+              dragleave: handleDragLeave,
+              dragover: handleDragOver,
+              drop: handleDrop,
+            }
+          : {}
+      "
       @click="triggerFileInput"
     >
-      <div class="flex flex-col items-center justify-center p-1">
+      <div
+        v-if="!(hasExistingData && forceActive === false)"
+        class="flex flex-col items-center justify-center p-1"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-10 w-10 mb-2 text-gray-400"
@@ -97,7 +132,7 @@ const triggerFileInput = () => {
             stroke-linecap="round"
             stroke-linejoin="round"
             stroke-width="2"
-            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+            d="M7 16 a4 4 0 0 1 -.88 -7.903 A 5 5 0 1 1 15.9 6 L 16 6 a 5 5 0 0 1 1 9.9 M15 13 l-3 -3 m0 0 l-3 3 m3 -3 v12"
           />
         </svg>
         <p class="text-gray-600 mb-1">拖拽文件到此处</p>
@@ -109,14 +144,17 @@ const triggerFileInput = () => {
     <!-- Traditional file input (hidden) -->
     <input
       ref="fileInput"
+      class="hidden"
       type="file"
       :accept="accept"
       @change="handleFileInputChange"
-      class="hidden"
     />
 
     <!-- File name display -->
-    <p v-if="fileName" class="mt-2 text-sm text-gray-600">
+    <p
+      v-if="fileName && forceActive === undefined"
+      class="mt-2 text-sm text-gray-600"
+    >
       已选择: {{ fileName }}
     </p>
   </div>
@@ -126,6 +164,7 @@ const triggerFileInput = () => {
 .file-upload-container {
   width: 100%;
   min-height: 60px;
+  height: 100%;
 }
 
 .drag-drop-area {
@@ -133,9 +172,8 @@ const triggerFileInput = () => {
   border-radius: 0.5rem;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  background-color: #f9fafb;
   min-height: 40px;
-  height: auto;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -153,8 +191,8 @@ const triggerFileInput = () => {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.drag-drop-area .flex-col {
-  width: 100%;
-  text-align: center;
+.is-transparent {
+  opacity: 0.5;
+  pointer-events: none;
 }
 </style>

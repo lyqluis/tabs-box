@@ -1,12 +1,13 @@
 <script lang="ts" setup>
-import { computed, ref } from "vue"
+import { computed, ref, watch } from "vue"
 import Tree from "./Tree.vue"
+import DragDropFileUpload from "./DragDropFileUpload.vue"
 import { useTransferStore } from "../store/transfer"
 import { getAllCheckedItems, generateExportCollections } from "../utils/data"
 import { useSelector } from "../hooks/useSelector"
+import { useDrag } from "../hooks/useDrag"
 import type { WrappedCollection } from "../types/data.d.ts"
 import { checkTree } from "../utils/tree"
-import { watch } from "vue"
 
 const props = defineProps({
   fileName: {
@@ -39,11 +40,40 @@ const isSelectMode = computed<boolean>(() => {
   )
 })
 
+const uploadRef = ref()
+const handleDropFile = (e: DragEvent) => {
+  const files = e.dataTransfer?.files
+  if (files && files.length > 0 && uploadRef.value) {
+    // 调用子组件暴露的方法，完成文件处理
+    uploadRef.value.handleFileSelection(files[0])
+  }
+}
+const { isDragActive, onDragEnter, onDragLeave, onDrop } = useDrag({
+  handleDropFile,
+})
+
+// 文件上传相关
+const file = ref<File | null>(null)
+const fileContent = ref<string>("")
+const handleFileUpload = (side: "left" | "right", uploadedFile: File) => {
+  file.value = uploadedFile
+
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    fileContent.value = e.target?.result as string
+  }
+  reader.readAsText(uploadedFile)
+
+  // 触发父组件的文件上传事件（如果需要）
+  emit("file-uploaded", side, uploadedFile)
+}
+
 // 定义emit
 const emit = defineEmits([
   "move-to-target",
   "move-collection",
   "export-collections",
+  "file-uploaded",
 ])
 
 // select模式相关状态
@@ -149,9 +179,8 @@ watch(
   <div
     class="file-operator flex-1 m-0 p-2 rounded border-2 h-full flex flex-col min-h-0"
   >
-    <!-- TODO: if no collections, upload -->
     <div class="flex justify-between items-center m-2 flex-shrink-0">
-      <div>{{ fileName || "default filename" }}</div>
+      <div>{{ fileName || "no file" }}</div>
       <div class="btns flex gap-1">
         <div
           class="btn btn-sm"
@@ -198,15 +227,64 @@ watch(
         <button class="btn btn-sm" @click="exportData">↑</button>
       </div>
     </div>
-    <div class="flex-1 overflow-y-auto min-h-0">
-      <Tree
-        :collections="collections"
-        :is-select-mode="isSelectMode"
-        :operator-id="operatorId"
-        :active-item-id="selectedItem?.data?.id"
-        @item-selected="selectedItem = $event"
-        @item-checked="handleChecked"
-      ></Tree>
+    <!-- TODO: try replace code from gemini-3-pro -->
+    <!-- <div -->
+    <!--   class="flex-1 overflow-y-auto min-h-0 relative" -->
+    <!--   v-if="collections.length" -->
+    <!-- > -->
+    <div
+      class="flex-1 min-h-0 relative h-full w-full"
+      @dragenter="onDragEnter"
+      @dragover.prevent
+      @dragleave="onDragLeave"
+      @drop="onDrop"
+    >
+      <div class="absolute inset-0 z-0 overflow-y-auto">
+        <Tree
+          v-if="collections.length"
+          :collections="collections"
+          :is-select-mode="isSelectMode"
+          :operator-id="operatorId"
+          :active-item-id="selectedItem?.data?.id"
+          @item-selected="selectedItem = $event"
+          @item-checked="handleChecked"
+        ></Tree>
+      </div>
+
+      <div
+        class="absolute inset-0 z-10 transition-all duration-200"
+        :class="[
+          isDragActive && 'bg-blue-50/10',
+          isDragActive === false && collections.length > 0
+            ? 'pointer-events-none'
+            : 'pointer-events-auto',
+        ]"
+      >
+        <DragDropFileUpload
+          class="h-full w-full"
+          ref="uploadRef"
+          :force-active="isDragActive"
+          :has-existing-data="collections.length > 0"
+          :side="operatorId"
+          :on-file-upload="handleFileUpload"
+          accept=".txt,.json"
+        >
+        </DragDropFileUpload>
+      </div>
     </div>
   </div>
 </template>
+
+<style lang="css" scoped>
+.upload-pane {
+  flex: 1;
+  margin: 0;
+  min-width: 0; /* 防止flex项目溢出 */
+  height: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+</style>
