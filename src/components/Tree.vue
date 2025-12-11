@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { onMounted, watch, type PropType } from "vue"
-import { findRootCollection, checkParent, checkTree } from "../utils/tree.ts"
+import { checkTree } from "../utils/tree.ts"
 import { nextTick } from "vue"
 import type { WrappedCollection } from "../types/data"
 import { useTransferStore } from "../store/transfer"
+import { getTabsNumber } from "../utils/data"
 
 // Define the props for the Tree component
 const props = defineProps({
@@ -117,10 +118,15 @@ watch(
             @click.stop=""
             :disabled="transferStore.isTransferMode || col.transferred"
           />
-          {{ col.data.title ?? "undefined" }}
-          {{ col.transferred ? "(transferred)" : "" }}
-          <span class="text-sm text-gray-400">({{ col.data.id }})</span>
-          <span>{{ col.conflict && "⚠️" }}</span>
+          <span>
+            {{ col.data.title ?? "undefined" }}
+            <i class="text-xs">
+              {{ col.windows.length + "|" + getTabsNumber(col) }}
+              <span class="text-gray-400">({{ col.data.id }})</span>
+            </i>
+            {{ col.transferred ? "(transferred)" : "" }}
+            <span>{{ col.conflict && "⚠️" }}</span>
+          </span>
         </summary>
         <ul>
           <li v-for="w in col.windows" :key="w.data.id || w.data.name">
@@ -145,10 +151,15 @@ watch(
                     w.deleted
                   "
                 />
-                {{ w.data.title ?? "window" }}
-                ({{ w.data.id }})
-                {{ w.transferred ? "(transferred)" : "" }}
-                {{ w.deleted ? "(deleted)" : "" }}
+                <span>
+                  {{ w.data.title ?? "window" }}
+                  <i class="text-xs">
+                    {{ w.tabs.length }}
+                    <span class="text-gray400">({{ w.data.id }})</span>
+                  </i>
+                  {{ w.transferred ? "(transferred)" : "" }}
+                  {{ w.deleted ? "(deleted)" : "" }}
+                </span>
               </summary>
               <ul>
                 <li

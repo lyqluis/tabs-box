@@ -3,7 +3,7 @@ import { computed, ref, watch } from "vue"
 import Tree from "./Tree.vue"
 import DragDropFileUpload from "./DragDropFileUpload.vue"
 import { useTransferStore } from "../store/transfer"
-import { getAllCheckedItems, generateExportCollections } from "../utils/data"
+import { getAllCheckedItems } from "../utils/data"
 import { useSelector } from "../hooks/useSelector"
 import { useDrag } from "../hooks/useDrag"
 import type { WrappedCollection } from "../types/data.d.ts"
@@ -180,7 +180,7 @@ watch(
     class="file-operator flex-1 m-0 p-2 rounded border-2 h-full flex flex-col min-h-0"
   >
     <div class="flex justify-between items-center m-2 flex-shrink-0">
-      <div>{{ fileName || "no file" }}</div>
+      <div class="truncate flex-1 min-w-0">{{ fileName || "no file" }}</div>
       <div class="btns flex gap-1">
         <!-- <div -->
         <!--   class="btn btn-sm" -->
