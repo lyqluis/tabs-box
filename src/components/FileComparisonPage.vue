@@ -162,10 +162,16 @@ const moveToTarget = (target, operatorId: "left" | "right") => {
 <template>
   <Layout>
     <template #actions>
-      <button class="btn" @click="compareFiles">
-        <!-- :disabled="!leftContent || !rightContent" -->
-        比较文件
-      </button>
+      <div class="flex items-center gap-5">
+        <h1 class="text-lg font-bold">Tabs-Box 文件比较工具</h1>
+        <button
+          class="btn"
+          @click="compareFiles"
+          :disabled="!leftContent || !rightContent"
+        >
+          比较文件
+        </button>
+      </div>
     </template>
 
     <template #content-container>

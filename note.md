@@ -7,12 +7,13 @@
   - [ ] 如何从左侧到右侧添加tab/window/collection？
     - 如果冲突数组存在同title/id/hash/的collection，标为conflict属性为另一个的id
     - 通过selected item的collection.conflict来找到目标
-- [ ] selected list: 记录选中目标，获取最大根元素collection放入list
+- selected list: 记录选中目标，获取最大根元素collection放入list
 - 永远记录collection；移动的时候计算checked tab/window
   - if check tab/window，额外记录一个window序号
-- [ ] each operator has its own selected list
+- each operator has its own selected list
 - [!] 点击左侧展开，如果存在conflict，那么右侧一同展开
 - [ ] tree 展示window数量和tab数量
+- [ ] add conflict/new style in tab
 
 # UI
 

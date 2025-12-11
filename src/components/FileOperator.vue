@@ -182,12 +182,20 @@ watch(
     <div class="flex justify-between items-center m-2 flex-shrink-0">
       <div>{{ fileName || "no file" }}</div>
       <div class="btns flex gap-1">
+        <!-- <div -->
+        <!--   class="btn btn-sm" -->
+        <!--   :class="isSelectMode ? 'btn-error' : 'btn-info'" -->
+        <!--   @click="isSelectMode ? disableSelectMode() : enableSelectMode()" -->
+        <!-- > -->
+        <!--   {{ isSelectMode ? "取消选择" : "选择模式" }} -->
+        <!-- </div> -->
         <div
+          v-if="isSelectMode"
           class="btn btn-sm"
           :class="isSelectMode ? 'btn-error' : 'btn-info'"
-          @click="isSelectMode ? disableSelectMode() : enableSelectMode()"
+          @click="disableSelectMode()"
         >
-          {{ isSelectMode ? "取消选择" : "选择模式" }}
+          {{ "取消选择" }}
         </div>
         <button
           class="btn btn-sm"
@@ -227,11 +235,7 @@ watch(
         <button class="btn btn-sm" @click="exportData">↑</button>
       </div>
     </div>
-    <!-- TODO: try replace code from gemini-3-pro -->
-    <!-- <div -->
-    <!--   class="flex-1 overflow-y-auto min-h-0 relative" -->
-    <!--   v-if="collections.length" -->
-    <!-- > -->
+
     <div
       class="flex-1 min-h-0 relative h-full w-full"
       @dragenter="onDragEnter"
