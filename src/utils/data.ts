@@ -210,6 +210,71 @@ const tagConfictCollections = (
     if (colA && colB) {
       colA.extra.conflict = colB.raw.id
       colB.extra.conflict = colA.raw.id
+
+      // TODO: tag `added` flag in tab/window
+      // Process all windows and tabs to identify additions
+      // Optimized single-pass approach to eliminate duplicate loops
+      const windowMappingById = new Map<string, TaskWindow>() // Map from window id to window in B
+      const windowMappingByHash = new Map<string, TaskWindow>() // Map from window hash to window in B
+
+      // Build mappings of windows in B by their id and hash
+      for (const winB of colB.raw.windows) {
+        windowMappingById.set(winB.raw.id, winB)
+        windowMappingByHash.set(winB.extra.hash, winB)
+      }
+
+      // Keep track of windows in B that have been matched
+      const matchedWindowsInB = new Set<TaskWindow>()
+
+      // Process all windows in A
+      for (const winA of colA.raw.windows) {
+        // First, try to find by ID (standard case)
+        let winB = windowMappingByHash.get(winA.extra.hash)
+
+        if (!winB) {
+          winB = windowMappingById.get(winA.raw.id)
+          if (!winB) {
+            // no same id, no same hash
+            // Window only exists in A - mark as added
+            winA.extra.added = true
+            for (const tab of winA.raw.tabs) {
+              tab.extra.added = true
+            }
+          } else {
+            // id same, hash not same, conflict, check tabs by each
+            // Window exists in both collections - check for new tabs
+            for (const tabA of winA.raw.tabs) {
+              const hasNoConflictTab = winB.raw.tabs.some(
+                (tabB) => tabB.raw.url === tabA.raw.url,
+              )
+              if (!hasNoConflictTab) {
+                tabA.extra.added = true
+              }
+            }
+            for (const tabB of winB.raw.tabs) {
+              const hasNoConflictTab = winA.raw.tabs.some(
+                (tabA) => tabA.raw.url === tabB.raw.url,
+              )
+              if (!hasNoConflictTab) {
+                tabB.extra.added = true
+              }
+            }
+          }
+        } else {
+          matchedWindowsInB.add(winB)
+        }
+      }
+
+      // Process windows in B that were not matched (exist only in B)
+      for (const winB of colB.raw.windows) {
+        if (!matchedWindowsInB.has(winB)) {
+          // Window only exists in B - mark as added
+          winB.extra.added = true
+          for (const tab of winB.raw.tabs) {
+            tab.extra.added = true
+          }
+        }
+      }
     }
   }
 }
@@ -411,4 +476,11 @@ export const generateExportCollections = (
 
     return exportedCollection
   })
+}
+
+export const getTabsNumber = (col: WrappedCollection) => {
+  return col.windows.reduce((acc, w) => {
+    acc += w.tabs.length
+    return acc
+  }, 0)
 }

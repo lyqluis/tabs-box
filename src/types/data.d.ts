@@ -28,6 +28,7 @@ export interface TaskData<T> {
   extra: {
     hash?: string
     conflict?: string
+    added?: boolean
   }
 }
 
@@ -44,6 +45,7 @@ export interface WrappedData<T> {
   deleted?: boolean
   transferred?: boolean
   conflict?: string
+  added?: boolean
 }
 
 export type WrappedTab = WrappedData<Tab> & {

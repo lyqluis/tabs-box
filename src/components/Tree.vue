@@ -165,6 +165,7 @@ watch(
                 <li
                   v-for="tab in w.tabs ?? w.links"
                   :key="tab.data.id ?? tab.data.url ?? tab.data.link"
+                  :class="tab.added && 'bg-green-100'"
                 >
                   <!-- TODO: line clamp 2, 会渲染第三行的上沿-->
                   <a

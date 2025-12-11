@@ -11,7 +11,7 @@
   - [?] if check tab/window，额外记录一个window序号
 - each operator has its own selected list
 - expand: 点击左侧展开，如果存在conflict，那么右侧一同展开
-- [ ] add conflict/new style in tab
+- [x] add conflict/new style in tab
 
 # UI
 
