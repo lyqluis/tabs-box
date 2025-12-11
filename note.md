@@ -36,4 +36,4 @@
 - [x] wrapped collectin.data.windows still has `raw` and `extra`, tab is the same
 - [x] click check box, will open conflict tree
 - [?] after hot reload, conflict expand not work
-- [ ] expand conflict on the left side always not work
+- [x] expand conflict on the left side always not work

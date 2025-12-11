@@ -45,32 +45,54 @@ const handleItemCheck = (event, item) => {
 const handleItemClick = (event: MouseEvent, item: WrappedCollection) => {
   if (props.isSelectMode) {
     emit("item-selected", item)
-    // console.log("handle item click", item)
   }
 }
 
 const handleConflictExpand = (e: Event) => {
   const el = e.currentTarget as HTMLDetailsElement
-  const isOpen = !el.open // at the click moment, open status is pre value
+  // 防止事件重复处理
+  if ((el as any)._handlingConflictExpand) return
+  ;(el as any)._handlingConflictExpand = true
+
+  const isOpen = el.open // toggle事件触发时，open状态已经更新
   const conflictId = el.dataset.conflictId
-  const conflictColEl = document.querySelector(
-    `[data-col-id="${conflictId}"]`,
-  ) as HTMLDetailsElement
-  if (conflictColEl) conflictColEl.open = isOpen
+
+  // 只有存在冲突ID时才需要同步另一个面板
+  if (conflictId) {
+    const conflictOperatorId = props.operatorId === "left" ? "right" : "left"
+    const conflictColEl = document.querySelector(
+      `[data-col-id="${conflictOperatorId}-${conflictId}"]`,
+    ) as HTMLDetailsElement
+    if (conflictColEl) conflictColEl.open = isOpen
+  }
+
+  // 清理标记，允许下一次处理
+  ;(el as any)._handlingConflictExpand = false
 }
 
+const bindToggleEvents = async () => {
+  // 使用更具体的选择器，确保选中当前组件内的所有details元素
+  const details = document.querySelectorAll(
+    `[data-col-id^="${props.operatorId}-"]`,
+  )
+  // 为当前操作面板的元素添加监听器
+  ;[...details].map((el) => {
+    el.removeEventListener("toggle", handleConflictExpand)
+    el.addEventListener("toggle", handleConflictExpand)
+  })
+}
+
+onMounted(async () => {
+  await nextTick()
+  setTimeout(bindToggleEvents)
+})
 watch(
   () => props.collections,
   async (val, preVal) => {
-    if (!val.length) return
-    await nextTick() // make sure Dom is ready
-    const details = document.querySelectorAll("details[data-col-id]")
-    if (!details.length) return
-    ;[...details].map((el) => {
-      el.removeEventListener("click", handleConflictExpand)
-      el.addEventListener("click", handleConflictExpand)
-    })
+    await nextTick() // 确保Dom更新
+    bindToggleEvents()
   },
+  { flush: "post" }, // 确保在DOM更新后执行
 )
 </script>
 
@@ -79,7 +101,7 @@ watch(
     <li v-for="col in collections" :key="col.data.id || col.data.name">
       <details
         :class="(col.deleted || col.transferred) && 'text-gray-400'"
-        :data-col-id="col.data.id"
+        :data-col-id="operatorId + '-' + col.data.id"
         :data-conflict-id="col.conflict"
       >
         <summary

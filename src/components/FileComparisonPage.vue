@@ -72,6 +72,18 @@ const handleFileUploaded = (side: "left" | "right", file: File) => {
 }
 /* -------------- file upload end --------------- */
 
+const clearFiles = () => {
+  leftFile.value = null
+  rightFile.value = null
+  leftContent.value = ""
+  rightContent.value = ""
+  collectionsA.value = []
+  collectionsB.value = []
+  sameCollections.value = []
+  conflictCollectionsA.value = []
+  conflictCollectionsB.value = []
+}
+
 const compareFiles = async () => {
   const { sames, conflictsA, conflictsB } =
     await compareCollectionsByTitleImproved(
@@ -170,6 +182,13 @@ const moveToTarget = (target, operatorId: "left" | "right") => {
           :disabled="!leftContent || !rightContent"
         >
           比较文件
+        </button>
+        <button
+          class="btn"
+          @click="clearFiles"
+          :disabled="!leftContent || !rightContent"
+        >
+          清空文件
         </button>
       </div>
     </template>
