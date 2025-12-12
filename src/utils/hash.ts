@@ -1,5 +1,4 @@
 import type { TaskCollection, TaskWindow } from "../types/data"
-import type { WrappedCollection, WrappedWindow } from "./data"
 
 // 生成稳定哈希（使用SHA-256，可替换为其他算法）
 async function generateHash(str: string) {
