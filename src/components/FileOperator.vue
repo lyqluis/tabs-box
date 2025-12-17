@@ -162,7 +162,19 @@ const move = () => {
   }
 }
 
-const exportData = () => {
+const exportData = (isSessionBuddyFmt = false) => {
+  if (isSessionBuddyFmt) {
+    console.log("emit sb fmt")
+    emit(
+      "export-collections",
+      props.collections,
+      props.fileName,
+      isSessionBuddyFmt,
+      props.operatorId,
+    )
+    return
+  }
+  console.log("emit tb fmt")
   emit("export-collections", props.collections, props.fileName)
 }
 
@@ -232,7 +244,16 @@ watch(
         >
           确定
         </button>
-        <button class="btn btn-sm" @click="exportData">↑</button>
+        <div class="dropdown dropdown-left dropdown-end">
+          <div tabindex="0" role="button" class="btn btn-sm">↑</div>
+          <ul
+            tabindex="-1"
+            class="dropdown-content menu text-sm bg-base-100 rounded-box z-10 w-35 shadow-sm"
+          >
+            <li @click="() => exportData(true)"><a>session-buddy</a></li>
+            <li @click="() => exportData(false)"><a>tabs-box</a></li>
+          </ul>
+        </div>
       </div>
     </div>
 

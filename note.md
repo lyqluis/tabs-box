@@ -30,6 +30,7 @@
 - [x] export tree
   - use wrapped-collection.windows to replace data.windows; same to wrapped-window.tabs
 - [x] UI: merge import area inside the tree area
+- [x] add export formate supported by session-buddy
 
 # BUG
 

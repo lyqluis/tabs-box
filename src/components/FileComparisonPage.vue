@@ -2,13 +2,10 @@
 import { ref, shallowRef } from "vue"
 import Layout from "./Layout.vue"
 import FileOperator from "./FileOperator.vue"
-import file0 from "../../mock/data0.json"
-import file1 from "../../mock/data1.json"
-import file2 from "../../mock/data2.json"
-import file3 from "../../mock/data3.json"
 import {
   compareCollectionsByTitleImproved,
   formatData,
+  unTaskCollection,
   moveCollectionToList,
   wrapCollection,
   getAllCheckedItems,
@@ -16,9 +13,13 @@ import {
   moveWindowsToCollection,
   generateExportCollections,
 } from "../utils/data"
-import { generateFileWithClientInfo } from "../utils/file"
+import {
+  generateFileWithClientInfo,
+  generateExportFileName,
+} from "../utils/file"
 import { useTransferStore } from "../store/transfer"
 import type {
+  Collection,
   WrappedCollection,
   WrappedWindow,
   WrappedTab,
@@ -28,13 +29,14 @@ import { checkTree } from "../utils/tree"
 // data
 const collectionsA = ref([])
 const collectionsB = ref([])
-const sameCollections = ref([])
+const sameCollections: Collection[] = []
 const conflictCollectionsA = shallowRef<WrappedCollection[]>([])
 const conflictCollectionsB = shallowRef<WrappedCollection[]>([])
 
 const transferStore = useTransferStore()
 
 /* -------------- file upload --------------- */
+// TODO: ENHANCE: use const instead of reactive
 const leftFile = ref<File | null>(null)
 const rightFile = ref<File | null>(null)
 const leftContent = ref<string>("")
@@ -79,7 +81,7 @@ const clearFiles = () => {
   rightContent.value = ""
   collectionsA.value = []
   collectionsB.value = []
-  sameCollections.value = []
+  sameCollections.length = 0
   conflictCollectionsA.value = []
   conflictCollectionsB.value = []
 }
@@ -90,7 +92,7 @@ const compareFiles = async () => {
       collectionsA.value,
       collectionsB.value,
     )
-  sameCollections.value = sames.map(wrapCollection)
+  sameCollections.push(...sames.map(unTaskCollection))
   conflictCollectionsA.value = conflictsA.map(wrapCollection)
   conflictCollectionsB.value = conflictsB.map(wrapCollection)
   // console.log("compare", diffResult)
@@ -99,13 +101,17 @@ const compareFiles = async () => {
 const exportData = (
   wrappedCollections: WrappedCollection[],
   fileName: string,
+  isSessionBuddyFmt?: boolean,
+  side?: "left" | "right",
 ) => {
-  const file = generateFileWithClientInfo()
-  const sameExportCollections = generateExportCollections(sameCollections.value)
+  const file = isSessionBuddyFmt
+    ? JSON.parse(side === "left" ? leftContent.value : rightContent.value)
+    : generateFileWithClientInfo()
+  // replace file.collections to reactive ones
   const conflictExportCollections =
     generateExportCollections(wrappedCollections)
   // TODO: maybe sort colelctions
-  file.collections = [...sameExportCollections, ...conflictExportCollections]
+  file.collections = [...sameCollections, ...conflictExportCollections]
   console.log("export data: ", file)
 
   const dataStr = JSON.stringify(file, null, 2)
@@ -113,7 +119,7 @@ const exportData = (
   const url = URL.createObjectURL(blob)
   const a = document.createElement("a")
   a.href = url
-  a.download = `${fileName || "tabs-box-merged-data.json"}`
+  a.download = generateExportFileName(isSessionBuddyFmt)
   document.body.appendChild(a)
   a.click()
   document.body.removeChild(a)

@@ -35,6 +35,16 @@ const sortCollection = (collections: TaskCollection[]) => {
   return collections.sort((a, b) => a.raw.created - b.raw.created)
 }
 
+export const unTaskCollection = (collection: TaskCollection): Collection => {
+  return {
+    ...collection.raw,
+    windows: collection.raw.windows.map((win) => ({
+      ...win.raw,
+      tabs: win.raw.tabs.map((t) => ({ ...t.raw })),
+    })),
+  }
+}
+
 /**
  * Enhanced comparison function that properly handles collections with duplicate titles
  * @param collections1 - First set of collections to compare
